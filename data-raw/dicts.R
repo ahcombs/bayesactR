@@ -5,7 +5,6 @@
 # First I am going to worry about the public datasets
 
 source_folder <- "data-raw/dicts"
-dest_folder <- "inst/extdata/dicts"
 file_list <- list.files(source_folder)
 
 # identities <- list()
@@ -104,13 +103,10 @@ for(file in file_list){
     # print average file first
     filename <- paste0(key, "_", component, "_av")
     saveit(average, name = filename)
-    # write.csv(average, paste0(dest_folder, "/", outfile))
-    # usethis::use_data(do.call("<-", list(as.name(outfile), average)), overwrite = TRUE)
 
     # then print male and female files if necessary
     if(avonly == FALSE){
       for(g in c("f", "m")){
-        # outfile <- paste0(key, "_", component, "_", g,".csv")
         filename <- paste0(key, "_", component, "_", g)
 
         if(g == 'f'){
@@ -120,8 +116,6 @@ for(file in file_list){
         }
 
         saveit(d, name = filename)
-        # write.csv(d, paste0(dest_folder, "/", outfile))
-        # usethis::use_data(do.call("<-", list(as.name(outfile), d)), overwrite = TRUE)
       }
     }
 
@@ -132,12 +126,8 @@ for(file in file_list){
   } else if (datatype == "COV") {
     names(data) <- c('term', 'E', 'P', 'A', 'cov1', 'cov2', 'cov3', 'cov4', 'cov5', 'cov6', 'cov7', 'cov8', 'cov9')
     data_clean <- standardize_terms(data, key, component)
-    # outfile <- paste0(dest_folder, "/", key, "_", component, "_av_COV.csv")
-    filename <- paste0(dest_folder, "/", key, "_", component, "_av_COV")
-
+    filename <- paste0(key, "_", component, "_av_COV")
     saveit(data_clean, name = filename)
-    # write.csv(data_clean, outfile)
-    # usethis::use_data(do.call("<-", list(as.name(outfile), data_clean)), overwrite = TRUE)
 
     # if(component == 'identities'){
     #   identities <- append(identities, data_clean[,1])
@@ -154,12 +144,8 @@ for(file in file_list){
     # standard deviation has three additional columns; does not split by gender
     names(data) <- c('term', 'E', 'P', 'A', 'sd1', 'sd2', 'sd3')
     data_clean <- standardize_terms(data, key, component)
-    # outfile <- paste0(dest_folder, "/", key, "_", component, "_av_SD.csv")
-    filename <- paste0(dest_folder, "/", key, "_", component, "_av_SD")
-
+    filename <- paste0(key, "_", component, "_av_SD")
     saveit(data_clean, name = filename)
-    # write.csv(data_clean, outfile)
-    # usethis::use_data(do.call("<-", list(as.name(outfile), data_clean)), overwrite = TRUE)
 
     # if(component == 'identities'){
     #   identities <- append(identities, data_clean[,1])

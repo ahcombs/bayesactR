@@ -12,7 +12,8 @@ saveit <- function(..., name, type = NA) {
     if(is.element(TRUE, grepl("identities", name)) |
        is.element(TRUE, grepl("behaviors", name)) |
        is.element(TRUE, grepl("mods", name)) |
-       is.element(TRUE, grepl("settings", name))) {
+       is.element(TRUE, grepl("settings", name)) |
+       is.element(TRUE, grepl("emotions", name))) {
       type <- "dict"
     } else if (is.element(TRUE, grepl("emotionid", name)) |
                is.element(TRUE, grepl("impressionabo", name)) |
