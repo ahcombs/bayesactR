@@ -2,4 +2,9 @@
 
 export(dict_info)
 export(eqn_info)
+export(saveit)
 export(write_input_file)
+importFrom(dplyr,"mutate")
+importFrom(magrittr,"%>%")
+importFrom(stringr,"str_replace")
+importFrom(stringr,"str_replace_all")

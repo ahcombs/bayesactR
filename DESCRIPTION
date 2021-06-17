@@ -1,13 +1,13 @@
 Package: bayesactR
-Title: What the Package Does (One Line, Title Case)
+Title: Functions for Running BayesACT Simulations Using an R Workflow
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Aidan",
+           family = "Combs",
            role = c("aut", "cre"),
            email = "first.last@example.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Description: This package provides utilities to facilitate running BayesACT simulations in a replicable way using R. It includes all publicly available dictionary and equation data, converted to a standard format. It includes functions to automate the production of BayesACT input text files so that running multiple simulations (perhaps to loop over identities, parameter settings, behaviors, etc) is easy. 
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
@@ -17,3 +17,10 @@ RoxygenNote: 7.1.1
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Imports: 
+    tidyselect,
+    dplyr,
+    stringr,
+    magrittr
+Depends: 
+    R (>= 2.10)
