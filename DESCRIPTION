@@ -8,8 +8,7 @@ Authors@R:
            email = "first.last@example.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: This package provides utilities to facilitate running BayesACT simulations in a replicable way using R. It includes all publicly available dictionary and equation data, converted to a standard format. It includes functions to automate the production of BayesACT input text files so that running multiple simulations (perhaps to loop over identities, parameter settings, behaviors, etc) is easy. 
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
@@ -21,6 +20,8 @@ Imports:
     tidyselect,
     dplyr,
     stringr,
-    magrittr
+    magrittr,
+    utils
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    actdata

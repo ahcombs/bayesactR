@@ -5,41 +5,29 @@
 \title{Write agent into input}
 \usage{
 agent(
-  agenttext,
   name,
-  dictname = "usfullsurveyor2015",
-  dicttype = "mean",
-  dictgender = "av",
-  impression_eqns = "us2010",
-  emotion_eqns = "us2010",
-  impression_gender = c("neutral", "female", "male"),
-  emotion_gender = c("neutral", "female", "male"),
-  eqndir = "/Users/aidan/Desktop/interact_data/eq_coefs/clean"
+  dict = "usfullsurveyor2015",
+  dict_type = "mean",
+  dict_gender = "av",
+  eqns = "us2010",
+  eqns_gender = c("av", "female")
 )
 }
 \arguments{
-\item{agenttext}{file template to add agent information to}
-
 \item{name}{string agent name}
 
-\item{dictname}{string, key of an available dictionary OR filepath}
+\item{dict}{string or length 4 vector, key(s) of an available dictionary OR filepath(s)}
 
-\item{dicttype}{string (\code{"mean"}, \code{"sd"}, or \code{"cov"})}
+\item{dict_type}{string or length 4 vector (\code{"mean"}, \code{"sd"}, or \code{"cov"})}
 
-\item{dictgender}{string (\code{"av"}, \code{"male"}, or \code{"female"})}
+\item{dict_gender}{string or length 4 vector (\code{"av"}, \code{"male"}, or \code{"female"})}
 
-\item{impression_eqns}{string, key of an available equation set OR filepath}
+\item{eqns}{string or length 2 vector, key(s) of an available equation set OR filepath(s)}
 
-\item{emotion_eqns}{string, key of an available equation set OR filepath}
-
-\item{impression_gender}{string (\code{"neutral"}, \code{"female"}, or \code{"male"})}
-
-\item{emotion_gender}{string (\code{"neutral"}, \code{"female"}, or \code{"male"})}
-
-\item{eqndir}{string, path to directory where equations are located}
+\item{eqns_gender}{string or length 2 vector (\code{"av"}, \code{"f"}, or \code{"m"})}
 }
 \value{
-
+file with inserted lines
 }
 \description{
 Compile all necessary information for an individual agent and add it to a template object that can be written to a text file

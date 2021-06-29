@@ -1,37 +1,45 @@
-#' Save data files
+#' Save actdata objects where bayesact can get them
 #'
-#' Adapted from https://stackoverflow.com/questions/21248065/r-rename-r-object-while-save-ing-it : see Marco Wirthlin's answer
+#' Need to move these files to a folder in the user's working directory so BayesACT can access them.
+#' Make a directory "actdata_dicts_eqns" under the user's working directory (if necessary)
 #'
-#' @param ... data object
-#' @param name desired object name (filename without type and extension)
-#' @param type data type (dict or eqn)
-#'
-#' @export
-saveit <- function(..., name, type = NA) {
-  if(is.na(type)){
-    if(is.element(TRUE, grepl("identities", name)) |
-       is.element(TRUE, grepl("behaviors", name)) |
-       is.element(TRUE, grepl("mods", name)) |
-       is.element(TRUE, grepl("settings", name)) |
-       is.element(TRUE, grepl("emotions", name))) {
-      type <- "dict"
-    } else if (is.element(TRUE, grepl("emotionid", name)) |
-               is.element(TRUE, grepl("impressionabo", name)) |
-               is.element(TRUE, grepl("selfdir", name)) |
-               is.element(TRUE, grepl("traitid", name))){
-      type <- "eqn"
-    }
+#' @param dataname name of the dataset in actdata
+save_actdata_input <- function(dataname){
+  path <- file.path(getwd(), "actdata_dicts_eqns")
+
+  if(!dir.exists(path)){
+    dir.create(path)
   }
 
-  if(!(type %in% c("dict", "eqn"))){
-    stop("Specify dataset type as dict or eqn")
+  if(grepl("dict", dataname)){
+    # the object is a dictionary
+    class <- "dict"
+    filename <- paste0(path, "/", dataname, ".csv")
+  } else {
+    # the object is an equation set
+    class <- "eqn"
+    filename = paste0(path, "/", dataname, ".dat")
   }
 
-  # this does the .RData files
-  x <- list(...)
-  names(x) <- paste0(name, "_", type)
-  save(list=names(x), file=paste0("data/", name, "_", type, ".RData"), envir=list2env(x))
-
-  # this does the csvs
-  write.csv(..., paste0("inst/extdata/", name, "_", type, ".csv"))
+  save_for_bayesact(dataname, class = class, filename = filename)
 }
+
+
+#' Save files where bayesact can find them
+#'
+#' @param dataname name of actdata object
+#' @param class string "dict" or "eqn"
+#' @param filename string filepath to save under
+#'
+#' @import actdata
+save_for_bayesact <- function(dataname, class, filename){
+  data <- get(dataname, asNamespace("actdata"))
+
+  if(class == "dict"){
+    utils::write.table(data, filename, sep = ",", row.names = FALSE, col.names = FALSE)
+  } else {
+    utils::write.table(data, filename, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+  }
+
+}
+

@@ -1,0 +1,10 @@
+﻿agent,object,agent_ident,agent_ident_prob,object_ident,object_ident_prob
+bill,bob,"[man, boss]","[.3, .7]","[secretary, friend]","[.6, .4]"
+bob,bill,"[employee, man, student]","[.6, .2, .2]","[mentor, tyrant, boss]","[.7, .05, .25]"
+sarah,bob,"[friend, coworker]","[.6, .4]","[friend, coworker]","[.6, .4]"
+sarah,bill,[employee],[1],"[boss, tyrant]","[.8, .2]"
+bill,sarah,"[boss, mentor]","[.8, .2]","[employee, woman, student]","[.7, .2, .1]"
+bob,sarah,"[friend, coworker]","[.6, .4]","[friend, coworker]","[.6, .4]"
+jessica,sarah,[wife],[1],"[wife, friend]","[.5, .5]"
+sarah,jessica,[wife],[1],[wife],[1]
+jessica,bill,[person],[1],,

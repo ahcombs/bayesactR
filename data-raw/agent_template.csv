@@ -1,0 +1,5 @@
+﻿name,dict,dict_type,dict_gender,eqns,eqns_gender
+bill,"usfullsurveyor2015, morocco2015, usfullsurveyor2015, usfullsurveyor2015",mean,av,"us2010, egypt2014","av, male"
+bob,usfullsurveyor2015,mean,av,us2010,"av, male"
+sarah,nc1978,mean,female,us2010,"av, female"
+jessica,uga2015bayesactsubset,cov,av,nc1978,female

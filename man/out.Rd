@@ -17,9 +17,6 @@ out(
 
 \item{dir}{directory to write to}
 }
-\value{
-
-}
 \description{
 Write to .txt file
 }

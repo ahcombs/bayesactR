@@ -4,21 +4,21 @@
 \alias{get_eqn_file}
 \title{Construct file string (equation)}
 \usage{
-get_eqn_file(eqndir, eqns, gender, type)
+get_eqn_file(key, gender, component)
 }
 \arguments{
-\item{eqndir}{directory where equations are located}
+\item{gender}{string}
 
-\item{eqns}{string}
+\item{component}{string (\code{"impression"}, \code{"emotion"})}
 
-\item{gender}{string (\code{"neutral"}, \code{"male"}, \code{"female"})}
-
-\item{type}{string (\code{"mean"}, \code{"sd"}, \code{"cov"})}
+\item{eqn}{string}
 }
 \value{
-
+string filepath
 }
 \description{
-this builds the correct filepath for the equations and checks if the specified gender is available. If the equations are given as a filepath, it returns the filepath and ignores specified gender.
+this builds the correct filepath for the equations and checks if the specified gender is available.
+if the equations are given as a filepath, it returns the filepath and ignores specified gender.
+if the input is a name from actdata, it saves the dataset in the "actdata_dicts_eqns" folder in the working directory
 }
 \keyword{internal}

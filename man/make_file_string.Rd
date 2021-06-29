@@ -4,21 +4,20 @@
 \alias{make_file_string}
 \title{Construct file string (dictionary)}
 \usage{
-make_file_string(dir, dict, gender, type)
+make_file_string(dict, gender, component, type)
 }
 \arguments{
-\item{dir}{string directory}
-
 \item{dict}{string}
 
-\item{gender}{string (\code{"av"}, \code{"male"}, \code{"female"})}
+\item{gender}{string (\code{"av"}, \code{"female"}, \code{"male"})}
 
-\item{type}{string (\code{"mean"}, \code{"sd"}, \code{"cov"})}
+\item{component}{string (\code{"identities"}, \code{"behaviors"}, \code{"settings"}, \code{"mods"})}
 }
 \value{
-
+string filepath
 }
 \description{
-this constructs the correct file string from dictionary information (dictionaries only, currently)
+this constructs the correct file string from dictionary information
+if the input is a name from actdata, it saves the dataset in the "actdata_dicts_eqns" folder in the working directory
 }
 \keyword{internal}
