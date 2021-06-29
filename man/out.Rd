@@ -4,11 +4,7 @@
 \alias{out}
 \title{Write to .txt file}
 \usage{
-out(
-  template,
-  filename,
-  dir = "/Users/aidan/Desktop/School/Grad_school/inteRact/bayesact/Rscripts/outtest/"
-)
+out(template, filename, dir = "bayesact_input_files")
 }
 \arguments{
 \item{template}{object to write}

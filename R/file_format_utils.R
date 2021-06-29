@@ -84,3 +84,37 @@ remove_line <- function(string, file){
 
   return(file[places,])
 }
+
+#' Utility for building a line in the interaction section of the input file
+#'
+#' @param identities list of identities
+#' @param probs list of probabilities
+#'
+#' @return text string to enter in line
+get_actor_prob_line <- function(identities, probs){
+  line <- ""
+
+  probs <- add_leading_zeros(probs)
+
+  for(i in 1:length(identities)){
+    line <- paste0(line, paste0(" : ", identities[i], " : ", probs[i]))
+  }
+
+  return(line)
+}
+
+#' Add leading zero before decimal point to probs if necessary
+#'
+#' @param probs vector of probabilities
+#'
+#' @return formatted character vector with leading zero before decimal
+add_leading_zeros <- function(probs){
+  for(i in 1:length(probs)){
+    n <- as.numeric(probs[i])
+    if(n < 1){
+      probs[i] <- as.character(n)
+    }
+  }
+
+  return(probs)
+}

@@ -218,3 +218,38 @@ check_eqn_gender <- function(eqns, eqns_gender){
   }
   return(TRUE)
 }
+
+#' Check that probabilities given sum to 1
+#'
+#' @param agent_ident_prob list of agent probabilities
+#' @param object_ident_prob list of object probabilities
+#'
+#' @return boolean successful test
+check_probs <- function(agent_ident_prob, object_ident_prob){
+  agent_ident_prob <- as.numeric(agent_ident_prob)
+  object_ident_prob <- as.numeric(object_ident_prob)
+  if(sum(agent_ident_prob) != 1){
+    stop("Agent identity probabilities do not sum to 1.")
+  }
+  if(sum(object_ident_prob) != 1){
+    stop("Object identity probabilities do not sum to 1.")
+  }
+  return(TRUE)
+}
+
+
+#' Check that all identities have a corresponding probability and vice versa
+#'
+#' Are lists the same length?
+#'
+#' @param ident identity list
+#' @param prob probability list
+#'
+#' @return boolean for successful check
+check_identity_prob_match <- function(ident, prob){
+  if(length(ident) == length(prob)){
+    return(TRUE)
+  } else {
+    stop("Length of identity lists must match length of probability lists")
+  }
+}

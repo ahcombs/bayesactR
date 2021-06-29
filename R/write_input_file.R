@@ -37,6 +37,18 @@ write_input_file_from_df <- function(nodelist, edgelist){
 
   # interactions: for each interaction, call the individual interaction function
 
+  for(i in 1:nrow(edgelist)){
+    a <- get_lists(edgelist[i,])
+
+    newlines <- interaction(agent = a$agent,
+                            object = a$object,
+                            agent_ident = a$agent_ident,
+                            agent_ident_prob = a$agent_ident_prob,
+                            object_ident = a$object_ident,
+                            object_ident_prob = a$object_ident_prob
+                            )
+  }
+
 
   # events: number of simulations and location of events file, if applicable. Also there are some event options. Write info to template.
 
@@ -65,76 +77,45 @@ agent <- function(name,
   dicts <- actdata::get_dicts()
   alldictnames <- actdata::dict_subset(dicts)
 
-  # TODO: check everything dictionary related
-
   # coerce name to a string and strip all whitespace.
   # TODO: CHECK what happens when you pass a list or a factor or other things?
   name <- gsub("[[:space:]]", "", toString(name), fixed = TRUE)
 
   ### CHECK INPUTS
   # check that dict key is as allowed (files exist or key strings are specified correctly, list is of proper length)
-  # tryCatch(
     check_input_list(dict,
                             allowlist = alldictnames,
                             allowlength = 4,
                             allowsingle = TRUE,
                             allowfile = TRUE)
 
-    # ,
-    #        error = function(e){
-    #          message("Error in dictionary input: ", e)
-    #        })
-
   # same with dict_type
-  # tryCatch(
     check_input_list(dict_type,
                             allowlist = c('mean', 'sd', 'cov'),
                             allowlength = 4,
                             allowsingle = TRUE,
                             allowfile = FALSE)
 
-    # ,
-    #        error = function(e){
-    #          message("Error in dictionary input: ", e)
-    #        })
-
   # same with dict_gender
-  # tryCatch(
     check_input_list(dict_gender,
                             allowlist = c("av", "female", "male"),
                             allowlength = 4,
                             allowsingle = TRUE,
                             allowfile = TRUE)
 
-    # ,
-    #        error = function(e){
-    #          message("Error in dictionary input: ", e)
-    #        })
-
   # check that equations are allowed
-  # tryCatch(
     check_input_list(eqns,
                             allowlist = actdata::eqn_subset(actdata::get_eqns()),
                             allowlength = 2,
                             allowsingle = TRUE,
                             allowfile = TRUE)
 
-    # ,
-    #        error = function(e){
-    #          message("Error in equation specification: ", e)
-    #        })
-
   # same with equation gender
-  # tryCatch(
     check_input_list(eqns_gender,
                             allowlist = c("av", "female", "male"),
                             allowlength = 2,
                             allowsingle = TRUE,
                             allowfile = TRUE)
-    # ,
-    #        error = function(e){
-    #          message("Error in equation input: ", e)
-    #        })
 
   # to make line spec and compatibility checking easier, expand single strings to vectors of correct length
   dict <- expand(dict, 4)
@@ -146,40 +127,16 @@ agent <- function(name,
   ### CHECK COMPATIBILTY
 
   # check that provided dictionaries contain necessary components
-  # tryCatch(
     check_dict_components(dict)
-    # ,
-    #        error = function(e){
-    #          message("Error in dictionary input: ", e)
-    #        })
 
   # check that dictionary has the requested gender
-  # tryCatch(
     check_dict_gender(dict, dict_gender)
 
-    # ,
-    #        error = function(e){
-    #          message("Error in dictionary input: ", e)
-    #        })
-
   # check that the dict_name and dict_type are compatible with one another
-  # tryCatch(
     check_dict_type(dict, dict_type)
 
-    # ,
-    #        error = function(e){
-    #          message("Error in dictionary type specification: ")
-    #        })
-
   # check that equations have specified genders
-  # tryCatch(
     check_eqn_gender(eqns, eqns_gender)
-
-    # ,
-    #        error = function(e){
-    #          message("Error in equation input: ", e)
-    #        })
-
 
 
   ## now get the proper strings to input for the text file
@@ -203,19 +160,37 @@ agent <- function(name,
   lines <- c(nametxt, dict1, dict2, dict3, dict4, dyn1, dyn2, end, blank)
 
   return(lines)
-  # insert lines into template file and return
-  # return(insertLines(file = text,
-  #                    lines = c(nametxt, dict1, dict2, dict3, dict4, dyn1, dyn2, end, ""),
-  #                    start = "AGENTDEF",
-  #                    end = "// \\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
-  #                    insertAt = "end"))
-
 }
 
 
 ### Interactions
-interaction <- function(){
+interaction <- function(agent, object,
+                        agent_ident = "person",
+                        agent_ident_prob = "1",
+                        object_ident = "person",
+                        object_ident_prob = "1"){
 
+  # check whether identities are in specified dictionaries--lower priority to implement
+
+  # check whether probabilities sum to 1
+  check_probs(agent_ident_prob, object_ident_prob)
+
+  # check whether all correponding identity/probability lists are the same length
+  check_identity_prob_match(agent_ident, agent_ident_prob)
+  check_identity_prob_match(object_ident, object_ident_prob)
+
+  # get lines for file
+  line1 <- paste0("interaction: ", agent, " : ", object)
+  line2 <- paste0(agent, get_actor_prob_line(agent_ident, agent_ident_prob))
+  line3 <- paste0(object, get_actor_prob_line(object_ident, object_ident_prob))
+  line4 <- "endinteraction"
+  line5 <- ""
+
+  # TODO: Handle NAs (for when actors don't know each other)
+
+  lines <- c(line1, line2, line3, line4, line5)
+
+  return(lines)
 }
 
 ### Events
