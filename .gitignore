@@ -3,3 +3,5 @@
 .Rdata
 .httr-oauth
 .DS_Store
+actdata_dicts_eqns/
+bayesact_input_files/
