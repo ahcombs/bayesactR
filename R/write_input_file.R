@@ -1,19 +1,35 @@
 #' Write BayesACT input file
 #'
-#' Write out a text file in the format required by BayesACT containing all necessary information for all actors
+#' From information in three dataframes (agents, interactions, events),
+#' write out a .txt sim file and a .events file in the format required by BayesACT.
+#' These contain information on actors, interactions/dyads, and events/actions.
+#'
+#' The data format expected for agents and interactions is similar to that used in social network analysis.
+#' Information on individual actors (including name, dictionaries, equations, etc) is stored in a node list (one line per actor).
+#' Information specific to ties between actors (called interactions here), such as identity distributions, is stored in an edgelist-like format (one line per directed tie).
+#'
+#' The function also requires an events file, which is simply a dataframe containing information on the actions to be simulated (one line per action)
+#' In future I will implement functionality to help build these dataframes.
 #'
 #' @param nodelist a dataframe giving dictionary information for each actor
 #' @param edgelist a dataframe delineating starting parameters (actor identity vector, object identity vector, probabilities) for each dyad
+#' @param eventslist a dataframe containing an ordered list of actions to perform
+#' @param simfilename file name by which to save the sim file
+#' @param eventfilename file name by which to save the events file
+#' @param dir the directory at which to save the sim file and events file
 #'
 #' @export
-write_input_file_from_df <- function(nodelist, edgelist){
-  # setup: read in the template so we can add to it.
+write_input_file_from_df <- function(nodelist, edgelist, eventslist, simfilename, eventfilename, dir = "bayesact_input_files"){
+  # The sim text file contains information on agents and interactions, and a line that points to a separate events file
+  # The events file (.events extension) contains the list of actions to perform, in order
+  # Though there is a user query mode implemented in bayesact, it doesn't make sense to use it when your goal is to run batches
+  # Therefore, this wrapper requires a .events file
 
-  # TODO: parameter generation
-  # TODO: documentation--build on Jesse's vignette?
+  # First, add agent and interaction lines in the designated places in the sim file.
+  # Then write the events file, and add the line in the sim file to point to it.
 
+  ### AGENTS: for each agent, get lines to add to template, then add them.
   agentlines <- c()
-  # agents: for each agent, call the individual agent function
   for(i in 1:nrow(nodelist)){
     mandatory_args <- c("name", "dict", "dict_type", "dict_gender", "eqns", "eqns_gender")
     a <- get_lists(nodelist[i,])
@@ -43,7 +59,7 @@ write_input_file_from_df <- function(nodelist, edgelist){
   curr_template <- remove_line("AGENTDEF", curr_template)
 
 
-  # interactions: for each interaction, call the individual interaction function
+  ### INTERACTIONS: for each interaction, get lines to add and add them
 
   interactionlines <- c()
 
@@ -78,8 +94,23 @@ write_input_file_from_df <- function(nodelist, edgelist){
   curr_template <- remove_line("INTERACTIONDEF", curr_template)
 
 
-  # events: number of simulations and location of events file, if applicable. Also there are some event options. Write info to template.
-  out(curr_template, "test_062921.txt")
+  ### EVENTS: save event dataframe in correct format and add the filepath to the sim file
+
+  eventfilepath <- file.path(dir, eventfilename)
+  simfilepath <- file.path(dir, simfilename)
+
+  eventlines <- event_lines(eventslist, filepath = eventfilepath)
+
+  curr_template <- insert_lines(file = curr_template,
+                                lines = eventlines,
+                                start = "EVENTDEF",
+                                end = "",
+                                insertAt = "start")
+
+  curr_template <- remove_line("EVENTDEF", curr_template)
+
+  simfile_out(curr_template, simfilename, dir)
+  eventfile_out(eventslist, eventfilename, dir)
 }
 
 
@@ -169,7 +200,6 @@ agent <- function(name,
   check_eqn_gender(eqns, eqns_gender)
 
 
-
   ##### OPTIONAL AGENT ARGUMENTS: alphas, betas, deltas, numsamples
   # check inputs
   check_agent_opt_args(opt_args)
@@ -240,8 +270,13 @@ interaction <- function(agent, object,
 # So the line should be "simtype : events" with an events file.
 # num_iterations can be left alone; I am pretty sure it gets overridden by the number of lines in the events file
 # see the notes I pasted on github for things to check for in the events file
-event_lines <- function(events){
-
+event_lines <- function(events, filepath){
+  check_events(events)
+  # the iterations row is not really necessary I don't think; I believe bayesact overwrites it with the number of rows it parses from the
+  # events file. But it may be convenient to have it there for informational purposes.
+  lines = c(paste0("num_iterations : ", nrow(events)),
+            paste0("events: ", filepath),
+            "simtype : events")
 }
 
 ### Write out
@@ -253,11 +288,26 @@ event_lines <- function(events){
 #' @param dir directory to write to
 #'
 #' @keywords internal
-out <- function(template, filename, dir = "bayesact_input_files"){
+simfile_out <- function(template, filename, dir){
   if(!dir.exists(dir)){
     dir.create(dir)
   }
 
   utils::write.table(template, file = file.path(dir, filename), sep = '\t', row.names = FALSE, col.names = FALSE, quote = FALSE)
+}
+
+
+eventfile_out <- function(template, filename, dir){
+  if(grepl(".events$", filename) == FALSE){
+    stop("Events file must end in extension .events")
+  }
+
+  # replace NA values with empty strings
+  template[is.na(template)] <- ""
+
+  if(!dir.exists(dir)){
+    dir.create(dir)
+  }
+  utils::write.table(template, file = file.path(dir, filename), sep = " : ", row.names = FALSE, col.names = FALSE, quote = FALSE)
 }
 

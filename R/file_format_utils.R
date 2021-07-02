@@ -110,22 +110,22 @@ get_actor_prob_line <- function(identities, probs){
   return(line)
 }
 
-#' Add leading zero before decimal point to probs if necessary
+#' Add leading zero before decimal point to vectors of numbers if necessary
 #'
-#' @param probs vector of probabilities
+#' @param vec vector of possibly decimal numbers
 #'
 #' @return formatted character vector with leading zero before decimal
-add_leading_zeros <- function(probs){
-  for(i in 1:length(probs)){
-    if(!is.na(probs[i])){
-      n <- as.numeric(probs[i])
+add_leading_zeros <- function(vec){
+  for(i in 1:length(vec)){
+    if(!is.na(vec[i])){
+      n <- as.numeric(vec[i])
       if(n < 1){
-        probs[i] <- as.character(n)
+        vec[i] <- as.character(n)
       }
     }
   }
 
-  return(probs)
+  return(vec)
 }
 
 
@@ -139,14 +139,17 @@ get_agent_opt_arg_lines <- function(opt_args){
   argnames <- names(opt_args)
   if("alphas" %in% argnames){
     a <- opt_args$alphas[[1]]
+    a <- add_leading_zeros(a)
     lines <- append(lines, paste0("alphas: ", paste(a, collapse = " : ")))
   }
   if("betas" %in% argnames){
     a <- opt_args$betas[[1]]
+    a <- add_leading_zeros(a)
     lines <- append(lines, paste0("betas: ", paste(a, collapse = " : ")))
   }
   if("deltas" %in% argnames){
     a <- opt_args$deltas[[1]]
+    a <- add_leading_zeros(a)
     lines <- append(lines, paste0("deltas: ", paste(a, collapse = " : ")))
   }
   if("numsamples" %in% argnames){

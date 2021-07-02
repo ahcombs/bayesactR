@@ -1,1 +1,9 @@
-﻿
+﻿agent,agent_action,agent_emotion,object,object_action,object_emotion
+bill,*+,*,bob,+,
+bob,!+,*,bill,+,
+sarah,!,*,bob,+,
+sarah,josh+,,bill,,
+bill,*+,*,sarah,,
+bob,*,,sarah,+,
+jessica,*,*,sarah,+,
+sarah,*,*,jessica,+,

@@ -4,13 +4,38 @@
 \alias{write_input_file_from_df}
 \title{Write BayesACT input file}
 \usage{
-write_input_file_from_df(nodelist, edgelist)
+write_input_file_from_df(
+  nodelist,
+  edgelist,
+  eventslist,
+  simfilename,
+  eventfilename,
+  dir = "bayesact_input_files"
+)
 }
 \arguments{
 \item{nodelist}{a dataframe giving dictionary information for each actor}
 
 \item{edgelist}{a dataframe delineating starting parameters (actor identity vector, object identity vector, probabilities) for each dyad}
+
+\item{eventslist}{a dataframe containing an ordered list of actions to perform}
+
+\item{simfilename}{file name by which to save the sim file}
+
+\item{eventfilename}{file name by which to save the events file}
+
+\item{dir}{the directory at which to save the sim file and events file}
 }
 \description{
-Write out a text file in the format required by BayesACT containing all necessary information for all actors
+From information in three dataframes (agents, interactions, events),
+write out a .txt sim file and a .events file in the format required by BayesACT.
+These contain information on actors, interactions/dyads, and events/actions.
+}
+\details{
+The data format expected for agents and interactions is similar to that used in social network analysis.
+Information on individual actors (including name, dictionaries, equations, etc) is stored in a node list (one line per actor).
+Information specific to ties between actors (called interactions here), such as identity distributions, is stored in an edgelist-like format (one line per directed tie).
+
+The function also requires an events file, which is simply a dataframe containing information on the actions to be simulated (one line per action)
+In future I will implement functionality to help build these dataframes.
 }

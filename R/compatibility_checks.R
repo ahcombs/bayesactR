@@ -329,3 +329,28 @@ check_interaction_opt_args <- function(opt_args){
   }
   return(TRUE)
 }
+
+#' Check events file input for format errors
+#'
+#' @param events dataframe
+#'
+#' @return boolean successful check
+check_events <- function(events){
+  # file format: six columns
+  cols <- c("agent", "agent_action", "agent_emotion", "object", "object_action", "object_emotion")
+  if(!identical(names(events), cols)){
+    stop(paste0("Events file must have columns ", paste(cols, collapse = ", "), " (not all need be populated)."))
+  }
+
+  # at least one of agent_behavior/client_behavior must have an entry for each row
+  for(i in 1:nrow(events)){
+    if((is.na(events$agent_action[i]) | events$agent_action[i] == "") & (is.na(events$object_action[i]) | events$object_action[i] == "")){
+      stop("Either agent or object must act on each turn")
+    }
+  }
+
+  # TODO in future: check that provided behaviors are in the dictionary
+  # (not critical; bayesact checks for this too -- but checking here first would allow errors to be caught before sinking time into simulation)
+
+  return(TRUE)
+}

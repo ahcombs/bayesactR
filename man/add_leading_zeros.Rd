@@ -2,16 +2,16 @@
 % Please edit documentation in R/file_format_utils.R
 \name{add_leading_zeros}
 \alias{add_leading_zeros}
-\title{Add leading zero before decimal point to probs if necessary}
+\title{Add leading zero before decimal point to vectors of numbers if necessary}
 \usage{
-add_leading_zeros(probs)
+add_leading_zeros(vec)
 }
 \arguments{
-\item{probs}{vector of probabilities}
+\item{vec}{vector of possibly decimal numbers}
 }
 \value{
 formatted character vector with leading zero before decimal
 }
 \description{
-Add leading zero before decimal point to probs if necessary
+Add leading zero before decimal point to vectors of numbers if necessary
 }
