@@ -1,5 +1,5 @@
-﻿name,dict,dict_type,dict_gender,eqns,eqns_gender
-bill,"usfullsurveyor2015, morocco2015, usfullsurveyor2015, usfullsurveyor2015",mean,av,"us2010, egypt2014","av, male"
-bob,usfullsurveyor2015,mean,av,us2010,"av, male"
-sarah,nc1978,mean,female,us2010,"av, female"
-jessica,uga2015bayesactsubset,cov,av,nc1978,female
+﻿name,dict,dict_type,dict_gender,eqns,eqns_gender,alphas,betas,deltas,numsamples
+bill,"usfullsurveyor2015, morocco2015, usfullsurveyor2015, usfullsurveyor2015",mean,av,"us2010, egypt2014","av, male","1, .5, 1",".1, .1",".4, .4",10000
+bob,usfullsurveyor2015,mean,av,us2010,"av, male",1,0.1,0.5,100
+sarah,nc1978,mean,female,us2010,"av, female",,,,
+jessica,uga2015bayesactsubset,cov,av,nc1978,female,5,,,5000

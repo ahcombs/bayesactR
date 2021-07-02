@@ -227,12 +227,14 @@ check_eqn_gender <- function(eqns, eqns_gender){
 #' @return boolean successful test
 check_probs <- function(agent_ident_prob, object_ident_prob){
   agent_ident_prob <- as.numeric(agent_ident_prob)
-  object_ident_prob <- as.numeric(object_ident_prob)
   if(sum(agent_ident_prob) != 1){
     stop("Agent identity probabilities do not sum to 1.")
   }
-  if(sum(object_ident_prob) != 1){
-    stop("Object identity probabilities do not sum to 1.")
+  if(!anyNA(object_ident_prob)){
+    object_ident_prob <- as.numeric(object_ident_prob)
+    if(sum(object_ident_prob) != 1){
+      stop(paste0("Object identity probabilities ", object_ident_prob," do not sum to 1."))
+    }
   }
   return(TRUE)
 }
@@ -252,4 +254,78 @@ check_identity_prob_match <- function(ident, prob){
   } else {
     stop("Length of identity lists must match length of probability lists")
   }
+}
+
+#' Check agent optional argument input
+#'
+#'institution, alphas, betas, deltas, numsamples
+#'
+#' @param opt_args named vector of provided optional arguments
+#'
+#' @return boolean for successful check
+check_agent_opt_args <- function(opt_args){
+  for(arg in names(opt_args)){
+    # arguments must be one of alphas, betas, deltas, numsamples. Warn if not.
+    validargs <- c("alphas", "betas", "deltas", "numsamples")
+    if(!(arg %in% validargs)){
+      warning(paste0(arg, " is not a recognized agent parameter and will be ignored. Valid parameters are ", paste(validargs, collapse = ", "), "."))
+    }
+    # alphas, betas, deltas, numsamples cannot be negative and must be correct length
+    else if (arg %in% c("alphas", "betas", "deltas", "numsamples")){
+      for(val in unlist(opt_args[arg][[1]])){
+        if(as.numeric(val) <= 0){
+          stop("alphas, betas, deltas, and numsamples must be positive")
+        }
+      }
+
+      if(arg == "alphas"){
+        l <- c(3, 1)
+      } else if(arg %in% c("betas", "deltas")){
+        l <- c(2, 1)
+      } else{
+        l <- c(1)
+      }
+
+      if(!(length(unlist(opt_args[arg][[1]])) %in% l)){
+        stop(message = paste0("Length of ", arg, " must be ", paste(l, collapse = " or "), "."))
+      }
+    }
+  }
+  return(TRUE)
+}
+
+#' Check institution optional arguments
+#'
+#' @param opt_args named list of optional arguments
+#'
+#' @return boolean for successful check
+check_interaction_opt_args <- function(opt_args){
+  for(arg in names(opt_args)){
+    # arguments must be one of institution, rseed. Warn if not.
+    validargs <- c("institution", "rseed")
+    if(!(arg %in% validargs)){
+      warning(paste0(arg, " is not a recognized interaction parameter and will be ignored. Valid parameters are ", paste(validargs, collapse = ", "), "."))
+    }
+    # institutions must be in given list
+    if(arg == "institution"){
+      # check that the given institution is a valid one
+      valid_insts <- c("overt","surmised","lay","business","law","politics","academe","medicine","religion","family","sexual","monadic","group","corporal")
+      this_inst <- tolower(trimws(unlist(opt_args$institution)))
+      for(inst in this_inst){
+        if(!(inst %in% valid_insts)){
+          stop(paste0("Provided institution ", inst, " is invalid. Valid institutions are: ", paste(valid_insts, collapse = ", ")))
+        }
+      }
+    }
+    else if (arg == "rseed"){
+      if(length(opt_args[arg][[1]]) > 1){
+        stop("Must only provide one seed value.")
+      }
+      s <- as.numeric(opt_args[arg][[1]])
+      if(s != round(s)){
+        stop("Seed value must be an integer")
+      }
+    }
+  }
+  return(TRUE)
 }

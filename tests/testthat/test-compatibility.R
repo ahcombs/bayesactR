@@ -25,3 +25,12 @@ test_that("probability sums", {
   expect_true(check_probs(agent_ident_prob = c(".99", ".01"), object_ident_prob = c(".01", ".99")))
   expect_error(check_probs(agent_ident_prob = c("1", ".01"), object_ident_prob = c(".01", ".99")))
 })
+
+test_that("optional agent arg check", {
+  expect_true(check_agent_opt_args(opt_args <- data.frame(alphas = c("1"))))
+  expect_warning(check_agent_opt_args(opt_args <- data.frame(alpha = c("1"))))
+  expect_error(check_agent_opt_args(opt_args <- data.frame(alphas = c("-1"))))
+  expect_true(check_agent_opt_args(opt_args <- data.frame()))
+  expect_true(check_agent_opt_args(opt_args <- ""))
+})
+

@@ -15,43 +15,70 @@ write_input_file_from_df <- function(nodelist, edgelist){
   agentlines <- c()
   # agents: for each agent, call the individual agent function
   for(i in 1:nrow(nodelist)){
+    mandatory_args <- c("name", "dict", "dict_type", "dict_gender", "eqns", "eqns_gender")
     a <- get_lists(nodelist[i,])
+    a_mand <- a[,mandatory_args]
+    a_trim <- dplyr::select(a, function(x) (!is.na(x) & x != ""))
+    a <- suppressMessages(dplyr::full_join(a_mand, a_trim))
+
+    thenames <- names(a)
+    opt_args <- thenames[(!thenames %in% mandatory_args)]
 
     newlines <- agent(name = unlist(a$name),
                       dict = unlist(a$dict),
                       dict_type = unlist(a$dict_type),
                       dict_gender = unlist(a$dict_gender),
                       eqns = unlist(a$eqns),
-                      eqns_gender = unlist(a$eqns_gender))
+                      eqns_gender = unlist(a$eqns_gender),
+                      opt_args = subset(a, select = opt_args))
     agentlines <- append(agentlines, newlines)
   }
 
-  curr_template <- insertLines(file = input_template,
-                               lines = agentlines,
-                               start = "AGENTDEF",
-                               end = "// \\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
-                               insertAt = "end")
+  curr_template <- insert_lines(file = input_template,
+                                lines = agentlines,
+                                start = "AGENTDEF",
+                                end = "// \\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
+                                insertAt = "end")
 
   curr_template <- remove_line("AGENTDEF", curr_template)
 
 
   # interactions: for each interaction, call the individual interaction function
 
-  for(i in 1:nrow(edgelist)){
-    a <- get_lists(edgelist[i,])
+  interactionlines <- c()
 
-    newlines <- interaction(agent = a$agent,
-                            object = a$object,
-                            agent_ident = a$agent_ident,
-                            agent_ident_prob = a$agent_ident_prob,
-                            object_ident = a$object_ident,
-                            object_ident_prob = a$object_ident_prob
-                            )
+  for(i in 1:nrow(edgelist)){
+    mandatory_args <- c("agent", "object", "agent_ident", "object_ident", "agent_ident_prob", "object_ident_prob")
+    a <- get_lists(edgelist[i,])
+    a_mand <- a[,mandatory_args]
+    a_trim <- dplyr::select(a, function(x) (!is.na(x) & x != ""))
+    a <- suppressMessages(dplyr::full_join(a_mand, a_trim))
+    thenames <- names(a)
+
+    opt_args <- thenames[(!thenames %in% mandatory_args)]
+
+    newlines <- interaction(agent = unlist(a$agent),
+                            object = unlist(a$object),
+                            agent_ident = unlist(a$agent_ident),
+                            agent_ident_prob = unlist(a$agent_ident_prob),
+                            object_ident = unlist(a$object_ident),
+                            object_ident_prob = unlist(a$object_ident_prob),
+                            opt_args = subset(a, select = opt_args))
+
+    interactionlines <- append(interactionlines, newlines)
   }
+
+  curr_template <- insert_lines(file = curr_template,
+                                lines = interactionlines,
+                                start = "INTERACTIONDEF",
+                                end = "// \\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*\\*",
+                                insertAt = "start"
+                                )
+
+  curr_template <- remove_line("INTERACTIONDEF", curr_template)
 
 
   # events: number of simulations and location of events file, if applicable. Also there are some event options. Write info to template.
-
   out(curr_template, "test_062921.txt")
 }
 
@@ -71,7 +98,10 @@ write_input_file_from_df <- function(nodelist, edgelist){
 #' @keywords internal
 agent <- function(name,
                   dict = "usfullsurveyor2015", dict_type = "mean", dict_gender = 'av',
-                  eqns = "us2010", eqns_gender = c('av', "female")){
+                  eqns = "us2010", eqns_gender = c('av', "female"),
+                  opt_args = ""){
+
+  ##### NECESSARY ARGUMENTS: name, dict, dict_type, dict_gender, eqns, eqns_gender
 
   # calls function to return info for available dictionaries
   dicts <- actdata::get_dicts()
@@ -83,39 +113,39 @@ agent <- function(name,
 
   ### CHECK INPUTS
   # check that dict key is as allowed (files exist or key strings are specified correctly, list is of proper length)
-    check_input_list(dict,
-                            allowlist = alldictnames,
-                            allowlength = 4,
-                            allowsingle = TRUE,
-                            allowfile = TRUE)
+  check_input_list(dict,
+                          allowlist = alldictnames,
+                          allowlength = 4,
+                          allowsingle = TRUE,
+                          allowfile = TRUE)
 
   # same with dict_type
-    check_input_list(dict_type,
-                            allowlist = c('mean', 'sd', 'cov'),
-                            allowlength = 4,
-                            allowsingle = TRUE,
-                            allowfile = FALSE)
+  check_input_list(dict_type,
+                          allowlist = c('mean', 'sd', 'cov'),
+                          allowlength = 4,
+                          allowsingle = TRUE,
+                          allowfile = FALSE)
 
   # same with dict_gender
-    check_input_list(dict_gender,
-                            allowlist = c("av", "female", "male"),
-                            allowlength = 4,
-                            allowsingle = TRUE,
-                            allowfile = TRUE)
+  check_input_list(dict_gender,
+                          allowlist = c("av", "female", "male"),
+                          allowlength = 4,
+                          allowsingle = TRUE,
+                          allowfile = TRUE)
 
   # check that equations are allowed
-    check_input_list(eqns,
-                            allowlist = actdata::eqn_subset(actdata::get_eqns()),
-                            allowlength = 2,
-                            allowsingle = TRUE,
-                            allowfile = TRUE)
+  check_input_list(eqns,
+                          allowlist = actdata::eqn_subset(actdata::get_eqns()),
+                          allowlength = 2,
+                          allowsingle = TRUE,
+                          allowfile = TRUE)
 
   # same with equation gender
-    check_input_list(eqns_gender,
-                            allowlist = c("av", "female", "male"),
-                            allowlength = 2,
-                            allowsingle = TRUE,
-                            allowfile = TRUE)
+  check_input_list(eqns_gender,
+                          allowlist = c("av", "female", "male"),
+                          allowlength = 2,
+                          allowsingle = TRUE,
+                          allowfile = TRUE)
 
   # to make line spec and compatibility checking easier, expand single strings to vectors of correct length
   dict <- expand(dict, 4)
@@ -127,21 +157,27 @@ agent <- function(name,
   ### CHECK COMPATIBILTY
 
   # check that provided dictionaries contain necessary components
-    check_dict_components(dict)
+  check_dict_components(dict)
 
   # check that dictionary has the requested gender
-    check_dict_gender(dict, dict_gender)
+  check_dict_gender(dict, dict_gender)
 
   # check that the dict_name and dict_type are compatible with one another
-    check_dict_type(dict, dict_type)
+  check_dict_type(dict, dict_type)
 
   # check that equations have specified genders
-    check_eqn_gender(eqns, eqns_gender)
+  check_eqn_gender(eqns, eqns_gender)
 
 
-  ## now get the proper strings to input for the text file
 
-  ## WRITE INTO AGENTTEXT
+  ##### OPTIONAL AGENT ARGUMENTS: alphas, betas, deltas, numsamples
+  # check inputs
+  check_agent_opt_args(opt_args)
+
+  # get lines
+  opt_lines <- get_agent_opt_arg_lines(opt_args)
+
+  ##### GET LINES TO WRITE INTO AGENTTEXT
   # need a name line, 4 dictionary lines, and 2 dynamics lines
   # try line by line
   nametxt <- paste0('agent: ', name)
@@ -157,7 +193,7 @@ agent <- function(name,
   end <- "endagent"
   blank <- ""
 
-  lines <- c(nametxt, dict1, dict2, dict3, dict4, dyn1, dyn2, end, blank)
+  lines <- c(nametxt, opt_lines, dict1, dict2, dict3, dict4, dyn1, dyn2, end, blank)
 
   return(lines)
 }
@@ -168,9 +204,10 @@ interaction <- function(agent, object,
                         agent_ident = "person",
                         agent_ident_prob = "1",
                         object_ident = "person",
-                        object_ident_prob = "1"){
+                        object_ident_prob = "1",
+                        opt_args = ""){
 
-  # check whether identities are in specified dictionaries--lower priority to implement
+  # TODO: check whether identities are in specified dictionaries--lower priority to implement
 
   # check whether probabilities sum to 1
   check_probs(agent_ident_prob, object_ident_prob)
@@ -179,22 +216,31 @@ interaction <- function(agent, object,
   check_identity_prob_match(agent_ident, agent_ident_prob)
   check_identity_prob_match(object_ident, object_ident_prob)
 
+  # check optional arguments (currently institution and random seed)
+  check_interaction_opt_args(opt_args)
+
   # get lines for file
-  line1 <- paste0("interaction: ", agent, " : ", object)
+  line1 <- paste0("interaction: ", agent, ": ", object)
   line2 <- paste0(agent, get_actor_prob_line(agent_ident, agent_ident_prob))
   line3 <- paste0(object, get_actor_prob_line(object_ident, object_ident_prob))
   line4 <- "endinteraction"
   line5 <- ""
 
+  opt_lines <- get_interaction_opt_arg_lines(opt_args)
+
   # TODO: Handle NAs (for when actors don't know each other)
 
-  lines <- c(line1, line2, line3, line4, line5)
+  lines <- c(line1, opt_lines, line2, line3, line4, line5)
 
   return(lines)
 }
 
 ### Events
-events <- function(){
+# if the goal of this is batches, then it doesn't make sense to make user-query mode available.
+# So the line should be "simtype : events" with an events file.
+# num_iterations can be left alone; I am pretty sure it gets overridden by the number of lines in the events file
+# see the notes I pasted on github for things to check for in the events file
+event_lines <- function(events){
 
 }
 

@@ -29,11 +29,6 @@ INTERACTIONDEF
 // EVENTS
 // *******************************************************************************************************************************
 // if not specified, will query the user
-// can also be 'query : bayesact' and then it will take the BayesACT suggested (default) actions
-// simtype : bayesact
-simtype : events
-//simtype : user
-
 
 EVENTDEF
 

@@ -10,7 +10,8 @@ agent(
   dict_type = "mean",
   dict_gender = "av",
   eqns = "us2010",
-  eqns_gender = c("av", "female")
+  eqns_gender = c("av", "female"),
+  opt_args = ""
 )
 }
 \arguments{

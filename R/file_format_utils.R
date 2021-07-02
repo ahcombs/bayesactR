@@ -8,7 +8,7 @@
 #'
 #' @return file with additional lines
 #' @keywords internal
-insertLines <- function(file, lines, start, end, insertAt = "end"){
+insert_lines <- function(file, lines, start, end, insertAt = "end"){
   place1 <- vector()
   place2 <- vector()
 
@@ -59,7 +59,9 @@ insertLines <- function(file, lines, start, end, insertAt = "end"){
 #' @return row with needed entries converted to lists
 get_lists <- function(row){
   for(i in 1:ncol(row)){
-    row[,i][[1]] <- list(trimws(strsplit(row[,i], ",")[[1]]))
+    if(row[,i] != "" & !is.na(row[,i])){
+      row[,i][[1]] <- list(trimws(strsplit(as.character(row[,i]), ",")[[1]]))
+    }
   }
   return(row)
 }
@@ -82,7 +84,7 @@ remove_line <- function(string, file){
     }
   }
 
-  return(file[places,])
+  return(data.frame(file[places,]))
 }
 
 #' Utility for building a line in the interaction section of the input file
@@ -97,7 +99,12 @@ get_actor_prob_line <- function(identities, probs){
   probs <- add_leading_zeros(probs)
 
   for(i in 1:length(identities)){
-    line <- paste0(line, paste0(" : ", identities[i], " : ", probs[i]))
+    # when agent doesn't know object, object identity will be NA
+    if(is.na(identities[i])){
+      line <- " :"
+    } else {
+      line <- paste0(line, paste0(" : ", identities[i], " : ", probs[i]))
+    }
   }
 
   return(line)
@@ -110,11 +117,60 @@ get_actor_prob_line <- function(identities, probs){
 #' @return formatted character vector with leading zero before decimal
 add_leading_zeros <- function(probs){
   for(i in 1:length(probs)){
-    n <- as.numeric(probs[i])
-    if(n < 1){
-      probs[i] <- as.character(n)
+    if(!is.na(probs[i])){
+      n <- as.numeric(probs[i])
+      if(n < 1){
+        probs[i] <- as.character(n)
+      }
     }
   }
 
   return(probs)
+}
+
+
+#' Get lines to insert in file for agent optional arguments
+#'
+#' @param opt_args named list of optional arguments for one agent
+#'
+#' @return list of lines for file
+get_agent_opt_arg_lines <- function(opt_args){
+  lines <- c()
+  argnames <- names(opt_args)
+  if("alphas" %in% argnames){
+    a <- opt_args$alphas[[1]]
+    lines <- append(lines, paste0("alphas: ", paste(a, collapse = " : ")))
+  }
+  if("betas" %in% argnames){
+    a <- opt_args$betas[[1]]
+    lines <- append(lines, paste0("betas: ", paste(a, collapse = " : ")))
+  }
+  if("deltas" %in% argnames){
+    a <- opt_args$deltas[[1]]
+    lines <- append(lines, paste0("deltas: ", paste(a, collapse = " : ")))
+  }
+  if("numsamples" %in% argnames){
+    a <- opt_args$numsamples[[1]]
+    lines <- append(lines, paste0("numsamples: ", a))
+  }
+  return(lines)
+}
+
+#' Get lines to insert in file for interaction optional arguments
+#'
+#' @param opt_args optional arguments
+#'
+#' @return list of lines for file
+get_interaction_opt_arg_lines <- function(opt_args){
+  lines <- c()
+  argnames <- names(opt_args)
+  if("institution" %in% argnames){
+    a <- opt_args$institution[[1]]
+    lines <- append(lines, paste0("institution : ", paste(a, collapse = " : ")))
+  }
+  if("rseed" %in% argnames){
+    a <- opt_args$rseed[[1]]
+    lines <- append(lines, paste0("rseed: ", a))
+  }
+  return(lines)
 }
