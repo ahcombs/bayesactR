@@ -41,8 +41,8 @@ make_file_string <- function(dict, gender, component, type){
       upper_type <- toupper(type)
       name <- paste0(d@key, "_", component, "_", g, "_", upper_type, "_dict")
     }
-    save_actdata_input(name)
-    return(paste0("actdata_dicts_eqns/", name, ".csv"))
+    return(save_actdata_input(name))
+    # return(paste0("actdata_dicts_eqns/", name, ".csv"))
   }
 }
 
@@ -89,10 +89,10 @@ get_eqn_file <- function(key, gender, component){
     name <- paste0(eq_obj@key, "_", component, "_", gender, "_eqn")
 
     # save datafile from actdata to the actdata_dicts_eqns folder in the user's wd so bayesact can find it
-    save_actdata_input(name)
 
-    # return the file location
-    return(paste0("actdata_dicts_eqns/", name, ".dat"))
+    # # return the file location
+    # return(paste0("actdata_dicts_eqns/", name, ".dat"))
+    return(save_actdata_input(name))
   }
 }
 

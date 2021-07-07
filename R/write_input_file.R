@@ -28,6 +28,16 @@ write_input_file_from_df <- function(nodelist, edgelist, eventslist, simfilename
   # First, add agent and interaction lines in the designated places in the sim file.
   # Then write the events file, and add the line in the sim file to point to it.
 
+
+
+
+
+  # for making things easier with current version of bayesact... remove eventually when more portable code is possible
+  dir <- "/Users/aidan/Desktop/School/Grad_school/bayesactgithub/bayesact/examples"
+
+
+
+
   ### AGENTS: for each agent, get lines to add to template, then add them.
   agentlines <- c()
   for(i in 1:nrow(nodelist)){
@@ -213,7 +223,7 @@ agent <- function(name,
   nametxt <- paste0('agent: ', name)
   # get dictionary filepaths
   dict1 <- paste0("dictionary: AGENT : ", make_file_string(dict[1], dict_gender[1], component = "identities", type = dict_type[1]), " : ", toupper(dict_type[1]))
-  dict2 <- paste0("dictionary: BEHAVIOR : ", make_file_string(dict[2], dict_gender[2], component = "behaviors", type = dict_type[2]), " : ", toupper(dict_type[2]))
+  dict2 <- paste0("dictionary: BEHAVIOUR : ", make_file_string(dict[2], dict_gender[2], component = "behaviors", type = dict_type[2]), " : ", toupper(dict_type[2]))
   dict3 <- paste0("dictionary: CLIENT : ", make_file_string(dict[3], dict_gender[3], component = "identities", type = dict_type[3]), " : ", toupper(dict_type[3]))
   dict4 <- paste0("dictionary: EMOTION : ", make_file_string(dict[4], dict_gender[4], component = "mods", type = dict_type[4]), " : ", toupper(dict_type[4]))
   # get equation filepaths
@@ -292,22 +302,30 @@ simfile_out <- function(template, filename, dir){
   if(!dir.exists(dir)){
     dir.create(dir)
   }
-
   utils::write.table(template, file = file.path(dir, filename), sep = '\t', row.names = FALSE, col.names = FALSE, quote = FALSE)
 }
 
 
+#' Write out event file
+#'
+#' @param template event dataframe
+#' @param filename filename to save under
+#' @param dir directory name to save in
+#'
+#' @return filepath saved under
 eventfile_out <- function(template, filename, dir){
   if(grepl(".events$", filename) == FALSE){
     stop("Events file must end in extension .events")
   }
-
-  # replace NA values with empty strings
+  # replace NA values with empty strings and tack an extra empty column on the end so there will be the right number of colons in the file
+  template[,ncol(template) + 1] <- NA
   template[is.na(template)] <- ""
 
   if(!dir.exists(dir)){
     dir.create(dir)
   }
   utils::write.table(template, file = file.path(dir, filename), sep = " : ", row.names = FALSE, col.names = FALSE, quote = FALSE)
+
+  return(file.path(dir, filename))
 }
 

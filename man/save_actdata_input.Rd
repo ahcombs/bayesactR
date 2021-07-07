@@ -9,6 +9,9 @@ save_actdata_input(dataname)
 \arguments{
 \item{dataname}{name of the dataset in actdata}
 }
+\value{
+filename that the object got saved to
+}
 \description{
 Need to move these files to a folder in the user's working directory so BayesACT can access them.
 Make a directory "actdata_dicts_eqns" under the user's working directory (if necessary)
