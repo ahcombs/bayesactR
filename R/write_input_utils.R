@@ -29,7 +29,14 @@ fileinput <- function(dictname){
 #' @keywords internal
 make_file_string <- function(dict, gender, component, type, bayesact_dir){
   if(fileinput(dict)){
-    return(dict)
+    # if the dict is a filepath, we need to save it to the data folder of the bayesact directory
+    # use rstudioapi to move the file to avoid needing to load it and possibly messing with format
+    termId <- rstudioapi::terminalExecute(command = paste0("cp ", dict, " ", file.path(bayesact_dir, "data")),
+                                          show = FALSE)
+    filename <- basename(dict)
+    wait_until_done(termId)
+    rstudioapi::terminalKill(termId)
+    return(filename)
   } else {
     g <- dplyr::case_when(gender == "av" ~ "av",
                    gender == "female" ~ "f",
@@ -60,9 +67,15 @@ make_file_string <- function(dict, gender, component, type, bayesact_dir){
 #' @return string filepath
 #' @keywords internal
 get_eqn_file <- function(key, gender, component, bayesact_dir){
-  # if it is a valid filepath, return the same filepath
+  # if it is a valid filepath, need to copy it to the bayesact data directory
+  # use the terminal to avoid having to read it in
   if(fileinput(key)){
-    return(key)
+    termId <- rstudioapi::terminalExecute(command = paste0("cp ", key, " ", file.path(bayesact_dir, "data")),
+                                          show = FALSE)
+    filename <- basename(key)
+    wait_until_done(termId)
+    rstudioapi::terminalKill(termId)
+    return(filename)
   } else {
     # we have already checked that the keyword is valid
     # get the equation object associated with it

@@ -139,7 +139,6 @@ check_dict_components <- function(dictname){
 #' @return boolean for successful check
 #' @keywords internal
 check_dict_gender <- function(dictname, gender){
-  # TODO: Can we provide some file inputs and some keyword inputs?
   # check for file inputs--if all four entries are file inputs, no need to check
   file <- TRUE
   for(i in length(dictname)){
@@ -155,15 +154,18 @@ check_dict_gender <- function(dictname, gender){
     # dictionary provided as list length 4
     if(length(dictname) == 4){
       for(i in 1:4){
-        d <- dictname[i]
-        if(length(gender) == 4){
-          g <- gender[i]
-        } else {
-          g <- gender
-        }
-        thisdict <- actdata::this_dict(d)
-        if(!(g %in% thisdict@genders)){
-          stop("At least one requested dictionary does not contain responses from requested gender")
+        # is this entry a file? If so skip this check
+        if(!fileinput(dictname[i])){
+          d <- dictname[i]
+          if(length(gender) == 4){
+            g <- gender[i]
+          } else {
+            g <- gender
+          }
+          thisdict <- actdata::this_dict(d)
+          if(!(g %in% thisdict@genders)){
+            stop("At least one requested dictionary does not contain responses from requested gender")
+          }
         }
       }
     }
@@ -195,6 +197,18 @@ check_dict_gender <- function(dictname, gender){
 #'
 #' @return boolean successful check
 check_eqn_gender <- function(eqns, eqns_gender){
+  # check for file inputs--if all entries are file inputs, no need to check
+  file <- TRUE
+  for(i in length(eqns)){
+    if(!fileinput(eqns[i])){
+      file <- FALSE
+    }
+  }
+  if(file){
+    return(TRUE)
+  }
+
+  # at least one input is a keyword
   components <- c("impressionabo", "emotionid")
 
   # abbreviate gender terms to match file names
@@ -203,17 +217,20 @@ check_eqn_gender <- function(eqns, eqns_gender){
   eqns_gender[eqns_gender == "male"] <- "m"
 
   for(i in 1:2){
-    # get the equation object
-    eq_obj <- actdata::this_dict(eqns[i], class = "equation")
-    gender <- eqns_gender[i]
-    component <- components[i]
+    # is this a file input? If yes, skip this check
+    if(!fileinput(eqns[i])){
+      # get the equation object
+      eq_obj <- actdata::this_dict(eqns[i], class = "equation")
+      gender <- eqns_gender[i]
+      component <- components[i]
 
-    # is the specified gender available for the specified equation? If not, give an error
-    eqnset_components <- eq_obj@gendercomponents[component == regmatches(eq_obj@gendercomponents, regexpr("^[[:alnum:]]*", eq_obj@gendercomponents))]
-    eqnset_genders <- regmatches(eqnset_components, regexpr("[[:alnum:]]*$", eqnset_components))
-    has_gender <- sapply(gender, function(x) x %in% eqnset_genders)
-    if(!(TRUE %in% has_gender)){
-      stop("Specified gender is not available for specified equations")
+      # is the specified gender available for the specified equation? If not, give an error
+      eqnset_components <- eq_obj@gendercomponents[component == regmatches(eq_obj@gendercomponents, regexpr("^[[:alnum:]]*", eq_obj@gendercomponents))]
+      eqnset_genders <- regmatches(eqnset_components, regexpr("[[:alnum:]]*$", eqnset_components))
+      has_gender <- sapply(gender, function(x) x %in% eqnset_genders)
+      if(!(TRUE %in% has_gender)){
+        stop("Specified gender is not available for specified equations")
+      }
     }
   }
   return(TRUE)
