@@ -27,7 +27,7 @@ fileinput <- function(dictname){
 #'
 #' @return string filepath
 #' @keywords internal
-make_file_string <- function(dict, gender, component, type){
+make_file_string <- function(dict, gender, component, type, bayesact_dir){
   if(fileinput(dict)){
     return(dict)
   } else {
@@ -41,7 +41,7 @@ make_file_string <- function(dict, gender, component, type){
       upper_type <- toupper(type)
       name <- paste0(d@key, "_", component, "_", g, "_", upper_type, "_dict")
     }
-    return(save_actdata_input(name))
+    return(save_actdata_input(name, bayesact_dir))
     # return(paste0("actdata_dicts_eqns/", name, ".csv"))
   }
 }
@@ -59,7 +59,7 @@ make_file_string <- function(dict, gender, component, type){
 #'
 #' @return string filepath
 #' @keywords internal
-get_eqn_file <- function(key, gender, component){
+get_eqn_file <- function(key, gender, component, bayesact_dir){
   # if it is a valid filepath, return the same filepath
   if(fileinput(key)){
     return(key)
@@ -92,7 +92,7 @@ get_eqn_file <- function(key, gender, component){
 
     # # return the file location
     # return(paste0("actdata_dicts_eqns/", name, ".dat"))
-    return(save_actdata_input(name))
+    return(save_actdata_input(name, bayesact_dir))
   }
 }
 

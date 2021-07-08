@@ -4,7 +4,7 @@
 \alias{get_eqn_file}
 \title{Construct file string (equation)}
 \usage{
-get_eqn_file(key, gender, component)
+get_eqn_file(key, gender, component, bayesact_dir)
 }
 \arguments{
 \item{gender}{string}

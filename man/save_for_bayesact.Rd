@@ -4,14 +4,14 @@
 \alias{save_for_bayesact}
 \title{Save files where bayesact can find them}
 \usage{
-save_for_bayesact(dataname, class, filename)
+save_for_bayesact(dataname, class, filepath)
 }
 \arguments{
 \item{dataname}{name of actdata object}
 
 \item{class}{string "dict" or "eqn"}
 
-\item{filename}{string filepath to save under}
+\item{filepath}{string filepath to save under}
 }
 \description{
 Save files where bayesact can find them

@@ -4,7 +4,7 @@
 \alias{make_file_string}
 \title{Construct file string (dictionary)}
 \usage{
-make_file_string(dict, gender, component, type)
+make_file_string(dict, gender, component, type, bayesact_dir)
 }
 \arguments{
 \item{dict}{string}

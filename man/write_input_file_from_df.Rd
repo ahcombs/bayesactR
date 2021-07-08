@@ -10,7 +10,8 @@ write_input_file_from_df(
   eventslist,
   simfilename,
   eventfilename,
-  dir = "bayesact_input_files"
+  bayesact_dir,
+  input_dir = "bayesact_input"
 )
 }
 \arguments{
@@ -24,7 +25,9 @@ write_input_file_from_df(
 
 \item{eventfilename}{file name by which to save the events file}
 
-\item{dir}{the directory at which to save the sim file and events file}
+\item{bayesact_dir}{the top level directory at which the bayesact code lives}
+
+\item{input_dir}{the directory in which to save the sim and events files.}
 }
 \description{
 From information in three dataframes (agents, interactions, events),

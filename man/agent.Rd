@@ -6,6 +6,7 @@
 \usage{
 agent(
   name,
+  bayesact_dir,
   dict = "usfullsurveyor2015",
   dict_type = "mean",
   dict_gender = "av",
@@ -17,6 +18,8 @@ agent(
 \arguments{
 \item{name}{string agent name}
 
+\item{bayesact_dir}{top level directory at which the bayesact code lives}
+
 \item{dict}{string or length 4 vector, key(s) of an available dictionary OR filepath(s)}
 
 \item{dict_type}{string or length 4 vector (\code{"mean"}, \code{"sd"}, or \code{"cov"})}
@@ -26,6 +29,8 @@ agent(
 \item{eqns}{string or length 2 vector, key(s) of an available equation set OR filepath(s)}
 
 \item{eqns_gender}{string or length 2 vector (\code{"av"}, \code{"f"}, or \code{"m"})}
+
+\item{opt_args}{more agent-level parameters that may or may not be included}
 }
 \value{
 file with inserted lines

@@ -4,10 +4,12 @@
 \alias{save_actdata_input}
 \title{Save actdata objects where bayesact can get them}
 \usage{
-save_actdata_input(dataname)
+save_actdata_input(dataname, bayesact_dir)
 }
 \arguments{
 \item{dataname}{name of the dataset in actdata}
+
+\item{bayesact_dir}{top directory for bayesact code}
 }
 \value{
 filename that the object got saved to

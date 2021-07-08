@@ -1,3 +1,3 @@
 ﻿agent,object,agent_ident,agent_ident_prob,object_ident,object_ident_prob,institution,rseed
 bill,bob,"man, boss",".3, .7","secretary, friend",".6, .4","business, lay",342
-bob,bill,"employee, man, student",".6, .2, .2","mentor, tyrant, boss",".7, .05, .25",business,1
+bob,bill,"employee, man, student",".6, .2, .2","mentor, man, boss",".7, .05, .25",business,1

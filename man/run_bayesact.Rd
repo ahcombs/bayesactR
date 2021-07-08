@@ -6,8 +6,8 @@
 \usage{
 run_bayesact(
   simfilename,
-  bayesact_source_dir,
-  inputdir = "bayesact_input_files",
+  bayesact_dir,
+  inputdir = "bayesact_input",
   outputdir = "bayesact_output",
   wd = getwd()
 )
@@ -15,7 +15,7 @@ run_bayesact(
 \arguments{
 \item{simfilename}{the name of the simulation file}
 
-\item{bayesact_source_dir}{the directory the bayesact source code is in}
+\item{bayesact_dir}{the top level directory where the bayesact code lives}
 
 \item{inputdir}{the directory the file is in}
 

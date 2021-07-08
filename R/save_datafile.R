@@ -4,32 +4,30 @@
 #' Make a directory "actdata_dicts_eqns" under the user's working directory (if necessary)
 #'
 #' @param dataname name of the dataset in actdata
+#' @param bayesact_dir top directory for bayesact code
 #'
 #' @return filename that the object got saved to
-save_actdata_input <- function(dataname){
+save_actdata_input <- function(dataname, bayesact_dir){
 
-
-  # TEMPORARY FIX
   # path <- file.path(getwd(), "actdata_dicts_eqns")
-  path <- "/Users/aidan/Desktop/School/Grad_school/bayesactgithub/bayesact/data"
+  # path <- "/Users/aidan/Desktop/School/Grad_school/bayesactgithub/bayesact/data"
+  dirpath <- file.path(bayesact_dir, "data")
 
-
-
-  if(!dir.exists(path)){
-    dir.create(path)
-  }
+  create_dir_if_needed(dirpath)
 
   if(grepl("dict", dataname)){
     # the object is a dictionary
     class <- "dict"
-    filename <- paste0(path, "/", dataname, ".csv")
+    filename <- paste0(dataname, ".csv")
   } else {
     # the object is an equation set
     class <- "eqn"
-    filename = paste0(path, "/", dataname, ".dat")
+    filename <- paste0(dataname, ".dat")
   }
 
-  save_for_bayesact(dataname, class = class, filename = filename)
+  filepath <- file.path(dirpath, filename)
+
+  save_for_bayesact(dataname, class = class, filepath = filepath)
   return(filename)
 }
 
@@ -38,10 +36,10 @@ save_actdata_input <- function(dataname){
 #'
 #' @param dataname name of actdata object
 #' @param class string "dict" or "eqn"
-#' @param filename string filepath to save under
+#' @param filepath string filepath to save under
 #'
 #' @import actdata
-save_for_bayesact <- function(dataname, class, filename){
+save_for_bayesact <- function(dataname, class, filepath){
   data <- get(dataname, asNamespace("actdata"))
 
   # if the dictionary is type "mean", it needs to have six EPA columns and an institution codes column
@@ -70,10 +68,9 @@ save_for_bayesact <- function(dataname, class, filename){
   }
 
   if(class == "dict"){
-    utils::write.table(data, filename, sep = ",", row.names = FALSE, col.names = FALSE)
+    utils::write.table(data, filepath, sep = ",", quote = FALSE, row.names = FALSE, col.names = FALSE)
   } else {
-    utils::write.table(data, filename, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+    utils::write.table(data, filepath, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
   }
-
 }
 

@@ -15,11 +15,12 @@
 #' @param edgelist a dataframe delineating starting parameters (actor identity vector, object identity vector, probabilities) for each dyad
 #' @param eventslist a dataframe containing an ordered list of actions to perform
 #' @param simfilename file name by which to save the sim file
+#' @param bayesact_dir the top level directory at which the bayesact code lives
+#' @param input_dir the directory in which to save the sim and events files.
 #' @param eventfilename file name by which to save the events file
-#' @param dir the directory at which to save the sim file and events file
 #'
 #' @export
-write_input_file_from_df <- function(nodelist, edgelist, eventslist, simfilename, eventfilename, dir = "bayesact_input_files"){
+write_input_file_from_df <- function(nodelist, edgelist, eventslist, simfilename, eventfilename, bayesact_dir, input_dir = "bayesact_input"){
   # The sim text file contains information on agents and interactions, and a line that points to a separate events file
   # The events file (.events extension) contains the list of actions to perform, in order
   # Though there is a user query mode implemented in bayesact, it doesn't make sense to use it when your goal is to run batches
@@ -27,16 +28,6 @@ write_input_file_from_df <- function(nodelist, edgelist, eventslist, simfilename
 
   # First, add agent and interaction lines in the designated places in the sim file.
   # Then write the events file, and add the line in the sim file to point to it.
-
-
-
-
-
-  # for making things easier with current version of bayesact... remove eventually when more portable code is possible
-  dir <- "/Users/aidan/Desktop/School/Grad_school/bayesactgithub/bayesact/examples"
-
-
-
 
   ### AGENTS: for each agent, get lines to add to template, then add them.
   agentlines <- c()
@@ -51,6 +42,7 @@ write_input_file_from_df <- function(nodelist, edgelist, eventslist, simfilename
     opt_args <- thenames[(!thenames %in% mandatory_args)]
 
     newlines <- agent(name = unlist(a$name),
+                      bayesact_dir = bayesact_dir,
                       dict = unlist(a$dict),
                       dict_type = unlist(a$dict_type),
                       dict_gender = unlist(a$dict_gender),
@@ -106,9 +98,9 @@ write_input_file_from_df <- function(nodelist, edgelist, eventslist, simfilename
 
   ### EVENTS: save event dataframe in correct format and add the filepath to the sim file
 
-  eventfilepath <- file.path(dir, eventfilename)
-  simfilepath <- file.path(dir, simfilename)
-
+  # if the provided input is a relative path, make it an absolute path by prepending the current working directory
+  input_dir <- absolute_path(input_dir)
+  eventfilepath <- file.path(input_dir, eventfilename)
   eventlines <- event_lines(eventslist, filepath = eventfilepath)
 
   curr_template <- insert_lines(file = curr_template,
@@ -119,8 +111,10 @@ write_input_file_from_df <- function(nodelist, edgelist, eventslist, simfilename
 
   curr_template <- remove_line("EVENTDEF", curr_template)
 
-  simfile_out(curr_template, simfilename, dir)
-  eventfile_out(eventslist, eventfilename, dir)
+  simfile_out(curr_template, simfilename, input_dir)
+  eventfile_out(eventslist, eventfilename, input_dir)
+
+  return(input_dir)
 }
 
 
@@ -134,10 +128,12 @@ write_input_file_from_df <- function(nodelist, edgelist, eventslist, simfilename
 #' @param dict_gender string or length 4 vector (\code{"av"}, \code{"male"}, or \code{"female"})
 #' @param eqns string or length 2 vector, key(s) of an available equation set OR filepath(s)
 #' @param eqns_gender string or length 2 vector (\code{"av"}, \code{"f"}, or \code{"m"})
+#' @param bayesact_dir top level directory at which the bayesact code lives
+#' @param opt_args more agent-level parameters that may or may not be included
 #'
 #' @return file with inserted lines
 #' @keywords internal
-agent <- function(name,
+agent <- function(name, bayesact_dir,
                   dict = "usfullsurveyor2015", dict_type = "mean", dict_gender = 'av',
                   eqns = "us2010", eqns_gender = c('av', "female"),
                   opt_args = ""){
@@ -222,13 +218,13 @@ agent <- function(name,
   # try line by line
   nametxt <- paste0('agent: ', name)
   # get dictionary filepaths
-  dict1 <- paste0("dictionary: AGENT : ", make_file_string(dict[1], dict_gender[1], component = "identities", type = dict_type[1]), " : ", toupper(dict_type[1]))
-  dict2 <- paste0("dictionary: BEHAVIOUR : ", make_file_string(dict[2], dict_gender[2], component = "behaviors", type = dict_type[2]), " : ", toupper(dict_type[2]))
-  dict3 <- paste0("dictionary: CLIENT : ", make_file_string(dict[3], dict_gender[3], component = "identities", type = dict_type[3]), " : ", toupper(dict_type[3]))
-  dict4 <- paste0("dictionary: EMOTION : ", make_file_string(dict[4], dict_gender[4], component = "mods", type = dict_type[4]), " : ", toupper(dict_type[4]))
+  dict1 <- paste0("dictionary: AGENT : ", make_file_string(dict[1], dict_gender[1], component = "identities", type = dict_type[1], bayesact_dir), " : ", toupper(dict_type[1]))
+  dict2 <- paste0("dictionary: BEHAVIOUR : ", make_file_string(dict[2], dict_gender[2], component = "behaviors", type = dict_type[2], bayesact_dir), " : ", toupper(dict_type[2]))
+  dict3 <- paste0("dictionary: CLIENT : ", make_file_string(dict[3], dict_gender[3], component = "identities", type = dict_type[3], bayesact_dir), " : ", toupper(dict_type[3]))
+  dict4 <- paste0("dictionary: EMOTION : ", make_file_string(dict[4], dict_gender[4], component = "mods", type = dict_type[4], bayesact_dir), " : ", toupper(dict_type[4]))
   # get equation filepaths
-  dyn1 <- paste0("dynamics: IMPRESSION : ", get_eqn_file(eqns[1], eqns_gender[1], "impressionabo"))
-  dyn2 <- paste0("dynamics: EMOTION : ", get_eqn_file(eqns[2], eqns_gender[2], "emotionid"))
+  dyn1 <- paste0("dynamics: IMPRESSION : ", get_eqn_file(eqns[1], eqns_gender[1], "impressionabo", bayesact_dir))
+  dyn2 <- paste0("dynamics: EMOTION : ", get_eqn_file(eqns[2], eqns_gender[2], "emotionid", bayesact_dir))
 
   end <- "endagent"
   blank <- ""
@@ -290,8 +286,8 @@ event_lines <- function(events, filepath){
 }
 
 ### Write out
-# TODO: change path
-#' Write to .txt file
+
+#' Write sim information to .txt file
 #'
 #' @param template object to write
 #' @param filename name to write to
@@ -299,9 +295,7 @@ event_lines <- function(events, filepath){
 #'
 #' @keywords internal
 simfile_out <- function(template, filename, dir){
-  if(!dir.exists(dir)){
-    dir.create(dir)
-  }
+  create_dir_if_needed(dir)
   utils::write.table(template, file = file.path(dir, filename), sep = '\t', row.names = FALSE, col.names = FALSE, quote = FALSE)
 }
 
@@ -321,9 +315,7 @@ eventfile_out <- function(template, filename, dir){
   template[,ncol(template) + 1] <- NA
   template[is.na(template)] <- ""
 
-  if(!dir.exists(dir)){
-    dir.create(dir)
-  }
+  create_dir_if_needed(dir)
   utils::write.table(template, file = file.path(dir, filename), sep = " : ", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
   return(file.path(dir, filename))

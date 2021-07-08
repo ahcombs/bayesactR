@@ -2,7 +2,7 @@
 % Please edit documentation in R/write_input_file.R
 \name{simfile_out}
 \alias{simfile_out}
-\title{Write to .txt file}
+\title{Write sim information to .txt file}
 \usage{
 simfile_out(template, filename, dir)
 }
@@ -14,6 +14,6 @@ simfile_out(template, filename, dir)
 \item{dir}{directory to write to}
 }
 \description{
-Write to .txt file
+Write sim information to .txt file
 }
 \keyword{internal}
