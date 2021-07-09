@@ -1,0 +1,61 @@
+test_that("multiplication works", {
+  expect_equal(2 * 2, 4)
+})
+
+test_that("numeric input checks work", {
+  actors = c("sarah", "john")
+  expect_error(basic_event_df(n = -2, actors = actors))
+  expect_error(basic_event_df(n = 3.5, actors = actors))
+  expect_error(basic_event_df(n = 10, actors = actors, switch_actor_after = 15))
+  expect_error(basic_event_df(n = 10, actors = actors, switch_actor_after = -3))
+  expect_error(basic_event_df(n = "ten", actors = actors))
+  expect_error(basic_event_df(n = 10, actors = actors, switch_actor_after = "five"))
+  expect_type(basic_event_df(n = 10, actors = actors), "list")
+  expect_type(basic_event_df(n = 10, actors = actors, switch_actor_after = 4), "list")
+})
+
+test_that("actors input check works", {
+  expect_error(basic_event_df(n = 10, actors = c("sarah", "john", "lillian")))
+  expect_error(basic_event_df(n = 10, actors = c("lillian")))
+  expect_error(basic_event_df(n = 10, actors = c(34, 52)))
+  expect_error(basic_event_df(n = 10, actors = c(TRUE, FALSE)))
+  expect_type(basic_event_df(n = 10, actors = c("p1", "p2")), "list")
+})
+
+test_that("action and emotion input checks work", {
+  a <- c("jamaal", "lillian")
+  expect_error(basic_event_df(n = 10, actors = a, a1_action = c("none", "none")))
+  expect_error(basic_event_df(n = 10, actors = a, a2_action = c("none", "none")))
+  expect_error(basic_event_df(n = 10, actors = a, a1_emotion = c("none", "none")))
+  expect_error(basic_event_df(n = 10, actors = a, a2_emotion = c("none", "none")))
+  expect_error(basic_event_df(n = 10, actors = a, a1_action = 432))
+  expect_error(basic_event_df(n = 10, actors = a, a1_action = TRUE))
+  expect_type(basic_event_df(n = 10, actors = a, a1_action = "bayesact_optimal"), "list")
+  expect_type(basic_event_df(n = 10, actors = a, a2_action = "interact_optimal"), "list")
+  expect_type(basic_event_df(n = 10, actors = a, a1_emotion = "sad"), "list")
+  expect_type(basic_event_df(n = 10, actors = a, a2_emotion = "bayesact_optimal"), "list")
+})
+
+test_that("noise input checks work", {
+  a <- c("jamaal", "lillian")
+  expect_error(basic_event_df(n = 10, actors = a, noise = "thing"))
+  expect_error(basic_event_df(n = 10, actors = a, noise = c("thing", "a1_action")))
+  expect_error(basic_event_df(n = 10, actors = a, noise = c(42, "a1_action")))
+  expect_error(basic_event_df(n = 10, actors = a, noise = c(TRUE, "a1_action")))
+  expect_type(basic_event_df(n = 10, actors = a, noise = c("a2_action", "a1_action")), "list")
+  expect_type(basic_event_df(n = 10, actors = a, noise = c("none")), "list")
+  expect_type(basic_event_df(n = 10, actors = a, noise = c("a1_emotion", "a2_emotion", "a1_action", "a2_action")), "list")
+  expect_type(basic_event_df(n = 10, actors = a, noise = c("a1_emotion", "a2_emotion", "a1_action", "a2_action", "none")), "list")
+})
+
+test_that("act_simultaneously and perspective_shift input checks work", {
+  a <- c("jamaal", "lillian")
+  expect_error(basic_event_df(n = 10, actors = a, act_simultaneously = 42))
+  expect_error(basic_event_df(n = 10, actors = a, act_simultaneously = "true"))
+  expect_error(basic_event_df(n = 10, actors = a, perspective_shift = 42))
+  expect_error(basic_event_df(n = 10, actors = a, perspective_shift = "true"))
+  expect_type(basic_event_df(n = 10, actors = a, act_simultaneously = TRUE), "list")
+  expect_type(basic_event_df(n = 10, actors = a, perspective_shift = TRUE), "list")
+  expect_type(basic_event_df(n = 10, actors = a, perspective_shift = TRUE, act_simultaneously = TRUE), "list")
+})
+
