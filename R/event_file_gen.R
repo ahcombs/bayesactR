@@ -47,7 +47,15 @@ basic_event_df <- function(n, actors,
   # action and emotion strings are type character and length 1
   if(!is.character(a1_action) | !is.character(a2_action) | !is.character(a1_emotion) | !is.character(a2_emotion) |
      length(a1_action) > 1 | length(a2_action) > 1 | length(a1_emotion) > 1 | length(a2_emotion) > 1){
-    stop("Provided actions and emotions must be strings. Options are bayesact_optimal, interact_optimal, none (emotion only), or a dictionary term.")
+    stop("Provided actions and emotions must be strings. Options are bayesact_optimal, interact_optimal (action only), none (emotion only), or a dictionary term.")
+  }
+
+  if(a1_action == "none" | a2_action == "none"){
+    stop("Actions cannot be none")
+  }
+
+  if(a1_emotion == "interact_optimal" | a2_emotion == "interact_optimal"){
+    stop("Emotions cannot be interact_optimal")
   }
 
   # TODO later check that actions provided are in dictionary

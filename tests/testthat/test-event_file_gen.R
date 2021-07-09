@@ -30,6 +30,8 @@ test_that("action and emotion input checks work", {
   expect_error(basic_event_df(n = 10, actors = a, a2_emotion = c("none", "none")))
   expect_error(basic_event_df(n = 10, actors = a, a1_action = 432))
   expect_error(basic_event_df(n = 10, actors = a, a1_action = TRUE))
+  expect_error(basic_event_df(n = 10, actors = a, a1_action = "none"))
+  expect_error(basic_event_df(n = 10, actors = a, a1_emotion = "interact_optimal"))
   expect_type(basic_event_df(n = 10, actors = a, a1_action = "bayesact_optimal"), "list")
   expect_type(basic_event_df(n = 10, actors = a, a2_action = "interact_optimal"), "list")
   expect_type(basic_event_df(n = 10, actors = a, a1_emotion = "sad"), "list")
