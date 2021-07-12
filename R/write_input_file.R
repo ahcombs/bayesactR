@@ -138,6 +138,9 @@ agent <- function(name, bayesact_dir,
                   eqns = "us2010", eqns_gender = c('av', "female"),
                   opt_args = ""){
 
+  # TODO: I probably don't need all the defaults here, though they aren't hurting anything so I will ignore for now
+  # TODO: Need to standardize language between agent/actor, agentlist/nodelist.
+
   ##### NECESSARY ARGUMENTS: name, dict, dict_type, dict_gender, eqns, eqns_gender
 
   # calls function to return info for available dictionaries
