@@ -40,6 +40,7 @@ save_actdata_input <- function(dataname, bayesact_dir){
 #'
 #' @import actdata
 save_for_bayesact <- function(dataname, class, filepath){
+  # TODO this is SUPER sensitive to the input format of the dataframe. Does it work with every actdata dataset?
   data <- get(dataname, asNamespace("actdata"))
 
   # if the dictionary is type "mean", it needs to have six EPA columns and an institution codes column
@@ -64,6 +65,8 @@ save_for_bayesact <- function(dataname, class, filepath){
       if(ncol(data) != 8){
         stop("Error in saving file for bayesact: wrong number of columns")
       }
+      # make sure columns are in the right order
+      data <- dplyr::select(data, "term", "E", "P", "A", "E.2", "P.2", "A.2", "instcodes")
     }
   }
 

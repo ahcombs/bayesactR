@@ -34,26 +34,42 @@ run_bayesact <- function(simfilename, bayesact_dir, inputdir = "bayesact_input",
   if(!("libbayesact.so" %in% source_files)){
     # TODO: test this
     print("Running 'make' in the bayesact source directory to compile the BayesACT C code. See make_terminal_output.txt for output.")
-    termId <- rstudioapi::terminalExecute(command = paste0("make > ", file.path(outputdir,"make_terminal_output.txt")),
+    termId <- rstudioapi::terminalExecute(command = paste0("make"),
                                           workingDir = source_dir,
                                           show = FALSE)
 
-    # wait for it to finish before killing the terminal instance and moving on
+    #  > ", file.path(outputdir,"make_terminal_output.txt"), " 2>&1"
+
+    # wait for it to finish before writing output, checking exit status, and killing process
     wait_until_done(termId)
+
+    # check exit status
+    check_exit(termId, "make_terminal_output.txt")
+
+    # write the contents of the terminal to file
+    utils::write.table(rstudioapi::terminalBuffer(termId), file = file.path(outputdir,"make_terminal_output.txt"), quote = FALSE, row.names = FALSE, col.names = FALSE)
+
     rstudioapi::terminalKill(termId)
   }
 
   # the output file name will be the same as the input file name but with the csv extension
   outname <- paste0(regmatches(simfilename, regexpr("^[^\\.]*", simfilename)), ".csv ")
-  outnametxt <- paste0(regmatches(simfilename, regexpr("^[^\\.]*", simfilename)), "_terminaltext.txt ")
-  termId <- rstudioapi::terminalExecute(command = paste0('./bayesactsim', " ", file.path(inputdir, simfilename),' -o ', file.path(outputdir, outname), ' > ', file.path(outputdir, outnametxt)),
+  outnametxt <- paste0(regmatches(simfilename, regexpr("^[^\\.]*", simfilename)), "_terminaltext.txt")
+  termId <- rstudioapi::terminalExecute(command = paste0('./bayesactsim', " ", file.path(inputdir, simfilename),' -o ', file.path(outputdir, outname), ' -v'),
                                         workingDir = source_dir,
                                         show = FALSE)
 
-  # wait for it to finish before killing the terminal instance
+  #  > ', file.path(outputdir, outnametxt)
+
+  # wait for it to finish before writing output, checking exit status, and killing process
   wait_until_done(termId)
 
-  print("BayesACT run complete")
+  # check exit status
+  check_exit(termId, outnametxt)
+
+  # write the contents of the terminal to file
+  utils::write.table(rstudioapi::terminalBuffer(termId), file = file.path(outputdir, outnametxt), quote = FALSE, row.names = FALSE, col.names = FALSE)
+
   rstudioapi::terminalKill(termId)
 
   # return the output file path
@@ -70,4 +86,18 @@ wait_until_done <- function(termId){
     Sys.sleep(0.5)
   }
   return(TRUE)
+}
+
+#' Check whether BayesACT completed successfully and print a warning if not.
+#'
+#' @param termId the terminal process id
+check_exit <- function(termId, outfile){
+  exit <- rstudioapi::terminalExitCode(termId)
+  if(!is.null(exit) & exit != 0){
+    warning(paste0("BayesACT run completed with a non-zero terminal exit code, indicating a possible problem. The terminal exit code was ", exit, ". Check terminal output file ", outfile, " for more detail."))
+  } else if (exit == 0){
+    print("BayesACT completed successfully (terminal exit code 0).")
+  } else {
+    print("BayesACT still running (terminal exit code null). This may indicate a problem.")
+  }
 }

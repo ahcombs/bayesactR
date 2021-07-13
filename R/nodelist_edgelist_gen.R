@@ -7,7 +7,7 @@
 #' @param use.deltas boolean whether to include deltas column
 #' @param use.numsamples boolean whether to include numsamples column
 #'
-#' @return empty data frame with correct column names
+#' @return empty nodelist data frame with correct column names
 #' @export
 blank_nodelist <- function(use.alphas = FALSE, use.betas = FALSE, use.deltas = FALSE, use.numsamples = FALSE){
   cols = c("name", "dict", "dict_type", "dict_gender", "eqns", "eqns_gender")
@@ -26,10 +26,8 @@ blank_nodelist <- function(use.alphas = FALSE, use.betas = FALSE, use.deltas = F
 #' @param use.institution boolean whether to include an institution column
 #' @param use.rseed boolean whether to include an rseed column
 #'
-#' @return
+#' @return empty edgelist data frame with correct column names
 #' @export
-#'
-#' @examples
 blank_edgelist <- function(use.institution = FALSE, use.rseed = FALSE){
   cols = c("agent", "object", "agent_ident", "agent_ident_prob", "object_ident", "object_ident_prob")
   if(use.institution){ cols <- append(cols, "institution") }
@@ -105,6 +103,6 @@ add_interaction <- function(edgelist, agent, object,
   if(!all(is.na(rseed))){ line$institution = toString(rseed) }
 
   joined <- plyr::rbind.fill(edgelist, line)
-  joined <- dplyr::select(joined, intersect(c("agent", "object", "agent_ident_prob", "object_ident_prob", "institution", "rseed")))
+  joined <- dplyr::select(joined, intersect(c("agent", "object", "agent_ident", "agent_ident_prob", "object_ident", "object_ident_prob", "institution", "rseed"), names(joined)))
   return(joined)
 }

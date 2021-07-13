@@ -20,7 +20,7 @@
 #' @param eventfilename file name by which to save the events file
 #'
 #' @export
-write_input_file_from_df <- function(nodelist, edgelist, eventslist, simfilename, eventfilename, bayesact_dir, input_dir = "bayesact_input"){
+write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eventfilename, bayesact_dir, input_dir = "bayesact_input"){
   # The sim text file contains information on agents and interactions, and a line that points to a separate events file
   # The events file (.events extension) contains the list of actions to perform, in order
   # Though there is a user query mode implemented in bayesact, it doesn't make sense to use it when your goal is to run batches
