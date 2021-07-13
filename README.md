@@ -118,7 +118,7 @@ nodelist <- add_actor(nodelist, name = "Sally", dict = "germany2007", eqns = "ge
 # For Felix we use the actdata keyword for the Germany 2007 sentiment dictionary and equations, and we use the values collected from men.
 nodelist <- add_actor(nodelist, name = "Felix", dict = "germany2007", dict_gender = "male", eqns = "germany2007", eqns_gender = "av", alphas = 1)
 
-print(nodelist)
+nodelist
 #>    name        dict dict_type dict_gender        eqns eqns_gender alphas
 #> 1 Sally germany2007      mean          av germany2007          av   <NA>
 #> 2 Felix germany2007      mean        male germany2007          av      1
@@ -142,7 +142,7 @@ edgelist <- add_interaction(edgelist, agent = "Sally", object = "Felix", agent_i
 # When he interacts with Sally, Felix usually sees himself as a student (p = .7) but sometimes as a whiz kid (p = .3). He usually sees Sally as a teacher (p - .85) but occasionally as a stuffed shirt (p = .15). 
 edgelist <- add_interaction(edgelist, agent = "Felix", object = "Sally", agent_ident = c("student", "whiz_kid"), agent_ident_prob = c(.7, .3), object_ident = c("teacher", "stuffed_shirt"), object_ident_prob = c(.85, .15))
 
-print(edgelist)
+edgelist
 #>   agent object       agent_ident agent_ident_prob           object_ident
 #> 1 Sally  Felix           teacher                1                student
 #> 2 Felix  Sally student, whiz_kid         0.7, 0.3 teacher, stuffed_shirt
@@ -183,7 +183,7 @@ action or emotion.
 # Sally and Felix will take 10 turns using the default specifications: bayesact optimal actions and no emotion expression. A small amount of noise will be added to each person's perception of the other's action--this means that there is a chance actions will be misinterpreted by the observing party. 
 eventlist <- basic_event_df(n = 10, actors = c("Sally", "Felix"), noise = c("a1_action", "a2_action"))
 
-print(eventlist)
+eventlist
 #>    agent agent_action agent_emotion object object_action object_emotion
 #> 1  Sally           *+                Felix                             
 #> 2  Felix           *+                Sally                             
