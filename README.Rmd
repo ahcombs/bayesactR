@@ -67,7 +67,7 @@ nodelist <- add_actor(nodelist, name = "Sally", dict = "germany2007", eqns = "ge
 # For Felix we use the actdata keyword for the Germany 2007 sentiment dictionary and equations, and we use the values collected from men.
 nodelist <- add_actor(nodelist, name = "Felix", dict = "germany2007", dict_gender = "male", eqns = "germany2007", eqns_gender = "av", alphas = 1)
 
-nodelist
+knitr::kable(nodelist)
 ```
 
 ### Interaction edgelist
@@ -84,7 +84,7 @@ edgelist <- add_interaction(edgelist, agent = "Sally", object = "Felix", agent_i
 # When he interacts with Sally, Felix usually sees himself as a student (p = .7) but sometimes as a whiz kid (p = .3). He usually sees Sally as a teacher (p - .85) but occasionally as a stuffed shirt (p = .15). 
 edgelist <- add_interaction(edgelist, agent = "Felix", object = "Sally", agent_ident = c("student", "whiz_kid"), agent_ident_prob = c(.7, .3), object_ident = c("teacher", "stuffed_shirt"), object_ident_prob = c(.85, .15))
 
-edgelist
+knitr::kable(edgelist)
 ```
 
 ### Event list
@@ -101,7 +101,7 @@ The contents of this file are more cryptic than the nodelist and edgelist. Each 
 # Sally and Felix will take 10 turns using the default specifications: bayesact optimal actions and no emotion expression. A small amount of noise will be added to each person's perception of the other's action--this means that there is a chance actions will be misinterpreted by the observing party. 
 eventlist <- basic_event_df(n = 10, actors = c("Sally", "Felix"), noise = c("a1_action", "a2_action"))
 
-eventlist
+knitr::kable(eventlist)
 ```
 
 ### Writing input data frames to file
@@ -136,7 +136,7 @@ run_bayesact(simfilename = "readme_simfile.txt", bayesact_dir = "/path/to/my/bay
 
 ## Analysis
 
-We have results! BayesACT output comes in a few different formats which are described below. 
+BayesACT output comes in a few different formats which are described below. 
 
 ### CSV output
 
