@@ -70,6 +70,20 @@ nodelist <- add_actor(nodelist, name = "Felix", dict = "germany2007", dict_gende
 knitr::kable(nodelist)
 ```
 
+#### A note about dictionaries and cross-cultural interaction
+
+When two actors are based in the same culture, it is reasonable to assign them the same set of dictionaries and equations. When two actors are from different cultures, we may want to instead assign them different dictionaries and equations. This is possible in BayesACT, but there is a caveat: the *behavior* dictionary for both actors must contain the same set of words. If the set of actions differs between dictionaries, one agent will not be able to comprehend the action performed by the other, and BayesACT will crash. One workaround is simply to use the same behavior dictionary for both actors (identity and modifier dictionaries can differ without restriction). Another is to create and provide subsets of the desired dictionaries that contain only the terms that are present in both. `actdata` makes this kind of manipulation reasonably straightforward. 
+
+```{r different dicts same behaviors, eval = FALSE}
+nodelist <- blank_nodelist()
+# We can provide dictionaries from different sets for the identities, behaviors, and modifiers by passing a list to the dict argument. The order is c(agent_identity, agent_behavior, object_identity, agent_emotion).
+# This allows us to make sure the behavior dictionaries for both actors contain the same terms even as we vary identities and emotions. 
+nodelist <- add_actor(nodelist, name = "Sally", dict = c("usfullsurveyor2015", "germany2007", "usfullsurveyor2015", "usfullsurveyor2015"))
+
+# Felix's dictionaries are all from the same public data set and can be specified with a single actdata keyword
+nodelist <- add_actor(nodelist, name = "Felix", dict = "germany2007", dict_gender = "male", eqns = "germany2007", eqns_gender = "av", alphas = 1)
+```
+
 ### Interaction edgelist
 
 The interaction edgelist contains information that defines relationships between actors--in particular, the identities they will ascribe to themselves and their alter at the outset of an interaction. The process for creating this edgelist is very similar to that for creating the nodelist: 
