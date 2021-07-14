@@ -9,11 +9,9 @@
 
 bayesactR provides utilities that allow R users to run simulations using
 the [C package BayesACT](https://github.com/jessehoey/bayesact),
-developed by Dr. Jesse Hoey and colleagues, entirely from within R. The
-current version of bayesactR is designed to work with BayesACT 2.3.8,
-last modified on June 19, 2021.
+developed by Dr. Jesse Hoey and colleagues, entirely from within R.
 
-## Installation
+## Installation of bayesactR
 
 You can install the development version of bayesactR from
 [GitHub](https://github.com/) with:
@@ -22,6 +20,21 @@ You can install the development version of bayesactR from
 # install.packages("devtools")
 devtools::install_github("ahcombs/bayesactR")
 ```
+
+## This version
+
+Users should be aware that this package is currently in an early-stage
+beta state. Key functionality has been implemented and has worked in my
+local tests, but testing in other contexts has so far been limited. In
+particular, all development and testing of this package has so far been
+done on MacOS (11.2.3). If you try this, please expect and be patient
+with some inevitable bumps in the road, particularly if you are not a
+Mac user\! Please get in touch with me (ahc26atduke.edu) if you
+encounter any bugs or confusions or have thoughts about how this might
+be made a more useful tool–any feedback is very helpful\!
+
+The current version of bayesactR is designed to work with BayesACT C
+2.3.8, last modified on June 19, 2021.
 
 ## Overview
 
@@ -43,7 +56,59 @@ easily reproducible.
 
 There are three stages to running BayesACT simulations: a setup stage, a
 run stage, and an analysis stage. Details on how this package
-facilitates each stage are provided below.
+facilitates each stage are provided below, after instructions on how to
+initially set up required prerequisites.
+
+## Prerequisites: downloading and installing the BayesACT C package
+
+If you want to use this package to run BayesACT simulations, you must
+first also download and install the [BayesACT C
+package](https://github.com/jessehoey/bayesact). In future iterations of
+this package, I hope to provide functions that will help users get the
+BayesACT C package set up, but for now, there are a few steps that must
+be done manually.
+
+To get the most recent version of the BayesACT C package, visit [its
+GitHub repo](https://github.com/jessehoey/bayesact) and either clone the
+repo to a local directory (recommended; this enables you to more easily
+update to the latest GitHub version) or download and decompress the ZIP
+file. Make a note of the file path of the top level directory–you will
+need this for some of the functions in this package. The version of
+BayesACT that bayesactR is currently set up to work with is listed at
+the top of this readme–I recommend that you install this same version if
+possible.
+
+The C package requires a few other pieces of software–see its
+documentation for information beyond what is included here. In summary,
+they are:
+
+1.  A C compiler. In my testing I have used GCC, but this is a pain to
+    set up on Mac, and is not generally preferred for most applications.
+    Another option that is much simpler is to download
+    [XCode](https://developer.apple.com/xcode/) which includes the
+    complier clang. Fair warning that this is a relatively large program
+    and will likely take a long time to download and install. If you
+    find that clang does not work, please let me know\!
+
+2.  [GSL (the GNU Scientific
+    Library)](http://www.gnu.org/software/gsl/). The most recent version
+    is recommended. If for some reason you must use an old version, see
+    the BayesACT C documentation for instructions on how to modify
+    things so that it will work.
+
+3.  [Python
+    **3.8**](https://www.python.org/downloads/release/python-380/). Note
+    that this is **not** the most recent version of Python, but it is
+    the one that the C code requires. On Mac, you must download this
+    directly from [the Python
+    website](https://www.python.org/downloads/release/python-380/) in
+    order for it to be installed in a place where BayesACT can find it.
+    Installing it using homebrew, anaconda, or other package managers
+    unfortunately will not work\!
+
+The C package includes a number of examples and instructions on how to
+run them using the command line. These may be helpful for debugging
+purposes in order to ensure the C code is set up correctly.
 
 ## Setup: Creating input files
 
@@ -59,14 +124,17 @@ reproducible, and less prone to errors than manual creation.
 The information needed to generate the proper input files can be divided
 into three types: information about individual actors, information about
 the actors’ initial relationships with one another, and information
-about the kinds of events that can occur in the simulation. Information
-specific to individual actors is stored in a data frame structured like
-a *nodelist* and information about relationships between actors is
-stored in a data frame structured like an *edgelist*. These terms are
-used because this structure parallels one often used in social network
-analysis. Finally, information about events is stored in a sequentially
-ordered data frame. More information on each of these three data
-structures and how to construct them in this package is below.
+about the kinds of events that can occur in the simulation. Within
+bayesactR, this information is structured in a way that parallels that
+often used in social network analysis and agent based modeling.
+Information specific to individual actors is stored in a data frame
+structured like a nodelist. Information about relationships between
+actors is stored in a data frame structured like an edgelist. Finally,
+information about events is stored in a sequentially ordered data frame,
+and this is information is conceptually similar to algorithms that
+define action in agent-based models. More information on each of these
+three data structures and how to construct them in this package is
+below.
 
 ### Actor nodelist
 
@@ -78,12 +146,6 @@ they manage uncertainty.
 
 The recommended way to create the nodelist is to generate it using a
 pair of provided functions `blank_nodelist()` and `add_actor()`.
-
-Note that theoretically, it should be possible to run interactions where
-different actors are assigned different dictionaries, simulating
-cross-cultural interaction. However, at the time of this writing this
-seems to sometimes cause errors, so assigning all actors the same set of
-dictionaries is recommended.
 
 #### Synergy with actdata
 
@@ -248,46 +310,15 @@ at which it saved the input files.
 write_input_from_df(nodelist, edgelist, eventlist, simfilename = "readme_simfile.txt", eventfilename = "readme_eventfile.events", bayesact_dir = "/path/to/my/bayesact/Cpackage/top/level/directory/")
 ```
 
-## Run
+## Running BayesACT using bayesactR
 
-Now that we have the input files ready to go, it’s almost time to run
-the simulation\! Before this will work, however, we have to do some
-setup work to get the BayesACT C package installed and running. This
-only needs to be done once. Do note, however, that BayesACT is still
-under active development, and so it may be updated occasionally. I will
-do my best to ensure that this package is also updated promptly so that
-it works with the most recent version of BayesACT. However, there will
-likely be a delay between these updates.
-
-### Prerequisite: downloading and installing the BayesACT C package
-
-In future iterations of this package, I hope to provide functions that
-will help users get the BayesACT C package set up, but for now, there
-are a few steps that must be done manually.
-
-To get the most recent version of the BayesACT C package, visit [its
-GitHub repo](https://github.com/jessehoey/bayesact) and either clone the
-repo to a local directory (recommended; this enables you to more easily
-update to the latest GitHub version) or download and decompress the ZIP
-file. Make a note of where the top level directory lives on your
-machine–you will need this file path for the write\_input\_from\_df
-function.
-
-In addition, note that BayesACT requires you to have a C compiler and
-GSL installed on your machine. See the BayesACT installation
-instructions contained in the C package readme and PDF documentation for
-more information.
-
-### Running BayesACT using bayesactR
-
-Once the C package is set up, we can run the simulation we have set up\!
-The function for this is `run_bayesact()`. It requires the file name we
-gave the input sim file, the path to the top level directory of the
-Bayesact C package, the path to the directory where the input files were
-saved (if something other than “bayesact\_input” under the working
-directory, which is the default), and the path where the output should
-be saved (“bayesact\_output” under the current working directory is the
-default).
+The function used to run simulations is `run_bayesact()`. It requires
+the file name we gave the input sim file, the path to the top level
+directory of the Bayesact C package, the path to the directory where the
+input files were saved (if something other than “bayesact\_input” under
+the working directory, which is the default), and the path where the
+output should be saved (“bayesact\_output” under the current working
+directory is the default).
 
 This will probably take a minute or two to run (longer if there are more
 events).
