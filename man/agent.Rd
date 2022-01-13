@@ -8,8 +8,8 @@ agent(
   name,
   bayesact_dir,
   dict = "usfullsurveyor2015",
-  dict_type = "mean",
-  dict_gender = "av",
+  dict_stat = "mean",
+  dict_gender = "average",
   eqns = "us2010",
   eqns_gender = c("av", "female"),
   opt_args = ""
@@ -20,11 +20,11 @@ agent(
 
 \item{bayesact_dir}{top level directory at which the bayesact code lives}
 
-\item{dict}{string or length 4 vector, key(s) of an available dictionary OR filepath(s)}
+\item{dict}{string or length 4 vector, key(s) of an available dictionary OR filepaths OR data frames. If there are any file paths or data frames, it must be a length 4 vector.}
 
-\item{dict_type}{string or length 4 vector (\code{"mean"}, \code{"sd"}, or \code{"cov"})}
+\item{dict_stat}{string or length 4 vector (\code{"mean"}, \code{"sd"}, or \code{"cov"})}
 
-\item{dict_gender}{string or length 4 vector (\code{"av"}, \code{"male"}, or \code{"female"})}
+\item{dict_gender}{string or length 4 vector (\code{"average"}, \code{"male"}, or \code{"female"})}
 
 \item{eqns}{string or length 2 vector, key(s) of an available equation set OR filepath(s)}
 

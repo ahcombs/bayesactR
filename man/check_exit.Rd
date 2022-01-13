@@ -4,7 +4,7 @@
 \alias{check_exit}
 \title{Check whether BayesACT completed successfully and print a warning if not.}
 \usage{
-check_exit(termId)
+check_exit(termId, outfile)
 }
 \arguments{
 \item{termId}{the terminal process id}

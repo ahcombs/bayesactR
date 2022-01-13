@@ -4,14 +4,18 @@
 \alias{make_file_string}
 \title{Construct file string (dictionary)}
 \usage{
-make_file_string(dict, gender, component, type, bayesact_dir)
+make_file_string(dict, gender, component, stat, bayesact_dir)
 }
 \arguments{
 \item{dict}{string}
 
-\item{gender}{string (\code{"av"}, \code{"female"}, \code{"male"})}
+\item{gender}{string (\code{"average"}, \code{"female"}, \code{"male"})}
 
-\item{component}{string (\code{"identities"}, \code{"behaviors"}, \code{"settings"}, \code{"mods"})}
+\item{component}{string (\code{"identity"}, \code{"behavior"}, \code{"setting"}, \code{"modifier"})}
+
+\item{stat}{string (\code{"mean"}, \code{"sd"}, \code{"cov"})}
+
+\item{bayesact_dir}{string}
 }
 \value{
 string filepath

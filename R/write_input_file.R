@@ -9,7 +9,8 @@
 #' Information specific to ties between actors (called interactions here), such as identity distributions, is stored in an edgelist-like format (one line per directed tie).
 #'
 #' The function also requires an events file, which is simply a dataframe containing information on the actions to be simulated (one line per action)
-#' In future I will implement functionality to help build these dataframes.
+#'
+#'
 #'
 #' @param nodelist a dataframe giving dictionary information for each actor
 #' @param edgelist a dataframe delineating starting parameters (actor identity vector, object identity vector, probabilities) for each dyad
@@ -143,13 +144,19 @@ agent <- function(name, bayesact_dir,
 
   ##### NECESSARY ARGUMENTS: name, dict, dict_stat, dict_gender, eqns, eqns_gender
 
+  # Three options for dictionary format:
+  # 1. A file path. Like before, don't do anything with these, just pass along to bayesact
+  # 2. A dataset key from actdict. These need to be grabbed out of actdata (subsetted) and saved to the right place.
+  # 3. A dataframe. Pass to the format_for_bayesact function to check whether they are formatted correctly and to reformat for saving.
+  #  All else should be rejected.
+
   # what kind of dictionary specifications were passed?
   # this provides some checks to ensure they're valid strings or objects, so don't need to redo that
   specs <- dict_spects(dict)
   # is the given list of dictionaries the right length?
   if(length(specs) != 4){
     if((length(specs) != 1) | !all(specs == "key")){
-      stop("Input list of dictionaries is of the incorrect length. Allowable length is 1 (if it's an actdata key) or 4 (if it includes any file paths or data frames)")
+      stop("Input list of dictionaries is of the incorrect length. Allowable length is 1 (if it is an actdata key) or 4 (if it includes any file paths or data frames)")
     }
   }
 

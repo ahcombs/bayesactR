@@ -4,7 +4,14 @@
 \alias{check_input_list}
 \title{Check input for agreement with provided lists}
 \usage{
-check_input_list(input, allowlist, allowlength, allowsingle, allowfile)
+check_input_list(
+  input,
+  allowlist,
+  allowlength,
+  allowsingle,
+  allowfile = FALSE,
+  checkindex = NA
+)
 }
 \arguments{
 \item{input}{vector}
@@ -13,9 +20,11 @@ check_input_list(input, allowlist, allowlength, allowsingle, allowfile)
 
 \item{allowlength}{numeric}
 
-\item{allowsingle}{boolean}
+\item{allowsingle}{logical}
 
-\item{allowfile}{boolean}
+\item{allowfile}{logical}
+
+\item{checkindex}{numeric, the index to verify if the list length is greater than one. Default is NA meaning all indices are verified.}
 }
 \value{
 boolean true if successful check

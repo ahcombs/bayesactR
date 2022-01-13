@@ -1,79 +1,139 @@
-#' Save actdata objects where bayesact can get them
+#' #' Save actdata objects where bayesact can get them
+#' #'
+#' #' Save them to a "data" folder that is under the bayesact directory
+#' #'
+#' #' @param dataname name of the dataset in actdata
+#' #' @param bayesact_dir top directory for bayesact code
+#' #'
+#' #' @return filename that the object got saved to
+#' save_actdata_input <- function(dataname, bayesact_dir){
 #'
-#' Need to move these files to a folder in the user's working directory so BayesACT can access them.
-#' Make a directory "actdata_dicts_eqns" under the user's working directory (if necessary)
+#'   # path <- file.path(getwd(), "actdata_dicts_eqns")
+#'   # path <- "/Users/aidan/Desktop/School/Grad_school/bayesactgithub/bayesact/data"
+#'   dirpath <- file.path(bayesact_dir, "data")
 #'
-#' @param dataname name of the dataset in actdata
-#' @param bayesact_dir top directory for bayesact code
+#'   create_dir_if_needed(dirpath)
 #'
-#' @return filename that the object got saved to
-save_actdata_input <- function(dataname, bayesact_dir){
+#'   if(grepl("dict", dataname)){
+#'     # the object is a dictionary
+#'     class <- "dict"
+#'     filename <- paste0(dataname, ".csv")
+#'   } else {
+#'     # the object is an equation set
+#'     class <- "eqn"
+#'     filename <- paste0(dataname, ".dat")
+#'   }
+#'
+#'   filepath <- file.path(dirpath, filename)
+#'
+#'   save_for_bayesact(dataname, class = class, filepath = filepath)
+#'   return(filename)
+#' }
 
-  # path <- file.path(getwd(), "actdata_dicts_eqns")
-  # path <- "/Users/aidan/Desktop/School/Grad_school/bayesactgithub/bayesact/data"
-  dirpath <- file.path(bayesact_dir, "data")
 
-  create_dir_if_needed(dirpath)
-
-  if(grepl("dict", dataname)){
-    # the object is a dictionary
-    class <- "dict"
-    filename <- paste0(dataname, ".csv")
-  } else {
-    # the object is an equation set
-    class <- "eqn"
-    filename <- paste0(dataname, ".dat")
-  }
-
-  filepath <- file.path(dirpath, filename)
-
-  save_for_bayesact(dataname, class = class, filepath = filepath)
-  return(filename)
-}
-
+#' #' Save files where bayesact can find them
+#' #'
+#' #' @param dataname name of actdata object
+#' #' @param class string "dict" or "eqn"
+#' #' @param filepath string filepath to save under
+#' #'
+#' #' @import actdata
+#' save_for_bayesact <- function(dataname, class, filepath){
+#'   # TODO I think this can be deleted if save_eqn_bayesact works
+#'   # TODO this is SUPER sensitive to the input format of the dataframe. Does it work with every actdata dataset?
+#'   data <- get(dataname, asNamespace("actdata"))
+#'
+#'   # if the dictionary is stat "mean", it needs to have six EPA columns and an institution codes column
+#'   # neither seems to be the case for COV and SD datasets but this needs to be checked.
+#'
+#'   if(class == "dict"){
+#'     if(!grepl("COV", dataname) & !grepl("SD", dataname)){
+#'       cols <- ncol(data)
+#'       # 4 or 5 columns: no duplicate set
+#'       if(cols == 4 | cols == 5){
+#'         data$E.2 <- data$E
+#'         data$P.2 <- data$P
+#'         data$A.2 <- data$A
+#'       }
+#'       # 4 or 7 columns: no institution codes
+#'       if(cols == 4 | cols == 7){
+#'         # add a filler row: 11 111111111 111
+#'         data$instcodes <- rep("11 111111111 111", nrow(data))
+#'       }
+#'       # 8 columns now: good
+#'       # else: some other error
+#'       if(ncol(data) != 8){
+#'         stop("Error in saving file for bayesact: wrong number of columns")
+#'       }
+#'       # make sure columns are in the right order
+#'       data <- dplyr::select(data, "term", "E", "P", "A", "E.2", "P.2", "A.2", "instcodes")
+#'     }
+#'   }
+#'
+#'   if(class == "dict"){
+#'     utils::write.table(data, filepath, sep = ",", quote = FALSE, row.names = FALSE, col.names = FALSE)
+#'   } else {
+#'     utils::write.table(data, filepath, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+#'   }
+#' }
 
 #' Save files where bayesact can find them
 #'
 #' @param dataname name of actdata object
-#' @param class string "dict" or "eqn"
 #' @param filepath string filepath to save under
 #'
 #' @import actdata
-save_for_bayesact <- function(dataname, class, filepath){
+save_eqn_actdata <- function(dataname, bayesact_dir){
   # TODO this is SUPER sensitive to the input format of the dataframe. Does it work with every actdata dataset?
   data <- get(dataname, asNamespace("actdata"))
+  filename <- paste0(dataname, ".dat")
+  filepath <- file.path(bayesact_dir, "data", filename)
+  utils::write.table(data, filepath, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+}
 
-  # if the dictionary is stat "mean", it needs to have six EPA columns and an institution codes column
-  # neither seems to be the case for COV and SD datasets but this needs to be checked.
-
-  if(class == "dict"){
-    if(!grepl("COV", dataname) & !grepl("SD", dataname)){
-      cols <- ncol(data)
-      # 4 or 5 columns: no duplicate set
-      if(cols == 4 | cols == 5){
-        data$E.2 <- data$E
-        data$P.2 <- data$P
-        data$A.2 <- data$A
-      }
-      # 4 or 7 columns: no institution codes
-      if(cols == 4 | cols == 7){
-        # add a filler row: 11 111111111 111
-        data$instcodes <- rep("11 111111111 111", nrow(data))
-      }
-      # 8 columns now: good
-      # else: some other error
-      if(ncol(data) != 8){
-        stop("Error in saving file for bayesact: wrong number of columns")
-      }
-      # make sure columns are in the right order
-      data <- dplyr::select(data, "term", "E", "P", "A", "E.2", "P.2", "A.2", "instcodes")
-    }
-  }
-
-  if(class == "dict"){
-    utils::write.table(data, filepath, sep = ",", quote = FALSE, row.names = FALSE, col.names = FALSE)
+#' Given a key and assorted information OR a dataframe, construct and return a sensible file name.
+#'
+#' This will be in format "key_gender_component_stat.csv" if the dict was provided via actdata key,
+#' or "dfname.csv" if the dict was provided as a dataframe.
+#'
+#' These are all dictionaries and so should be csvs
+#'
+#' @param df dataframe object
+#' @param key key string
+#' @param gender gender string
+#' @param component component string
+#' @param stat stat string
+#'
+#'
+#' @return string with the filename
+construct_df_filename <- function(df = NA, key = NA, gender = NA, component = NA, stat = NA){
+  if(is.na(df)){
+    file <- paste0(paste0(key, gender, component, stat, collapse = "_"), ".csv")
   } else {
-    utils::write.table(data, filepath, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+    file <-  paste0(deparse(substitute(testdf)), ".csv")
   }
+  return(file)
+}
+
+#' Save dataframe dictionary
+#'
+#' The newest shiniest save function
+#'
+#' @param data
+#' @param filename
+#' @param dir
+#'
+#' @return
+#' @export
+#'
+#' @examples
+save_dict_df <- function(data, filename, bayesact_dir){
+  dirpath <- file.path(bayesact_dir, "data")
+  create_dir_if_needed(dirpath)
+  filepath <- paste(dirpath, "/", filename)
+
+  utils::write.table(data, filepath, sep = ",", quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+  return(filename)
 }
 

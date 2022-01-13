@@ -8,7 +8,7 @@ add_actor(
   nodelist,
   name,
   dict = "usfullsurveyor2015",
-  dict_type = "mean",
+  dict_stat = "mean",
   dict_gender = "av",
   eqns = "us2010",
   eqns_gender = c("av", "female"),
@@ -25,7 +25,7 @@ add_actor(
 
 \item{dict}{string or string list length 4: dictionary to use. Entries must either be dictionary keys from the actdata package or valid filepaths to dictionaries.}
 
-\item{dict_type}{string or string list length 4: type of provided dictionaries (mean, cov, sd). For datasets in actdata, check available types with actdata::dict_info().}
+\item{dict_stat}{string or string list length 4: stat of provided dictionaries (mean, cov, sd). For datasets in actdata, check available stats with actdata::dict_info().}
 
 \item{dict_gender}{string or string list length 4: gender of provided dictionaries (av, female, male). For datasets in actdata, check available genders with actdata::dict_info().}
 

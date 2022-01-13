@@ -40,5 +40,4 @@ Information on individual actors (including name, dictionaries, equations, etc) 
 Information specific to ties between actors (called interactions here), such as identity distributions, is stored in an edgelist-like format (one line per directed tie).
 
 The function also requires an events file, which is simply a dataframe containing information on the actions to be simulated (one line per action)
-In future I will implement functionality to help build these dataframes.
 }

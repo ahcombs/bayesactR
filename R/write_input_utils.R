@@ -50,19 +50,13 @@ dict_specs <- function(dict){
 #' @param dict string
 #' @param gender string (\code{"average"}, \code{"female"}, \code{"male"})
 #' @param component string (\code{"identity"}, \code{"behavior"}, \code{"setting"}, \code{"modifier"})
+#' @param stat string (\code{"mean"}, \code{"sd"}, \code{"cov"})
+#' @param bayesact_dir string
 #'
 #' @return string filepath
 #' @keywords internal
 make_file_string <- function(dict, gender, component, stat, bayesact_dir){
-
-  # Three options for dictionary format:
-  # 1. A file path. Like before, don't do anything with these, just pass along to bayesact
-  # 2. A dataset key from actdict. These need to be grabbed out of actdata (subsetted) and saved to the right place.
-  # 3. A dataframe. Pass to the format_for_bayesact function to check whether they are formatted correctly and to reformat for saving.
-  #  All else should be rejected.
-
   # We have already checked for validity of everything before so we don't need to repeat that here. We have also reformatted the data frames where they have been provided.
-
 
   if(dict_specs(dict) == "file"){
     # if the dict is a filepath, we need to save it to the data folder of the bayesact directory
@@ -76,23 +70,22 @@ make_file_string <- function(dict, gender, component, stat, bayesact_dir){
   } else if (dataset_spec(dict) == "key"){
     # We need to subset the actdata summary stats frame for the given statistics, then save it to the folder
 
-    # dict is an actdata dataset key
+    stats_to_subset <- c("mean")
+    if(stat %in% c("sd", "cov")){
+      stats_to_subset <- append(stats_to_subset, stat)
+    }
 
-    # g <- dplyr::case_when(gender == "average" ~ "av",
-    #                gender == "female" ~ "f",
-    #                gender == "male" ~ "m")
-    # d <- actdata::this_dict(dict)
-    # if(stat == "mean"){
-    #   name <- paste0(d@key, "_", component, "_", g, "_dict")
-    # } else {
-    #   upper_stat <- toupper(stat)
-    #   name <- paste0(d@key, "_", component, "_", g, "_", upper_stat, "_dict")
-    # }
-    return(save_actdata_input(name, bayesact_dir))
-    # return(paste0("actdata_dicts_eqns/", name, ".csv"))
+    d <- actdata::format_for_bayesact(actdata::epa_subset(dataset = dict, gender = gender, component = component, stat = stats_to_subset), stat = stat)
+    file <- save_dict_df(data = d,
+                         filename = construct_df_filename(key = key, gender = gender, component = component, stat = stat),
+                         bayesact_dir = bayesact_dir)
+    return(file)
   } else if (dataset_spec(dict) == "df"){
     # This has already been reformatted as necessary. Save it to the folder.
-
+    file <- save_dict_df(data = dict,
+                         filename = construct_df_filename(data = dict),
+                         bayesact_dir = bayesact_dir)
+    return(file)
   }
 }
 
@@ -125,29 +118,16 @@ get_eqn_file <- function(key, gender, component, bayesact_dir){
     eq_obj <- actdata::this_dict(key, class = "equation")
 
     # abbreviate gender terms
-    gender[gender=="average"] <- "av"
-    gender[gender=="female"] <- "f"
-    gender[gender=="male"] <- "m"
-    #
-    # # is the specified gender available in the specified dictionary? If not, give an error
-    # eqnset_components <- eq_obj@gendercomponents[component == regmatches(eq_obj@gendercomponents, regexpr("^[[:alnum:]]*", eq_obj@gendercomponents))]
-    # eqnset_genders <- regmatches(eqnset_components, regexpr("[[:alnum:]]*$", eqnset_components))
-    # has_gender <- sapply(gender, function(x) x %in% eqnset_genders)
-    # if(!(TRUE %in% has_gender)){
-    #   stop("Specified gender is not available for specified equations")
-    # }
-
-    # all looks good; keyword is valid and gender is available
-    # if gender is a list, take the first one that is available (has_gender has this information)
-    # gender_to_use <- names(has_gender[has_gender == TRUE])[1]
+    gender = standardize_option(gender, param = "gender", version = "eqn")
+    # gender[gender=="average"] <- "av"
+    # gender[gender=="female"] <- "f"
+    # gender[gender=="male"] <- "m"
 
     # we now have all components of the file name
     name <- paste0(eq_obj@key, "_", component, "_", gender, "_eqn")
 
     # save datafile from actdata to the actdata_dicts_eqns folder in the user's wd so bayesact can find it
-
-    # # return the file location
-    # return(paste0("actdata_dicts_eqns/", name, ".dat"))
+    # return the file name
     return(save_actdata_input(name, bayesact_dir))
   }
 }
@@ -182,13 +162,13 @@ expand <- function(s, len){
 standardize_option <- function(input, param, version = "dict"){
   input <- trimws(tolower(toString(input)))
   for(i in 1:length(input)){
-    if(param == "gender" & version = "dict"){
+    if(param == "gender" & version == "dict"){
       check_abbrev(input, allowed = c("m", "male", "man", "f", "female", "woman", "a", "av", "average"))
       input[i] <- dplyr::case_when(substr(input[i], 1, 1) == "m" ~ "male",
                                    substr(input[i], 1, 1) == "a" ~ "average",
                                    substr(input[i], 1, 1) %in% c("f", "w") ~ "female",
                                    TRUE ~ input[i])
-    } else if(param == "gender" & version = "eqn"){
+    } else if(param == "gender" & version == "eqn"){
       check_abbrev(input, allowed = c("m", "male", "man", "f", "female", "woman", "a", "av", "average"))
       input[i] <- dplyr::case_when(substr(input[i], 1, 1) == "m" ~ "m",
                                    substr(input[i], 1, 1) == "a" ~ "av",
