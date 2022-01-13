@@ -5,17 +5,22 @@
 #' @param input vector
 #' @param allowlist vector
 #' @param allowlength numeric
-#' @param allowsingle boolean
-#' @param allowfile boolean
+#' @param allowsingle logical
+#' @param allowfile logical
+#' @param checkindex numeric, the index to verify if the list length is greater than one. Default is NA meaning all indices are verified.
 #'
 #' @return boolean true if successful check
 #' @keywords internal
-check_input_list <- function(input, allowlist, allowlength, allowsingle, allowfile){
+check_input_list <- function(input, allowlist, allowlength, allowsingle, allowfile = FALSE, checkindex = NA){
   valid <- c()
   # first check if input is a character vector
-  if(is.character(input)){
-    # then check length: must be either the given allowable length or length 1 if allowsingle is true
-    if((length(input) == allowlength) | (allowsingle & length(input) == 1)) {
+  if(!is.character(input)){
+    stop("Input must be a character vector")
+  }
+
+  # then check length: must be either the given allowable length or length 1 if allowsingle is true
+  if((length(input) == allowlength) | (allowsingle & length(input) == 1)) {
+    if(is.na(checkindex)){
       for(entry in input){
         # then check that each entry is in the allowable list, or that they are valid filepaths (if allowed). Can mix and match.
         if(trimws(tolower(entry)) %in% allowlist){
@@ -35,38 +40,46 @@ check_input_list <- function(input, allowlist, allowlength, allowsingle, allowfi
           stop(message)
         }
       }
-    }
-    else {
-      message <- paste0("Input list is of the incorrect length. Allowable length is ", toString(allowlength))
-      if(allowsingle){
-        message <- paste0(message, ". Single entries also allowed.")
+    } else {
+      if(length(input) > 1){
+        thisindex <- checkindex
+      } else {
+        thisindex <- 1
       }
-      stop(message)
+
+      if((trimws(tolower(input[thisindex])) %in% allowlist) | (allowfile & fileinput(input[thisindex]))){
+        valid <- append(valid, TRUE)
+      } else {
+        stop(paste0("Provided input is invalid. Input must be in ", toString(allowlist)))
+      }
     }
-  }
-  else{
-    stop("Input must be a character vector")
+  } else {
+    message <- paste0("Input list is of the incorrect length. Allowable length is ", toString(allowlength))
+    if(allowsingle){
+      message <- paste0(message, ". Single entries also allowed.")
+    }
+    stop(message)
   }
   return(TRUE)
 }
 
 
-#' Compatibility check: dictionary and type
+#' Compatibility check: dictionary and stat
 #'
-#' this checks that the provided dictionary has the provided type. This will look different for dictionaries accessed with keywords than dictionaries provided with a filepath.
+#' this checks that the provided dictionary has the provided stat. This will look different for dictionaries accessed with keywords than dictionaries provided with a filepath.
 #'
 #' @param dictname string
-#' @param dicttype string (\code{"mean"}, \code{"sd"}, or \code{"cov"})
+#' @param dictstat string (\code{"mean"}, \code{"sd"}, or \code{"cov"})
 #'
 #' @return boolean for successful check
 #' @keywords internal
-check_dict_type <- function(dict, dicttype){
+check_dict_stat <- function(dict, dictstat){
   dicts <- actdata::get_dicts()
 
-  # loop through the list and check each dict/type combo
+  # loop through the list and check each dict/stat combo
   for(i in 1:length(dict)){
     name <- dict[i]
-    type <- dicttype[i]
+    stat <- dictstat[i]
 
     # Dictionary is one of the provided ones: check dictionary info
     if(name %in% actdata::dict_subset(dicts)){
@@ -77,8 +90,8 @@ check_dict_type <- function(dict, dicttype){
         }
       }
 
-      if(!(type %in% d@types)){
-        message <- paste0("Provided dictionary type ", type, " is not an option for dictionary ", name, ". Available types for this dictionary are ",  d@types, ".")
+      if(!(stat %in% d@stats)){
+        message <- paste0("Provided dictionary stat ", stat, " is not an option for dictionary ", name, ". Available stats for this dictionary are ",  d@stats, ".")
         stop(message)
       }
     }
@@ -98,7 +111,7 @@ check_dict_type <- function(dict, dicttype){
 check_dict_components <- function(dictname){
   files <- fileinput(dictname)
   valid <- c()
-  order <- c("identities", "behaviors", "identities", "mods")
+  order <- c("identity", "behavior", "identity", "modifier")
   for(i in 1:4){
     # entry is a filepath
     if(files[i]){
@@ -369,5 +382,20 @@ check_events <- function(events){
   # TODO in future: check that provided behaviors are in the dictionary
   # (not critical; bayesact checks for this too -- but checking here first would allow errors to be caught before sinking time into simulation)
 
+  return(TRUE)
+}
+
+#' Check abbreviation validity
+#'
+#' @param value the entry to check
+#' @param allowed the list of allowed abbreviations/alternate spellings
+#'
+#' @return logical indicating success
+check_abbrev <- function(value, allowed){
+  for(v in value){
+    if(!(v %in% allowed)){
+      stop(paste0("Invalid input '", v, ".'"))
+    }
+  }
   return(TRUE)
 }

@@ -80,7 +80,7 @@ library(bayesactR)
 # blank_nodelist() creates an empty data frame with the correct column labels
 nodelist <- blank_nodelist()
 
-# add_actor() appends a line representing an actor to this data frame. If dictionaries, equations, or dict/eqn types or genders are not specified, they will revert to defaults. 
+# add_actor() appends a line representing an actor to this data frame. If dictionaries, equations, or dict/eqn stats or genders are not specified, they will revert to defaults. 
 nodelist <- add_actor(nodelist, name = "Sally", dict = "germany2007", eqns = "germany2007", eqns_gender = "av")
 
 # To add another actor, use add_actor() again. Different parameter values can be specified for each actor.

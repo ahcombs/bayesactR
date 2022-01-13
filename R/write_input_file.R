@@ -32,7 +32,7 @@ write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eve
   ### AGENTS: for each agent, get lines to add to template, then add them.
   agentlines <- c()
   for(i in 1:nrow(nodelist)){
-    mandatory_args <- c("name", "dict", "dict_type", "dict_gender", "eqns", "eqns_gender")
+    mandatory_args <- c("name", "dict", "dict_stat", "dict_gender", "eqns", "eqns_gender")
     a <- get_lists(nodelist[i,])
     a_mand <- a[,mandatory_args]
     a_trim <- dplyr::select(a, function(x) (!is.na(x) & x != ""))
@@ -44,7 +44,7 @@ write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eve
     newlines <- agent(name = unlist(a$name),
                       bayesact_dir = bayesact_dir,
                       dict = unlist(a$dict),
-                      dict_type = unlist(a$dict_type),
+                      dict_stat = unlist(a$dict_stat),
                       dict_gender = unlist(a$dict_gender),
                       eqns = unlist(a$eqns),
                       eqns_gender = unlist(a$eqns_gender),
@@ -123,9 +123,9 @@ write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eve
 #' Compile all necessary information for an individual agent and add it to a template object that can be written to a text file
 #'
 #' @param name string agent name
-#' @param dict string or length 4 vector, key(s) of an available dictionary OR filepath(s)
-#' @param dict_type string or length 4 vector (\code{"mean"}, \code{"sd"}, or \code{"cov"})
-#' @param dict_gender string or length 4 vector (\code{"av"}, \code{"male"}, or \code{"female"})
+#' @param dict string or length 4 vector, key(s) of an available dictionary OR filepaths OR data frames. If there are any file paths or data frames, it must be a length 4 vector.
+#' @param dict_stat string or length 4 vector (\code{"mean"}, \code{"sd"}, or \code{"cov"})
+#' @param dict_gender string or length 4 vector (\code{"average"}, \code{"male"}, or \code{"female"})
 #' @param eqns string or length 2 vector, key(s) of an available equation set OR filepath(s)
 #' @param eqns_gender string or length 2 vector (\code{"av"}, \code{"f"}, or \code{"m"})
 #' @param bayesact_dir top level directory at which the bayesact code lives
@@ -134,67 +134,83 @@ write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eve
 #' @return file with inserted lines
 #' @keywords internal
 agent <- function(name, bayesact_dir,
-                  dict = "usfullsurveyor2015", dict_type = "mean", dict_gender = 'av',
+                  dict = "usfullsurveyor2015", dict_stat = "mean", dict_gender = 'average',
                   eqns = "us2010", eqns_gender = c('av', "female"),
                   opt_args = ""){
 
   # TODO: I probably don't need all the defaults here, though they aren't hurting anything so I will ignore for now
   # TODO: Need to standardize language between agent/actor, agentlist/nodelist.
 
-  ##### NECESSARY ARGUMENTS: name, dict, dict_type, dict_gender, eqns, eqns_gender
+  ##### NECESSARY ARGUMENTS: name, dict, dict_stat, dict_gender, eqns, eqns_gender
+
+  # what kind of dictionary specifications were passed?
+  # this provides some checks to ensure they're valid strings or objects, so don't need to redo that
+  specs <- dict_spects(dict)
+  # is the given list of dictionaries the right length?
+  if(length(specs) != 4){
+    if((length(specs) != 1) | !all(specs == "key")){
+      stop("Input list of dictionaries is of the incorrect length. Allowable length is 1 (if it's an actdata key) or 4 (if it includes any file paths or data frames)")
+    }
+  }
+
+  # Now, all these check functions are really just necessary for actdata strings, not files or datasets
+  # Should also work in the case of a mix of specifications... the easiest way to ensure this I think is a loop, though it's less efficient
 
   # calls function to return info for available dictionaries
-  dicts <- actdata::get_dicts()
-  alldictnames <- actdata::dict_subset(dicts)
+  alldictnames <- actdata::dataset_key_subset()
 
   # coerce name to a string and strip all whitespace.
   # TODO: CHECK what happens when you pass a list or a factor or other things?
   name <- gsub("[[:space:]]", "", toString(name), fixed = TRUE)
 
-  ### CHECK INPUTS
-  # check that dict key is as allowed (files exist or key strings are specified correctly, list is of proper length)
-  check_input_list(dict,
-                          allowlist = alldictnames,
-                          allowlength = 4,
-                          allowsingle = TRUE,
-                          allowfile = TRUE)
+  ### CHECK THE REST OF THE INPUTS AS NEEDED
+  for(i in 1:length(specs)){
+    if(specs[i] == "key"){
+      # if it's a key there must be a stat
+      check_input_list(dict_stat,
+                       allowlist = c('mean', 'sd', 'cov'),
+                       allowlength = 4,
+                       allowsingle = TRUE,
+                       check_index = i)
 
-  # same with dict_type
-  check_input_list(dict_type,
-                          allowlist = c('mean', 'sd', 'cov'),
-                          allowlength = 4,
-                          allowsingle = TRUE,
-                          allowfile = FALSE)
+      # same with dict_gender
+      check_input_list(dict_gender,
+                       allowlist = c("average", "female", "male"),
+                       allowlength = 4,
+                       allowsingle = TRUE,
+                       check_index = i)
 
-  # same with dict_gender
-  check_input_list(dict_gender,
-                          allowlist = c("av", "female", "male"),
-                          allowlength = 4,
-                          allowsingle = TRUE,
-                          allowfile = TRUE)
+    } else if (s == "df"){
+      # do the reformatting here--this also checks for valid format
+      dict[i] <- actdata::format_for_bayesact(dict[i])
+    }
+    # nothing more to check for files; pass along
+  }
 
   # check that equations are allowed
   check_input_list(eqns,
-                          allowlist = actdata::eqn_subset(actdata::get_eqns()),
-                          allowlength = 2,
-                          allowsingle = TRUE,
-                          allowfile = TRUE)
+                   allowlist = actdata::eqn_subset(actdata::get_eqns()),
+                   allowlength = 2,
+                   allowsingle = TRUE,
+                   allowfile = TRUE)
 
-  # same with equation gender
+  # same with equation gender: standardize this input first
+  eqns_gender <- standardize_option(eqns_gender, param = "gender", version = "eqn")
   check_input_list(eqns_gender,
-                          allowlist = c("av", "female", "male"),
-                          allowlength = 2,
-                          allowsingle = TRUE,
-                          allowfile = TRUE)
+                   allowlist = c("av", "f", "m"),
+                   allowlength = 2,
+                   allowsingle = TRUE,
+                   allowfile = TRUE)
 
   # to make line spec and compatibility checking easier, expand single strings to vectors of correct length
   dict <- expand(dict, 4)
-  dict_type <- expand(dict_type, 4)
+  dict_stat <- expand(dict_stat, 4)
   dict_gender <- expand(dict_gender, 4)
   eqns <- expand(eqns, 2)
   eqns_gender <- expand(eqns_gender, 2)
 
   ### CHECK COMPATIBILTY
+  # this isn't necessary for dfs and files but these check functions ignore them and just return "true"
 
   # check that provided dictionaries contain necessary components
   check_dict_components(dict)
@@ -202,8 +218,8 @@ agent <- function(name, bayesact_dir,
   # check that dictionary has the requested gender
   check_dict_gender(dict, dict_gender)
 
-  # check that the dict_name and dict_type are compatible with one another
-  check_dict_type(dict, dict_type)
+  # check that the dict_name and dict_stat are compatible with one another
+  check_dict_stat(dict, dict_stat)
 
   # check that equations have specified genders
   check_eqn_gender(eqns, eqns_gender)
@@ -221,10 +237,10 @@ agent <- function(name, bayesact_dir,
   # try line by line
   nametxt <- paste0('agent: ', name)
   # get dictionary filepaths
-  dict1 <- paste0("dictionary: AGENT : ", make_file_string(dict[1], dict_gender[1], component = "identities", type = dict_type[1], bayesact_dir), " : ", toupper(dict_type[1]))
-  dict2 <- paste0("dictionary: BEHAVIOUR : ", make_file_string(dict[2], dict_gender[2], component = "behaviors", type = dict_type[2], bayesact_dir), " : ", toupper(dict_type[2]))
-  dict3 <- paste0("dictionary: CLIENT : ", make_file_string(dict[3], dict_gender[3], component = "identities", type = dict_type[3], bayesact_dir), " : ", toupper(dict_type[3]))
-  dict4 <- paste0("dictionary: EMOTION : ", make_file_string(dict[4], dict_gender[4], component = "mods", type = dict_type[4], bayesact_dir), " : ", toupper(dict_type[4]))
+  dict1 <- paste0("dictionary: AGENT : ", make_file_string(dict[1], dict_gender[1], component = "identity", stat = dict_stat[1], bayesact_dir), " : ", toupper(dict_stat[1]))
+  dict2 <- paste0("dictionary: BEHAVIOUR : ", make_file_string(dict[2], dict_gender[2], component = "behavior", stat = dict_stat[2], bayesact_dir), " : ", toupper(dict_stat[2]))
+  dict3 <- paste0("dictionary: CLIENT : ", make_file_string(dict[3], dict_gender[3], component = "identity", stat = dict_stat[3], bayesact_dir), " : ", toupper(dict_stat[3]))
+  dict4 <- paste0("dictionary: EMOTION : ", make_file_string(dict[4], dict_gender[4], component = "modifier", stat = dict_stat[4], bayesact_dir), " : ", toupper(dict_stat[4]))
   # get equation filepaths
   dyn1 <- paste0("dynamics: IMPRESSION : ", get_eqn_file(eqns[1], eqns_gender[1], "impressionabo", bayesact_dir))
   dyn2 <- paste0("dynamics: EMOTION : ", get_eqn_file(eqns[2], eqns_gender[2], "emotionid", bayesact_dir))

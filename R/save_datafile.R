@@ -43,7 +43,7 @@ save_for_bayesact <- function(dataname, class, filepath){
   # TODO this is SUPER sensitive to the input format of the dataframe. Does it work with every actdata dataset?
   data <- get(dataname, asNamespace("actdata"))
 
-  # if the dictionary is type "mean", it needs to have six EPA columns and an institution codes column
+  # if the dictionary is stat "mean", it needs to have six EPA columns and an institution codes column
   # neither seems to be the case for COV and SD datasets but this needs to be checked.
 
   if(class == "dict"){

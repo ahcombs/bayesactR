@@ -10,7 +10,7 @@
 #' @return empty nodelist data frame with correct column names
 #' @export
 blank_nodelist <- function(use.alphas = FALSE, use.betas = FALSE, use.deltas = FALSE, use.numsamples = FALSE){
-  cols = c("name", "dict", "dict_type", "dict_gender", "eqns", "eqns_gender")
+  cols = c("name", "dict", "dict_stat", "dict_gender", "eqns", "eqns_gender")
   if(use.alphas){ cols <- append(cols, "alphas") }
   if(use.betas){ cols <- append(cols, "betas") }
   if(use.deltas){ cols <- append(cols, "deltas") }
@@ -45,7 +45,7 @@ blank_edgelist <- function(use.institution = FALSE, use.rseed = FALSE){
 #' @param nodelist data frame to add to
 #' @param name string actor's name
 #' @param dict string or string list length 4: dictionary to use. Entries must either be dictionary keys from the actdata package or valid filepaths to dictionaries.
-#' @param dict_type string or string list length 4: type of provided dictionaries (mean, cov, sd). For datasets in actdata, check available types with actdata::dict_info().
+#' @param dict_stat string or string list length 4: stat of provided dictionaries (mean, cov, sd). For datasets in actdata, check available stats with actdata::dict_info().
 #' @param dict_gender string or string list length 4: gender of provided dictionaries (av, female, male). For datasets in actdata, check available genders with actdata::dict_info().
 #' @param eqns string or string list length 2: equations to use. Entries must either by equation keys from the actdata package or valid filepaths to coefficient matrices.
 #' @param eqns_gender string or string list length 2: gender of equations to use (av, female, male). For datasets in actdata, check available genders with actdata::eqn_info().
@@ -57,21 +57,25 @@ blank_edgelist <- function(use.institution = FALSE, use.rseed = FALSE){
 #' @return provided nodelist with actor line appended
 #' @export
 add_actor <- function(nodelist, name,
-                      dict = "usfullsurveyor2015", dict_type = "mean", dict_gender = "av",
+                      dict = "usfullsurveyor2015", dict_stat = "mean", dict_gender = "av",
                       eqns = "us2010", eqns_gender = c("av", "female"),
                       alphas = NA, betas = NA, deltas = NA, numsamples = NA){
    line <- data.frame(name = name,
-                      dict = toString(dict), dict_type = tolower(toString(dict_type)), dict_gender = tolower(toString(dict_gender)),
-                      eqns = toString(eqns), eqns_gender = tolower(toString(eqns_gender)))
+                      dict = dict,
+                      dict_stat = standardize_option(dict_stat, "stat", version = "dict"),
+                      dict_gender = standardize_option(dict_gender, "gender", version = "dict"),
+                      eqns = toString(eqns),
+                      eqns_gender = standardize_option(eqns_gender, "gender", version = "eqn"))
    if(!all(is.na(alphas))){ line$alphas <- toString(alphas) }
    if(!all(is.na(betas))){ line$betas <- toString(betas) }
    if(!all(is.na(deltas))){ line$deltas <- toString(deltas) }
    if(!all(is.na(numsamples))){ line$numsamples <- toString(numsamples) }
 
-   # TODO: check all these inputs for validity (should be able to use the same checks as implemented in write_input_file)... unless this is too duplicative? No way to get around things being checked twice.
+   # TODO: CAN DATAFRAMES BE HANDLED LIKE STRINGS HERE? Can you save them to a data frame format and then reload them later? Or will I have to save the string that they are named and load them back in by name later?
+   # A quick look suggests that nesting should be possible: https://stackoverflow.com/questions/62248169/r-dataframe-cell-contains-dataframe-tibble-how-to-access-or-visualize
 
    joined <- plyr::rbind.fill(nodelist, line)
-   joined <- dplyr::select(joined, intersect(c("name", "dict", "dict_type", "dict_gender", "eqns", "eqns_gender", "alphas", "betas", "deltas", "numsamples"), names(joined)))
+   joined <- dplyr::select(joined, intersect(c("name", "dict", "dict_stat", "dict_gender", "eqns", "eqns_gender", "alphas", "betas", "deltas", "numsamples"), names(joined)))
    return(joined)
 }
 

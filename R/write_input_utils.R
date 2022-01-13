@@ -16,19 +16,55 @@ fileinput <- function(dictname){
   return(bool)
 }
 
+#' Checks whether an entry is a valid file, a valid actdata key, or a correctly formatted dataset. Throws an error otherwise.
+#'
+#' @param dict object to test
+#'
+#' @return character. file, key, df.
+#' @keyword internal
+dict_specs <- function(dict){
+  types <- c()
+  for(i in 1:length(dict)){
+    d <- dict[i]
+    if(fileinput(d)){
+      # input is a file string
+      types <- append(types, "file")
+    } else if (d %in% actdata::dataset_key_subset){
+      # input is a string representing a key in actdata
+      types <- append(types, "key")
+    } else if (is.data.frame(d) | tibble::is_tibble(d)){
+      # input is a data frame. There are other necessary format checks but these should happen in the actdata functions.
+      types <- append(types, "df")
+    } else {
+      stop("Provided dictionary is not a valid filepath, actdata dataset key, or EPA data frame or tibble.")
+    }
+  }
+  return(types)
+}
+
 #' Construct file string (dictionary)
 #'
 #' this constructs the correct file string from dictionary information
 #' if the input is a name from actdata, it saves the dataset in the "actdata_dicts_eqns" folder in the working directory
 #'
 #' @param dict string
-#' @param gender string (\code{"av"}, \code{"female"}, \code{"male"})
-#' @param component string (\code{"identities"}, \code{"behaviors"}, \code{"settings"}, \code{"mods"})
+#' @param gender string (\code{"average"}, \code{"female"}, \code{"male"})
+#' @param component string (\code{"identity"}, \code{"behavior"}, \code{"setting"}, \code{"modifier"})
 #'
 #' @return string filepath
 #' @keywords internal
-make_file_string <- function(dict, gender, component, type, bayesact_dir){
-  if(fileinput(dict)){
+make_file_string <- function(dict, gender, component, stat, bayesact_dir){
+
+  # Three options for dictionary format:
+  # 1. A file path. Like before, don't do anything with these, just pass along to bayesact
+  # 2. A dataset key from actdict. These need to be grabbed out of actdata (subsetted) and saved to the right place.
+  # 3. A dataframe. Pass to the format_for_bayesact function to check whether they are formatted correctly and to reformat for saving.
+  #  All else should be rejected.
+
+  # We have already checked for validity of everything before so we don't need to repeat that here. We have also reformatted the data frames where they have been provided.
+
+
+  if(dict_specs(dict) == "file"){
     # if the dict is a filepath, we need to save it to the data folder of the bayesact directory
     # use rstudioapi to move the file to avoid needing to load it and possibly messing with format
     termId <- rstudioapi::terminalExecute(command = paste0("cp ", dict, " ", file.path(bayesact_dir, "data")),
@@ -37,19 +73,26 @@ make_file_string <- function(dict, gender, component, type, bayesact_dir){
     wait_until_done(termId)
     rstudioapi::terminalKill(termId)
     return(filename)
-  } else {
-    g <- dplyr::case_when(gender == "av" ~ "av",
-                   gender == "female" ~ "f",
-                   gender == "male" ~ "m")
-    d <- actdata::this_dict(dict)
-    if(type == "mean"){
-      name <- paste0(d@key, "_", component, "_", g, "_dict")
-    } else {
-      upper_type <- toupper(type)
-      name <- paste0(d@key, "_", component, "_", g, "_", upper_type, "_dict")
-    }
+  } else if (dataset_spec(dict) == "key"){
+    # We need to subset the actdata summary stats frame for the given statistics, then save it to the folder
+
+    # dict is an actdata dataset key
+
+    # g <- dplyr::case_when(gender == "average" ~ "av",
+    #                gender == "female" ~ "f",
+    #                gender == "male" ~ "m")
+    # d <- actdata::this_dict(dict)
+    # if(stat == "mean"){
+    #   name <- paste0(d@key, "_", component, "_", g, "_dict")
+    # } else {
+    #   upper_stat <- toupper(stat)
+    #   name <- paste0(d@key, "_", component, "_", g, "_", upper_stat, "_dict")
+    # }
     return(save_actdata_input(name, bayesact_dir))
     # return(paste0("actdata_dicts_eqns/", name, ".csv"))
+  } else if (dataset_spec(dict) == "df"){
+    # This has already been reformatted as necessary. Save it to the folder.
+
   }
 }
 
@@ -126,4 +169,51 @@ expand <- function(s, len){
   } else {
     stop("Incorrect entry length")
   }
+}
+
+#' standardize_option
+#'
+#' This function deals with abbreviations in parameter specification and returns the spellings that are used in the datasets.
+#'
+#' @param input the string to standardize
+#' @param param the dictionary parameter expected (gender, component, stat)
+#'
+#' @return the standardized version of the input string
+standardize_option <- function(input, param, version = "dict"){
+  input <- trimws(tolower(toString(input)))
+  for(i in 1:length(input)){
+    if(param == "gender" & version = "dict"){
+      check_abbrev(input, allowed = c("m", "male", "man", "f", "female", "woman", "a", "av", "average"))
+      input[i] <- dplyr::case_when(substr(input[i], 1, 1) == "m" ~ "male",
+                                   substr(input[i], 1, 1) == "a" ~ "average",
+                                   substr(input[i], 1, 1) %in% c("f", "w") ~ "female",
+                                   TRUE ~ input[i])
+    } else if(param == "gender" & version = "eqn"){
+      check_abbrev(input, allowed = c("m", "male", "man", "f", "female", "woman", "a", "av", "average"))
+      input[i] <- dplyr::case_when(substr(input[i], 1, 1) == "m" ~ "m",
+                                   substr(input[i], 1, 1) == "a" ~ "av",
+                                   substr(input[i], 1, 1) %in% c("f", "w") ~ "f",
+                                   TRUE ~ input[i])
+    } else if(param == "component"){
+      check_abbrev(input, allowed = c("behavior", "b", "beh", "behaviors", "behaviour", "behaviours",
+                                      "modifier", "m", "mod", "modifiers",
+                                      "identity", "i", "ident","identities"
+                                      # "setting", "s", "set", "settings",
+                                      ))
+      input[i] <- dplyr::case_when(substr(input[i], 1, 1) == "b" ~ "behavior",
+                                   substr(input[i], 1, 1) == "m" ~ "modifier",
+                                   substr(input[i], 1, 1) == "i" ~ "identity",
+                                   # substr(input[i], 1, 1) == "s" ~ "setting",
+                                   TRUE ~ input[i])
+    } else if(param == "stat"){
+      check_abbrev(input, allowed = c("mean", "m", "sd", "standard deviation", "s", "cov", "covar", "covariance", "c"))
+      input[i] <- dplyr::case_when(substr(input[i], 1, 1) == "m" ~ "mean",
+                                   substr(input[i], 1, 1) == "s" ~ "sd",
+                                   substr(input[i], 1, 1) == "c" ~ "cov",
+                                   TRUE ~ input[i])
+    } else (
+      stop("Invalid parameter type provided.")
+    )
+  }
+  return(input)
 }
