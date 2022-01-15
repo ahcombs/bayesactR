@@ -1,9 +1,9 @@
 // *******************************************************************************************************************************
 // AGENTS
 // *******************************************************************************************************************************
-// 
-// each agent has dictionaries for identities, and the impression formation equation and emotion equation parameter files
-//  define the agents and specify a dictionary and dictionary type for each entity type
+//
+// each agent has dictionaries for identities and the impression formation equation and emotion equation parameter files
+// define the agents and specify a dictionary and dictionary type for each entity type
 // the entity types must match entity_type in fvarsample.h
 
 AGENTDEF
@@ -11,14 +11,14 @@ AGENTDEF
 // *******************************************************************************************************************************
 // INTERACTIONS
 // *******************************************************************************************************************************
-// these are the possible pairs of agents who can interact, and their identity profiles for each interaction
-// each interaction starts with a line with the keyword "interaction",
-// followed by the agent's name,
-// followed by the client's name 
-// Then, a line for the agent's self identity
+// these are the possible pairs of agents who can interact and their identity profiles for each interaction
+// each interaction starts with a line with the keyword "interaction"
+// followed by the agent's name
+// followed by the client's name
+// Then a line for the agent's self identity
 // and then a line for the agent's interpretation of the client's identity
 // each identity interpretation is a probability distribution such that
-// A : p : B : q : C : 1-p-q  means the agent has identity A with probability p, B with probability q and C with probability 1-p-q
+// A : p : B : q : C : 1-p-q  means the agent has identity A with probability p B with probability q and C with probability 1-p-q
 // probabilities must sum to 1
 
 INTERACTIONDEF

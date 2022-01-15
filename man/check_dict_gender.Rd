@@ -4,7 +4,7 @@
 \alias{check_dict_gender}
 \title{Compatibility check: dictionary and gender}
 \usage{
-check_dict_gender(dictname, gender)
+check_dict_gender(dictname, gender, indices = c(1, 2, 3, 4))
 }
 \arguments{
 \item{dictname}{string or length 4 vector}

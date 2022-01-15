@@ -59,8 +59,10 @@ insert_lines <- function(file, lines, start, end, insertAt = "end"){
 #' @return row with needed entries converted to lists
 get_lists <- function(row){
   for(i in 1:ncol(row)){
-    if(row[,i] != "" & !is.na(row[,i])){
-      row[,i][[1]] <- list(trimws(strsplit(as.character(row[,i]), ",")[[1]]))
+    if(is.character(row[,i])){
+      if(row[,i] != "" & !is.na(row[,i])){
+        row[,i][[1]] <- list(trimws(strsplit(as.character(row[,i]), ",")[[1]]))
+      }
     }
   }
   return(row)
@@ -176,4 +178,46 @@ get_interaction_opt_arg_lines <- function(opt_args){
     lines <- append(lines, paste0("rseed: ", a))
   }
   return(lines)
+}
+
+#' extract_dict_list
+#'
+#' Handles dict input from nodelist tibbles.
+#' This can be:
+#' 1. a list containing one tibble with four rows containing four strings (if actdata keys or filepaths)
+#' 2. or a list of four tibbles representing dictionaries (if a df was passed)
+#'
+#' These are not checked for validity here; that happens later. TODO: Think about whether this check should be moved up (possibly to the nodelist creation).
+# Pro: catching mistakes earlier. Con: then the checks have to be repeated, because users might change the cell contents between nodelist creation and input df writing.
+#'
+#' @param input the input passed from the nodelist df
+#'
+#' @return a list with four string entries or a tibble with four nested tibble entries
+extract_dict_list <- function(input){
+  wronglength <- FALSE
+  # is this a list of strings or a list of tibbles?
+  if(typeof(input[[1]][[1]]) == "character"){
+    type = "string"
+    if(length(input[[1]][[1]]) != 4){
+      wronglength <- TRUE
+    }
+  } else if(typeof(input[[1]][[1]]) == "list"){
+    type = "df"
+    if(length(input[[1]]) != 4){
+      wronglength <- TRUE
+    }
+  } else {
+    stop("Dictionary input is of incorrect format.")
+  }
+
+  if(wronglength){
+    stop("Dictionary input is of incorrect length.")
+  }
+
+  if(type == "string"){
+    out <- c(unlist(input)[[1]], unlist(input)[[2]], unlist(input)[[3]], unlist(input)[[4]])
+  } else {
+    out <- list(input[[1]][[1]], input[[1]][[2]], input[[1]][[3]], input[[1]][[4]])
+  }
+  return(out)
 }

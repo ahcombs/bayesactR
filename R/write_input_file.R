@@ -44,7 +44,7 @@ write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eve
 
     newlines <- agent(name = unlist(a$name),
                       bayesact_dir = bayesact_dir,
-                      dict = unlist(a$dict),
+                      dict = extract_dict_list(a$dict),
                       dict_stat = unlist(a$dict_stat),
                       dict_gender = unlist(a$dict_gender),
                       eqns = unlist(a$eqns),
@@ -150,9 +150,11 @@ agent <- function(name, bayesact_dir,
   # 3. A dataframe. Pass to the format_for_bayesact function to check whether they are formatted correctly and to reformat for saving.
   #  All else should be rejected.
 
+  # TODO: I need to add some sort of unnesting function for the dictionary objects now that they are in nested tibble format.
+
   # what kind of dictionary specifications were passed?
   # this provides some checks to ensure they're valid strings or objects, so don't need to redo that
-  specs <- dict_spects(dict)
+  specs <- dict_specs(dict)
   # is the given list of dictionaries the right length?
   if(length(specs) != 4){
     if((length(specs) != 1) | !all(specs == "key")){
@@ -164,7 +166,7 @@ agent <- function(name, bayesact_dir,
   # Should also work in the case of a mix of specifications... the easiest way to ensure this I think is a loop, though it's less efficient
 
   # calls function to return info for available dictionaries
-  alldictnames <- actdata::dataset_key_subset()
+  alldictnames <- actdata::dataset_keys()
 
   # coerce name to a string and strip all whitespace.
   # TODO: CHECK what happens when you pass a list or a factor or other things?
@@ -178,25 +180,25 @@ agent <- function(name, bayesact_dir,
                        allowlist = c('mean', 'sd', 'cov'),
                        allowlength = 4,
                        allowsingle = TRUE,
-                       check_index = i)
+                       checkindex = i)
 
       # same with dict_gender
       check_input_list(dict_gender,
                        allowlist = c("average", "female", "male"),
                        allowlength = 4,
                        allowsingle = TRUE,
-                       check_index = i)
+                       checkindex = i)
 
-    } else if (s == "df"){
+    } else if (specs[i] == "df"){
       # do the reformatting here--this also checks for valid format
-      dict[i] <- actdata::format_for_bayesact(dict[i])
+      dict[[i]] <- suppressMessages(actdata::format_for_bayesact(dict[[i]]))
     }
     # nothing more to check for files; pass along
   }
 
   # check that equations are allowed
   check_input_list(eqns,
-                   allowlist = actdata::eqn_subset(actdata::get_eqns()),
+                   allowlist = actdata::eqn_key_subset(actdata::get_eqns()),
                    allowlength = 2,
                    allowsingle = TRUE,
                    allowfile = TRUE)
@@ -217,16 +219,18 @@ agent <- function(name, bayesact_dir,
   eqns_gender <- expand(eqns_gender, 2)
 
   ### CHECK COMPATIBILTY
-  # this isn't necessary for dfs and files but these check functions ignore them and just return "true"
+  # this isn't necessary for dfs and files; just check indices that are keys
+
+  indices <- grep("key", specs)
 
   # check that provided dictionaries contain necessary components
-  check_dict_components(dict)
+  check_dict_components(dict, indices)
 
   # check that dictionary has the requested gender
-  check_dict_gender(dict, dict_gender)
+  check_dict_gender(dict, dict_gender, indices)
 
   # check that the dict_name and dict_stat are compatible with one another
-  check_dict_stat(dict, dict_stat)
+  check_dict_stat(dict, dict_stat, indices)
 
   # check that equations have specified genders
   check_eqn_gender(eqns, eqns_gender)
@@ -244,10 +248,16 @@ agent <- function(name, bayesact_dir,
   # try line by line
   nametxt <- paste0('agent: ', name)
   # get dictionary filepaths
-  dict1 <- paste0("dictionary: AGENT : ", make_file_string(dict[1], dict_gender[1], component = "identity", stat = dict_stat[1], bayesact_dir), " : ", toupper(dict_stat[1]))
-  dict2 <- paste0("dictionary: BEHAVIOUR : ", make_file_string(dict[2], dict_gender[2], component = "behavior", stat = dict_stat[2], bayesact_dir), " : ", toupper(dict_stat[2]))
-  dict3 <- paste0("dictionary: CLIENT : ", make_file_string(dict[3], dict_gender[3], component = "identity", stat = dict_stat[3], bayesact_dir), " : ", toupper(dict_stat[3]))
-  dict4 <- paste0("dictionary: EMOTION : ", make_file_string(dict[4], dict_gender[4], component = "modifier", stat = dict_stat[4], bayesact_dir), " : ", toupper(dict_stat[4]))
+  dict1 <- paste0("dictionary: AGENT : ",
+                  make_file_string(dict = dict[[1]],
+                                   gender = dict_gender[1],
+                                   component = "identity",
+                                   stat = dict_stat[1],
+                                   bayesact_dir = bayesact_dir),
+                  " : ", toupper(dict_stat[1]))
+  dict2 <- paste0("dictionary: BEHAVIOUR : ", make_file_string(dict[[2]], dict_gender[2], component = "behavior", stat = dict_stat[2], bayesact_dir), " : ", toupper(dict_stat[2]))
+  dict3 <- paste0("dictionary: CLIENT : ", make_file_string(dict[[3]], dict_gender[3], component = "identity", stat = dict_stat[3], bayesact_dir), " : ", toupper(dict_stat[3]))
+  dict4 <- paste0("dictionary: EMOTION : ", make_file_string(dict[[4]], dict_gender[4], component = "modifier", stat = dict_stat[4], bayesact_dir), " : ", toupper(dict_stat[4]))
   # get equation filepaths
   dyn1 <- paste0("dynamics: IMPRESSION : ", get_eqn_file(eqns[1], eqns_gender[1], "impressionabo", bayesact_dir))
   dyn2 <- paste0("dynamics: EMOTION : ", get_eqn_file(eqns[2], eqns_gender[2], "emotionid", bayesact_dir))

@@ -4,7 +4,6 @@
 # bayesactR
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 bayesactR provides utilities that allow R users to run simulations using
@@ -29,9 +28,9 @@ local tests, but testing in other contexts has so far been limited. In
 particular, all development and testing of this package has so far been
 done on MacOS (11.2.3). If you try this, please expect and be patient
 with some inevitable bumps in the road, particularly if you are not a
-Mac user\! Please get in touch with me (ahc26atduke.edu) if you
-encounter any bugs or confusions or have thoughts about how this might
-be made a more useful tool–any feedback is very helpful\!
+Mac user! Please get in touch with me (ahc26atduke.edu) if you encounter
+any bugs or confusions or have thoughts about how this might be made a
+more useful tool–any feedback is very helpful!
 
 The current version of bayesactR is designed to work with BayesACT C
 2.3.8, last modified on June 19, 2021.
@@ -88,7 +87,7 @@ they are:
     [XCode](https://developer.apple.com/xcode/) which includes the
     complier clang. Fair warning that this is a relatively large program
     and will likely take a long time to download and install. If you
-    find that clang does not work, please let me know\!
+    find that clang does not work, please let me know!
 
 2.  [GSL (the GNU Scientific
     Library)](http://www.gnu.org/software/gsl/). The most recent version
@@ -104,7 +103,7 @@ they are:
     website](https://www.python.org/downloads/release/python-380/) in
     order for it to be installed in a place where BayesACT can find it.
     Installing it using homebrew, anaconda, or other package managers
-    unfortunately will not work\!
+    unfortunately will not work!
 
 The C package includes a number of examples and instructions on how to
 run them using the command line. These may be helpful for debugging
@@ -173,7 +172,7 @@ library(bayesactR)
 # blank_nodelist() creates an empty data frame with the correct column labels
 nodelist <- blank_nodelist()
 
-# add_actor() appends a line representing an actor to this data frame. If dictionaries, equations, or dict/eqn types or genders are not specified, they will revert to defaults. 
+# add_actor() appends a line representing an actor to this data frame. If dictionaries, equations, or dict/eqn stats or genders are not specified, they will revert to defaults. 
 nodelist <- add_actor(nodelist, name = "Sally", dict = "germany2007", eqns = "germany2007", eqns_gender = "av")
 
 # To add another actor, use add_actor() again. Different parameter values can be specified for each actor.
@@ -183,10 +182,10 @@ nodelist <- add_actor(nodelist, name = "Felix", dict = "germany2007", dict_gende
 knitr::kable(nodelist)
 ```
 
-| name  | dict        | dict\_type | dict\_gender | eqns        | eqns\_gender | alphas |
-| :---- | :---------- | :--------- | :----------- | :---------- | :----------- | :----- |
-| Sally | germany2007 | mean       | av           | germany2007 | av           | NA     |
-| Felix | germany2007 | mean       | male         | germany2007 | av           | 1      |
+| name  | dict        | dict_type | dict_gender | eqns        | eqns_gender | alphas |
+|:------|:------------|:----------|:------------|:------------|:------------|:-------|
+| Sally | germany2007 | mean      | av          | germany2007 | av          | NA     |
+| Felix | germany2007 | mean      | male        | germany2007 | av          | 1      |
 
 #### A note about dictionaries and cross-cultural interaction
 
@@ -235,10 +234,10 @@ edgelist <- add_interaction(edgelist, agent = "Felix", object = "Sally", agent_i
 knitr::kable(edgelist)
 ```
 
-| agent | object | agent\_ident       | agent\_ident\_prob | object\_ident           | object\_ident\_prob |
-| :---- | :----- | :----------------- | :----------------- | :---------------------- | :------------------ |
-| Sally | Felix  | teacher            | 1                  | student                 | 1                   |
-| Felix | Sally  | student, whiz\_kid | 0.7, 0.3           | teacher, stuffed\_shirt | 0.85, 0.15          |
+| agent | object | agent_ident       | agent_ident_prob | object_ident           | object_ident_prob |
+|:------|:-------|:------------------|:-----------------|:-----------------------|:------------------|
+| Sally | Felix  | teacher           | 1                | student                | 1                 |
+| Felix | Sally  | student, whiz_kid | 0.7, 0.3         | teacher, stuffed_shirt | 0.85, 0.15        |
 
 ### Event list
 
@@ -275,18 +274,18 @@ eventlist <- basic_event_df(n = 10, actors = c("Sally", "Felix"), noise = c("a1_
 knitr::kable(eventlist)
 ```
 
-| agent | agent\_action | agent\_emotion | object | object\_action | object\_emotion |
-| :---- | :------------ | :------------- | :----- | :------------- | :-------------- |
-| Sally | \*+           |                | Felix  |                |                 |
-| Felix | \*+           |                | Sally  |                |                 |
-| Sally | \*+           |                | Felix  |                |                 |
-| Felix | \*+           |                | Sally  |                |                 |
-| Sally | \*+           |                | Felix  |                |                 |
-| Felix | \*+           |                | Sally  |                |                 |
-| Sally | \*+           |                | Felix  |                |                 |
-| Felix | \*+           |                | Sally  |                |                 |
-| Sally | \*+           |                | Felix  |                |                 |
-| Felix | \*+           |                | Sally  |                |                 |
+| agent | agent_action | agent_emotion | object | object_action | object_emotion |
+|:------|:-------------|:--------------|:-------|:--------------|:---------------|
+| Sally | \*+          |               | Felix  |               |                |
+| Felix | \*+          |               | Sally  |               |                |
+| Sally | \*+          |               | Felix  |               |                |
+| Felix | \*+          |               | Sally  |               |                |
+| Sally | \*+          |               | Felix  |               |                |
+| Felix | \*+          |               | Sally  |               |                |
+| Sally | \*+          |               | Felix  |               |                |
+| Felix | \*+          |               | Sally  |               |                |
+| Sally | \*+          |               | Felix  |               |                |
+| Felix | \*+          |               | Sally  |               |                |
 
 ### Writing input data frames to file
 
@@ -301,10 +300,10 @@ This function also requires the filepath for the directory that houses
 the BayesACT C package on your machine (see the section on downloading
 and installing the BayesACT C package below). By default, the function
 will put the text files it generates in a directory called
-“bayesact\_input” that lives under your current working directory. If
-you want the files to be saved to a different directory, provide a
-filepath to the `input_dir` argument. This function returns the filepath
-at which it saved the input files.
+“bayesact_input” that lives under your current working directory. If you
+want the files to be saved to a different directory, provide a filepath
+to the `input_dir` argument. This function returns the filepath at which
+it saved the input files.
 
 ``` r
 write_input_from_df(nodelist, edgelist, eventlist, simfilename = "readme_simfile.txt", eventfilename = "readme_eventfile.events", bayesact_dir = "/path/to/my/bayesact/Cpackage/top/level/directory/")
@@ -315,9 +314,9 @@ write_input_from_df(nodelist, edgelist, eventlist, simfilename = "readme_simfile
 The function used to run simulations is `run_bayesact()`. It requires
 the file name we gave the input sim file, the path to the top level
 directory of the Bayesact C package, the path to the directory where the
-input files were saved (if something other than “bayesact\_input” under
+input files were saved (if something other than “bayesact_input” under
 the working directory, which is the default), and the path where the
-output should be saved (“bayesact\_output” under the current working
+output should be saved (“bayesact_output” under the current working
 directory is the default).
 
 This will probably take a minute or two to run (longer if there are more

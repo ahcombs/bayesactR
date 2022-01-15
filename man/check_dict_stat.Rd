@@ -4,7 +4,7 @@
 \alias{check_dict_stat}
 \title{Compatibility check: dictionary and stat}
 \usage{
-check_dict_stat(dict, dictstat)
+check_dict_stat(dict, dictstat, indices = c(1, 2, 3, 4))
 }
 \arguments{
 \item{dictstat}{string (\code{"mean"}, \code{"sd"}, or \code{"cov"})}

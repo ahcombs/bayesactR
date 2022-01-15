@@ -15,3 +15,4 @@ character. file, key, df.
 \description{
 Checks whether an entry is a valid file, a valid actdata key, or a correctly formatted dataset. Throws an error otherwise.
 }
+\keyword{internal}

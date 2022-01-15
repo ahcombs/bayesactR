@@ -10,6 +10,8 @@ standardize_option(input, param, version = "dict")
 \item{input}{the string to standardize}
 
 \item{param}{the dictionary parameter expected (gender, component, stat)}
+
+\item{version}{dict or eqn}
 }
 \value{
 the standardized version of the input string

@@ -5,26 +5,26 @@
 #' TODO: There are more options here (see p. 7-8 of bayesactv2.pdf).
 #'
 #' @param simfilename the name of the simulation file
-#' @param inputdir the directory the file is in
-#' @param outputdir the directory in which to put the bayesact output
+#' @param input_dir the directory the file is in
+#' @param output_dir the directory in which to put the bayesact output
 #' @param wd current working directory
 #' @param bayesact_dir the top level directory where the bayesact code lives
 #'
 #' @return output file path
 #'
 #' @export
-run_bayesact <- function(simfilename, bayesact_dir, inputdir = "bayesact_input", outputdir = "bayesact_output", wd = getwd()){
+run_bayesact <- function(simfilename, bayesact_dir, input_dir = "bayesact_input", output_dir = "bayesact_output", wd = getwd()){
   # how to do terminal windows? Maybe this function should be wrapped in another function that essentially loops it, and the higher level function would create a single terminal instance.
   # For now, each run will create and then destroy a single terminal instance.
   # Does this have any prayer of working on windows?
 
   # if any of provided directories are relative paths, prepend wd and make them absolute paths
-  outputdir <- absolute_path(outputdir, wd)
-  inputdir <- absolute_path(inputdir, wd)
+  output_dir <- absolute_path(output_dir, wd)
+  input_dir <- absolute_path(input_dir, wd)
   bayesact_dir <- absolute_path(bayesact_dir, wd)
 
   # Does the output directory exist? If not, create.
-  create_dir_if_needed(outputdir)
+  create_dir_if_needed(output_dir)
 
   # check if the source directory has a shared library, and if not, run make
   # a maybe safer option: throw an error and link to instructions that show how people can run make themselves
@@ -47,7 +47,7 @@ run_bayesact <- function(simfilename, bayesact_dir, inputdir = "bayesact_input",
     check_exit(termId, "make_terminal_output.txt")
 
     # write the contents of the terminal to file
-    utils::write.table(rstudioapi::terminalBuffer(termId), file = file.path(outputdir,"make_terminal_output.txt"), quote = FALSE, row.names = FALSE, col.names = FALSE)
+    utils::write.table(rstudioapi::terminalBuffer(termId), file = file.path(output_dir,"make_terminal_output.txt"), quote = FALSE, row.names = FALSE, col.names = FALSE)
 
     rstudioapi::terminalKill(termId)
   }
@@ -55,7 +55,7 @@ run_bayesact <- function(simfilename, bayesact_dir, inputdir = "bayesact_input",
   # the output file name will be the same as the input file name but with the csv extension
   outname <- paste0(regmatches(simfilename, regexpr("^[^\\.]*", simfilename)), ".csv ")
   outnametxt <- paste0(regmatches(simfilename, regexpr("^[^\\.]*", simfilename)), "_terminaltext.txt")
-  termId <- rstudioapi::terminalExecute(command = paste0('./bayesactsim', " ", file.path(inputdir, simfilename),' -o ', file.path(outputdir, outname), ' -v'),
+  termId <- rstudioapi::terminalExecute(command = paste0('./bayesactsim', " ", file.path(input_dir, simfilename),' -o ', file.path(output_dir, outname), ' -v'),
                                         workingDir = source_dir,
                                         show = FALSE)
 
@@ -68,12 +68,12 @@ run_bayesact <- function(simfilename, bayesact_dir, inputdir = "bayesact_input",
   check_exit(termId, outnametxt)
 
   # write the contents of the terminal to file
-  utils::write.table(rstudioapi::terminalBuffer(termId), file = file.path(outputdir, outnametxt), quote = FALSE, row.names = FALSE, col.names = FALSE)
+  utils::write.table(rstudioapi::terminalBuffer(termId), file = file.path(output_dir, outnametxt), quote = FALSE, row.names = FALSE, col.names = FALSE)
 
   rstudioapi::terminalKill(termId)
 
   # return the output file path
-  return(file.path(outputdir, outname))
+  return(file.path(output_dir, outname))
 }
 
 #' Pause until terminal process is done
@@ -90,6 +90,7 @@ wait_until_done <- function(termId){
 
 #' Check whether BayesACT completed successfully and print a warning if not.
 #'
+#' @param outfile path to terminal output file
 #' @param termId the terminal process id
 check_exit <- function(termId, outfile){
   exit <- rstudioapi::terminalExitCode(termId)

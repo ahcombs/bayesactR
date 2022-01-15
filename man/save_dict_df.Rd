@@ -7,10 +7,14 @@
 save_dict_df(data, filename, bayesact_dir)
 }
 \arguments{
-\item{dir}{}
+\item{data}{data object to save}
+
+\item{filename}{name to save under (and return)}
+
+\item{bayesact_dir}{filepath to bayesact toplevel directory}
 }
 \value{
-
+file name
 }
 \description{
 The newest shiniest save function

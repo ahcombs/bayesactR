@@ -1,12 +1,12 @@
-test_that("dict-type compatibility", {
-  expect_true(check_dict_type(c("usfullsurveyor2015", "uga2015bayesactsubset", "nc1978", "uga2015bayesactsubset"), c("mean", "sd", "mean", "cov")))
-  expect_error(check_dict_type(c("usfullsurveyor2015", "uga2015bayesactsubset", "nc1978", "uga2015bayesactsubset"), c("sd", "sd", "mean", "cov")))
-  expect_error(check_dict_type(c("usfullsurveyor2015", "uga2015bayesactsubset", "nc1978", "uga2015bayesactsubset"), c("mean", "mean", "mean", "cov")))
+test_that("dict-stat compatibility", {
+  expect_true(check_dict_stat(c("usfullsurveyor2015", "uga2015", "nc1978", "uga2015"), c("mean", "sd", "mean", "cov")))
+  expect_error(check_dict_stat(c("germany2007", "uga2015", "nc1978", "uga2015"), c("sd", "sd", "mean", "cov")))
+  expect_error(check_dict_stat(c("usfullsurveyor2015", "uga2015", "nc1978", "germany2007"), c("mean", "mean", "mean", "cov")))
 })
 
 test_that("dict-gender compatibility", {
-  expect_true(check_dict_gender(c("usfullsurveyor2015", "nc1978", "nc1978", "politics2003"), c("av", "male", "female", "av")))
-  expect_error(check_dict_gender(c("usfullsurveyor2015", "nc1978", "usfullsurveyor2015", "politics2003"), c("female", "male", "female", "av")))
+  expect_true(check_dict_gender(c("usfullsurveyor2015", "nc1978", "nc1978", "politics2003"), c("average", "male", "female", "average")))
+  expect_error(check_dict_gender(c("usfullsurveyor2015", "nc1978", "usfullsurveyor2015", "politics2003"), c("female", "male", "female", "average")))
 })
 
 test_that("dict-component compatibility", {

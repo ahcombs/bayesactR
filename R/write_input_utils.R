@@ -11,7 +11,11 @@
 fileinput <- function(dictname){
   bool <- c()
   for(i in 1:length(dictname)){
-    bool <- append(bool, (file.exists(dictname[i]) & !dir.exists(dictname[i])))
+    if(is.character(dictname[[i]])){
+      bool <- append(bool, (file.exists(dictname[i]) & !dir.exists(dictname[i])))
+    } else {
+      bool <- append(bool, FALSE)
+    }
   }
   return(bool)
 }
@@ -21,24 +25,54 @@ fileinput <- function(dictname){
 #' @param dict object to test
 #'
 #' @return character. file, key, df.
-#' @keyword internal
+#' @keywords internal
 dict_specs <- function(dict){
   types <- c()
-  for(i in 1:length(dict)){
-    d <- dict[i]
-    if(fileinput(d)){
-      # input is a file string
-      types <- append(types, "file")
-    } else if (d %in% actdata::dataset_key_subset){
-      # input is a string representing a key in actdata
-      types <- append(types, "key")
+  wrongformat <- FALSE
+  if(length(dict) == 4){
+    for(i in 1:length(dict)){
+      d <- dict[[i]]
+      if(is.character(d)){
+        if(fileinput(d)){
+          # input is a file string
+          types <- append(types, "file")
+        } else if (d %in% actdata::dataset_keys()){
+          # input is a string representing a key in actdata
+          types <- append(types, "key")
+        } else {
+          wrongformat <- TRUE
+        }
+      } else if (is.data.frame(d) | tibble::is_tibble(d)){
+        # input is a data frame. There are other necessary format checks but these should happen in the actdata functions.
+        types <- append(types, "df")
+      } else {
+        wrongformat <- TRUE
+      }
+    }
+  } else {
+    d <- dict
+    if(is.character(d)){
+      if(fileinput(d)){
+        # input is a file string
+        types <- append(types, "file")
+      } else if (d %in% actdata::dataset_keys()){
+        # input is a string representing a key in actdata
+        types <- append(types, "key")
+      } else {
+        wrongformat <- TRUE
+      }
     } else if (is.data.frame(d) | tibble::is_tibble(d)){
       # input is a data frame. There are other necessary format checks but these should happen in the actdata functions.
       types <- append(types, "df")
     } else {
-      stop("Provided dictionary is not a valid filepath, actdata dataset key, or EPA data frame or tibble.")
+      wrongformat <- TRUE
     }
   }
+
+  if(wrongformat){
+    stop("Provided dictionary is not a valid filepath, actdata dataset key, or EPA data frame or tibble.")
+  }
+
   return(types)
 }
 
@@ -67,7 +101,7 @@ make_file_string <- function(dict, gender, component, stat, bayesact_dir){
     wait_until_done(termId)
     rstudioapi::terminalKill(termId)
     return(filename)
-  } else if (dataset_spec(dict) == "key"){
+  } else if (dict_specs(dict) == "key"){
     # We need to subset the actdata summary stats frame for the given statistics, then save it to the folder
 
     stats_to_subset <- c("mean")
@@ -75,15 +109,15 @@ make_file_string <- function(dict, gender, component, stat, bayesact_dir){
       stats_to_subset <- append(stats_to_subset, stat)
     }
 
-    d <- actdata::format_for_bayesact(actdata::epa_subset(dataset = dict, gender = gender, component = component, stat = stats_to_subset), stat = stat)
+    d <- suppressMessages(actdata::format_for_bayesact(actdata::epa_subset(dataset = dict, gender = gender, component = component, stat = stats_to_subset), stat = stat))
     file <- save_dict_df(data = d,
-                         filename = construct_df_filename(key = key, gender = gender, component = component, stat = stat),
+                         filename = construct_df_filename(key = dict, gender = gender, component = component, stat = stat),
                          bayesact_dir = bayesact_dir)
     return(file)
-  } else if (dataset_spec(dict) == "df"){
+  } else if (dict_specs(dict) == "df"){
     # This has already been reformatted as necessary. Save it to the folder.
     file <- save_dict_df(data = dict,
-                         filename = construct_df_filename(data = dict),
+                         filename = construct_df_filename(df = dict, component = component),
                          bayesact_dir = bayesact_dir)
     return(file)
   }
@@ -117,18 +151,18 @@ get_eqn_file <- function(key, gender, component, bayesact_dir){
     # get the equation object associated with it
     eq_obj <- actdata::this_dict(key, class = "equation")
 
-    # abbreviate gender terms
-    gender = standardize_option(gender, param = "gender", version = "eqn")
-    # gender[gender=="average"] <- "av"
-    # gender[gender=="female"] <- "f"
-    # gender[gender=="male"] <- "m"
+    # # abbreviate gender terms
+    # gender = standardize_option(gender, param = "gender", version = "eqn")
+    # # gender[gender=="average"] <- "av"
+    # # gender[gender=="female"] <- "f"
+    # # gender[gender=="male"] <- "m"
 
     # we now have all components of the file name
     name <- paste0(eq_obj@key, "_", component, "_", gender, "_eqn")
 
     # save datafile from actdata to the actdata_dicts_eqns folder in the user's wd so bayesact can find it
     # return the file name
-    return(save_actdata_input(name, bayesact_dir))
+    return(save_eqn_actdata(name, bayesact_dir))
   }
 }
 
@@ -157,10 +191,11 @@ expand <- function(s, len){
 #'
 #' @param input the string to standardize
 #' @param param the dictionary parameter expected (gender, component, stat)
+#' @param version dict or eqn
 #'
 #' @return the standardized version of the input string
 standardize_option <- function(input, param, version = "dict"){
-  input <- trimws(tolower(toString(input)))
+  input <- trimws(tolower(input))
   for(i in 1:length(input)){
     if(param == "gender" & version == "dict"){
       check_abbrev(input, allowed = c("m", "male", "man", "f", "female", "woman", "a", "av", "average"))

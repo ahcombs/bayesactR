@@ -8,6 +8,8 @@ check_exit(termId, outfile)
 }
 \arguments{
 \item{termId}{the terminal process id}
+
+\item{outfile}{path to terminal output file}
 }
 \description{
 Check whether BayesACT completed successfully and print a warning if not.

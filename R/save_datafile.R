@@ -1,86 +1,7 @@
-#' #' Save actdata objects where bayesact can get them
-#' #'
-#' #' Save them to a "data" folder that is under the bayesact directory
-#' #'
-#' #' @param dataname name of the dataset in actdata
-#' #' @param bayesact_dir top directory for bayesact code
-#' #'
-#' #' @return filename that the object got saved to
-#' save_actdata_input <- function(dataname, bayesact_dir){
-#'
-#'   # path <- file.path(getwd(), "actdata_dicts_eqns")
-#'   # path <- "/Users/aidan/Desktop/School/Grad_school/bayesactgithub/bayesact/data"
-#'   dirpath <- file.path(bayesact_dir, "data")
-#'
-#'   create_dir_if_needed(dirpath)
-#'
-#'   if(grepl("dict", dataname)){
-#'     # the object is a dictionary
-#'     class <- "dict"
-#'     filename <- paste0(dataname, ".csv")
-#'   } else {
-#'     # the object is an equation set
-#'     class <- "eqn"
-#'     filename <- paste0(dataname, ".dat")
-#'   }
-#'
-#'   filepath <- file.path(dirpath, filename)
-#'
-#'   save_for_bayesact(dataname, class = class, filepath = filepath)
-#'   return(filename)
-#' }
-
-
-#' #' Save files where bayesact can find them
-#' #'
-#' #' @param dataname name of actdata object
-#' #' @param class string "dict" or "eqn"
-#' #' @param filepath string filepath to save under
-#' #'
-#' #' @import actdata
-#' save_for_bayesact <- function(dataname, class, filepath){
-#'   # TODO I think this can be deleted if save_eqn_bayesact works
-#'   # TODO this is SUPER sensitive to the input format of the dataframe. Does it work with every actdata dataset?
-#'   data <- get(dataname, asNamespace("actdata"))
-#'
-#'   # if the dictionary is stat "mean", it needs to have six EPA columns and an institution codes column
-#'   # neither seems to be the case for COV and SD datasets but this needs to be checked.
-#'
-#'   if(class == "dict"){
-#'     if(!grepl("COV", dataname) & !grepl("SD", dataname)){
-#'       cols <- ncol(data)
-#'       # 4 or 5 columns: no duplicate set
-#'       if(cols == 4 | cols == 5){
-#'         data$E.2 <- data$E
-#'         data$P.2 <- data$P
-#'         data$A.2 <- data$A
-#'       }
-#'       # 4 or 7 columns: no institution codes
-#'       if(cols == 4 | cols == 7){
-#'         # add a filler row: 11 111111111 111
-#'         data$instcodes <- rep("11 111111111 111", nrow(data))
-#'       }
-#'       # 8 columns now: good
-#'       # else: some other error
-#'       if(ncol(data) != 8){
-#'         stop("Error in saving file for bayesact: wrong number of columns")
-#'       }
-#'       # make sure columns are in the right order
-#'       data <- dplyr::select(data, "term", "E", "P", "A", "E.2", "P.2", "A.2", "instcodes")
-#'     }
-#'   }
-#'
-#'   if(class == "dict"){
-#'     utils::write.table(data, filepath, sep = ",", quote = FALSE, row.names = FALSE, col.names = FALSE)
-#'   } else {
-#'     utils::write.table(data, filepath, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
-#'   }
-#' }
-
 #' Save files where bayesact can find them
 #'
+#' @param bayesact_dir top level of bayesact code directory
 #' @param dataname name of actdata object
-#' @param filepath string filepath to save under
 #'
 #' @import actdata
 save_eqn_actdata <- function(dataname, bayesact_dir){
@@ -104,13 +25,12 @@ save_eqn_actdata <- function(dataname, bayesact_dir){
 #' @param component component string
 #' @param stat stat string
 #'
-#'
 #' @return string with the filename
-construct_df_filename <- function(df = NA, key = NA, gender = NA, component = NA, stat = NA){
-  if(is.na(df)){
-    file <- paste0(paste0(key, gender, component, stat, collapse = "_"), ".csv")
+construct_df_filename <- function(df = NA, key = "", gender = "", component = "", stat = ""){
+  if(!is.data.frame(df) & !tibble::is_tibble(df)){
+    file <- paste0(paste0(key, "_", gender, "_", component, "_", stat), ".csv")
   } else {
-    file <-  paste0(deparse(substitute(testdf)), ".csv")
+    file <-  paste0("dict_", component,".csv")
   }
   return(file)
 }
@@ -119,21 +39,49 @@ construct_df_filename <- function(df = NA, key = NA, gender = NA, component = NA
 #'
 #' The newest shiniest save function
 #'
-#' @param data
-#' @param filename
-#' @param dir
+#' @param data data object to save
+#' @param bayesact_dir filepath to bayesact toplevel directory
+#' @param filename name to save under (and return)
 #'
-#' @return
-#' @export
-#'
-#' @examples
+#' @return file name
 save_dict_df <- function(data, filename, bayesact_dir){
+  orig_filename <- filename
+  save <- TRUE
   dirpath <- file.path(bayesact_dir, "data")
   create_dir_if_needed(dirpath)
-  filepath <- paste(dirpath, "/", filename)
 
-  utils::write.table(data, filepath, sep = ",", quote = FALSE, row.names = FALSE, col.names = FALSE)
+  filename_noext <- gsub("\\.csv", "", filename)
+  fileregex <- paste0("^", filename_noext, ".*")
 
-  return(filename)
+  allversions <- list.files(dirpath, pattern = fileregex)
+
+  # DOES A FILE WITH THIS NAME EXIST HERE ALREADY? IS IT THE SAME?
+  # WE ALSO HAVE TO CHECK ALL THE OTHER SUBSET VERSIONS
+  for(filename in allversions){
+    filepath <- paste0(dirpath, "/", filename)
+    otherfile <- utils::read.table(filepath, sep = ",", header = FALSE)
+    # if the file is the same in dimensions and elements, don't need to resave
+    if(all(dim(data) == dim(otherfile))){
+      if((all(data == otherfile))){
+        save <- FALSE
+        filename_to_return <- filename
+      }
+    }
+  }
+  if(save){
+    # another file exists under the same name but it is not the same file. Save the new one under a new suffix.
+    # is there already a numeric suffix? increment if so
+    filepath <- paste0(dirpath, "/", orig_filename)
+    while(file.exists(filepath)){
+      suffix <- as.numeric(regmatches(filename, regexpr("[[:digit:]]+(?=\\.csv)", filename, perl = TRUE)))
+      suffix <- ifelse(length(suffix) == 0, 1, suffix + 1)
+      filename <- sub("_*[[:digit:]]*\\.csv", paste0("_", as.character(suffix), ".csv"), filename, perl = TRUE)
+      filepath <- paste0(dirpath, "/", filename)
+    }
+
+    filename_to_return <- filename
+    utils::write.table(data, filepath, sep = ",", quote = FALSE, row.names = FALSE, col.names = FALSE)
+  }
+
+  return(filename_to_return)
 }
-

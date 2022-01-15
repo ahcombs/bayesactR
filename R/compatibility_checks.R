@@ -73,16 +73,16 @@ check_input_list <- function(input, allowlist, allowlength, allowsingle, allowfi
 #'
 #' @return boolean for successful check
 #' @keywords internal
-check_dict_stat <- function(dict, dictstat){
+check_dict_stat <- function(dict, dictstat, indices = c(1, 2, 3, 4)){
   dicts <- actdata::get_dicts()
 
   # loop through the list and check each dict/stat combo
-  for(i in 1:length(dict)){
+  for(i in indices){
     name <- dict[i]
     stat <- dictstat[i]
 
     # Dictionary is one of the provided ones: check dictionary info
-    if(name %in% actdata::dict_subset(dicts)){
+    if(name %in% actdata::dataset_keys(dicts)){
       for(element in dicts){
         if(element@key == name){
           d <- element
@@ -108,35 +108,36 @@ check_dict_stat <- function(dict, dictstat){
 #'
 #' @return boolean for successful check
 #' @keywords internal
-check_dict_components <- function(dictname){
-  files <- fileinput(dictname)
-  valid <- c()
+check_dict_components <- function(dictname, indices = c(1, 2, 3, 4)){
+  # files <- fileinput(dictname)
+  # valid <- c()
   order <- c("identity", "behavior", "identity", "modifier")
-  for(i in 1:4){
+  for(i in indices){
     # entry is a filepath
-    if(files[i]){
-      valid <- append(valid, TRUE)
-    } else {
+    # if(files[i]){
+    #   valid <- append(valid, TRUE)
+    # } else {
       # entry is a keyword (we have checked validity already)--check for correct component
       thisthing <- order[i]
       thisdictcomp <- actdata::this_dict(dictname[i])@components
       if(!(thisthing %in% thisdictcomp)){
         stop(paste("Dictionary", dictname[i], "does not contain", thisthing))
       }
-      valid <- append(valid, TRUE)
-    }
+      # valid <- append(valid, TRUE)
+    # }
 
-    # check that if more than one of identities, behaviors, and mods are provided as filepaths, those filepaths are unique
-    if(sum(files, na.rm = TRUE) > 1){
-      if((files[1] & files[2] & dictname[1] == dictname[2]) |
-         (files[1] & files[4] & dictname[1] == dictname[4]) |
-         (files[2] & files[4] & dictname[2] == dictname[4]) |
-         (files[3] & files[2] & dictname[3] == dictname[2]) |
-         (files[3] & files[4] & dictname[3] == dictname[4]))
-         {
-        stop(message = "Filepaths for identities, behaviors, and modifiers must be unique.")
-      }
-    }
+    # # check that if more than one of identities, behaviors, and mods are provided as filepaths, those filepaths are unique
+      # I don't think this is necessary; someone could make a dummy dictionary set where these are all the same.
+    # if(sum(files, na.rm = TRUE) > 1){
+    #   if((files[1] & files[2] & dictname[1] == dictname[2]) |
+    #      (files[1] & files[4] & dictname[1] == dictname[4]) |
+    #      (files[2] & files[4] & dictname[2] == dictname[4]) |
+    #      (files[3] & files[2] & dictname[3] == dictname[2]) |
+    #      (files[3] & files[4] & dictname[3] == dictname[4]))
+    #      {
+    #     stop(message = "Filepaths for identities, behaviors, and modifiers must be unique.")
+    #   }
+    # }
   }
   return(TRUE)
 }
@@ -151,56 +152,56 @@ check_dict_components <- function(dictname){
 #'
 #' @return boolean for successful check
 #' @keywords internal
-check_dict_gender <- function(dictname, gender){
+check_dict_gender <- function(dictname, gender, indices = c(1, 2, 3, 4)){
   # check for file inputs--if all four entries are file inputs, no need to check
-  file <- TRUE
-  for(i in length(dictname)){
-    if(!fileinput(dictname[i])){
-      file <- FALSE
-    }
-  }
-  if(file){
-    return(TRUE)
-  }
+  # file <- TRUE
+  # for(i in indices){
+  #   if(!fileinput(dictname[i])){
+  #     file <- FALSE
+  #   }
+  # }
+  # if(file){
+  #   return(TRUE)
+  # }
   # dictionaries provided as keywords
-  else{
+  # else{
     # dictionary provided as list length 4
-    if(length(dictname) == 4){
-      for(i in 1:4){
+    # if(length(dictname) == 4){
+      for(i in indices){
         # is this entry a file? If so skip this check
-        if(!fileinput(dictname[i])){
+        # if(!fileinput(dictname[i])){
           d <- dictname[i]
-          if(length(gender) == 4){
+          # if(length(gender) == 4){
             g <- gender[i]
-          } else {
-            g <- gender
-          }
+          # } else {
+          #   g <- gender
+          # }
           thisdict <- actdata::this_dict(d)
           if(!(g %in% thisdict@genders)){
             stop("At least one requested dictionary does not contain responses from requested gender")
           }
         }
-      }
-    }
+      # }
+    # }
     # dictionary provided as single keyword
-    else {
-      thisdict <- actdata::this_dict(dictname)
-      # gender still may be length 4
-      if(length(gender) == 4){
-        for(i in 1:4){
-          g <- gender[i]
-          if(!(g %in% thisdict@genders)){
-            stop("At least one requested dictionary does not contain responses from requested gender")
-          }
-        }
-      } else {
-        if(!(gender %in% thisdict@genders)){
-          stop("At least one requested dictionary does not contain responses from requested gender")
-        }
-      }
-    }
+    # else {
+    #   thisdict <- actdata::this_dict(dictname)
+    #   # gender still may be length 4
+    #   if(length(gender) == 4){
+    #     for(i in 1:4){
+    #       g <- gender[i]
+    #       if(!(g %in% thisdict@genders)){
+    #         stop("At least one requested dictionary does not contain responses from requested gender")
+    #       }
+    #     }
+    #   } else {
+    #     if(!(gender %in% thisdict@genders)){
+    #       stop("At least one requested dictionary does not contain responses from requested gender")
+    #     }
+    #   }
+    # }
     return(TRUE)
-  }
+  # }
 }
 
 #' Check that specified equations and equation genders are compatible

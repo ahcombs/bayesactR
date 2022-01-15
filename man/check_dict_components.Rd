@@ -4,7 +4,7 @@
 \alias{check_dict_components}
 \title{Compatibility check: dictionary and component}
 \usage{
-check_dict_components(dictname)
+check_dict_components(dictname, indices = c(1, 2, 3, 4))
 }
 \arguments{
 \item{dictname}{length 4 list, order: identity, behavior, identity, mod}
