@@ -89,38 +89,37 @@ dict_specs <- function(dict){
 #'
 #' @return string filepath
 #' @keywords internal
-make_file_string <- function(dict, gender, component, stat, bayesact_dir){
+make_file_string <- function(dict, spec, key, gender, component, stat, bayesact_dir){
   # We have already checked for validity of everything before so we don't need to repeat that here. We have also reformatted the data frames where they have been provided.
 
-  if(dict_specs(dict) == "file"){
+  if(spec == "file"){
     # if the dict is a filepath, we need to save it to the data folder of the bayesact directory
     # use rstudioapi to move the file to avoid needing to load it and possibly messing with format
     termId <- rstudioapi::terminalExecute(command = paste0("cp ", dict, " ", file.path(bayesact_dir, "data")),
                                           show = FALSE)
-    filename <- basename(dict)
+    file <- basename(dict)
     wait_until_done(termId)
     rstudioapi::terminalKill(termId)
-    return(filename)
-  } else if (dict_specs(dict) == "key"){
-    # We need to subset the actdata summary stats frame for the given statistics, then save it to the folder
-
-    stats_to_subset <- c("mean")
-    if(stat %in% c("sd", "cov")){
-      stats_to_subset <- append(stats_to_subset, stat)
-    }
-
-    d <- suppressMessages(actdata::format_for_bayesact(actdata::epa_subset(dataset = dict, gender = gender, component = component, stat = stats_to_subset), stat = stat))
-    file <- save_dict_df(data = d,
-                         filename = construct_df_filename(key = dict, gender = gender, component = component, stat = stat),
+  } else if (spec == "key"){
+    file <- save_dict_df(data = dict,
+                         filename = construct_df_filename(key = key, gender = gender, component = component, stat = stat),
                          bayesact_dir = bayesact_dir)
-    return(file)
-  } else if (dict_specs(dict) == "df"){
+  } else if (spec == "df"){
     # This has already been reformatted as necessary. Save it to the folder.
     file <- save_dict_df(data = dict,
                          filename = construct_df_filename(df = dict, component = component),
                          bayesact_dir = bayesact_dir)
-    return(file)
   }
+
+  # time <- 0
+  # while(!exists(file) & time < 5){
+  #   time <- time + .1
+  #   Sys.sleep(.1)
+  # }
+  # if(!exists(file) | length(file) == 0 | !is.character(file) | file == ""){
+  #   stop("problem with file name")
+  # }
+  return(file)
 }
 
 
@@ -162,7 +161,7 @@ get_eqn_file <- function(key, gender, component, bayesact_dir){
 
     # save datafile from actdata to the actdata_dicts_eqns folder in the user's wd so bayesact can find it
     # return the file name
-    return(save_eqn_actdata(name, bayesact_dir))
+    return(save_eqn_actdata(dataname = name, bayesact_dir))
   }
 }
 

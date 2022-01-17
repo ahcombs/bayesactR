@@ -186,6 +186,7 @@ get_interaction_opt_arg_lines <- function(opt_args){
 #' This can be:
 #' 1. a list containing one tibble with four rows containing four strings (if actdata keys or filepaths)
 #' 2. or a list of four tibbles representing dictionaries (if a df was passed)
+#' 3. A mix of these two formats
 #'
 #' These are not checked for validity here; that happens later. TODO: Think about whether this check should be moved up (possibly to the nodelist creation).
 # Pro: catching mistakes earlier. Con: then the checks have to be repeated, because users might change the cell contents between nodelist creation and input df writing.
@@ -194,30 +195,65 @@ get_interaction_opt_arg_lines <- function(opt_args){
 #'
 #' @return a list with four string entries or a tibble with four nested tibble entries
 extract_dict_list <- function(input){
-  wronglength <- FALSE
-  # is this a list of strings or a list of tibbles?
-  if(typeof(input[[1]][[1]]) == "character"){
-    type = "string"
-    if(length(input[[1]][[1]]) != 4){
-      wronglength <- TRUE
+  input <- input[[1]]
+  wrongLength <- FALSE
+  type <- "df"
+
+  # are all entries strings? If so it will be in a bit of a different format.
+  if(tibble::is_tibble(input)){
+    if(nrow(input) != 4 | ncol(input) != 1){
+      wrongLength <- TRUE
+    } else {
+      type <- "allstrings"
     }
-  } else if(typeof(input[[1]][[1]]) == "list"){
-    type = "df"
-    if(length(input[[1]]) != 4){
-      wronglength <- TRUE
-    }
-  } else {
-    stop("Dictionary input is of incorrect format.")
+  } else if(length(input) != 4){
+    wrongLength <- TRUE
   }
 
-  if(wronglength){
+  if(wrongLength){
     stop("Dictionary input is of incorrect length.")
   }
 
-  if(type == "string"){
-    out <- c(unlist(input)[[1]], unlist(input)[[2]], unlist(input)[[3]], unlist(input)[[4]])
-  } else {
-    out <- list(input[[1]][[1]], input[[1]][[2]], input[[1]][[3]], input[[1]][[4]])
+  out <- list()
+  for(i in 1:4){
+    # unnest each entry in the correct way according to its type
+    if(type == "allstrings"){
+      # all entries are keys or files
+      out <- append(out, input[[i,1]])
+    } else if(typeof(input[[i]]) == "character"){
+      # there is a mix of dfs and strings and this one is a string
+      out <- append(out, input[[i]])
+    } else if (typeof(input[[i]]) == "list"){
+      # this one is a df
+      out <- append(out, input[i])
+    }
   }
   return(out)
+
+  # wronglength <- FALSE
+  # # is this a list of strings or a list of tibbles?
+  # if(typeof(input[[1]][[1]]) == "character"){
+  #   type = "string"
+  #   if(length(input[[1]][[1]]) != 4){
+  #     wronglength <- TRUE
+  #   }
+  # } else if(typeof(input[[1]][[1]]) == "list"){
+  #   type = "df"
+  #   if(length(input[[1]]) != 4){
+  #     wronglength <- TRUE
+  #   }
+  # } else {
+  #   stop("Dictionary input is of incorrect format.")
+  # }
+  #
+  # if(wronglength){
+  #   stop("Dictionary input is of incorrect length.")
+  # }
+  #
+  # if(type == "string"){
+  #   out <- c(unlist(input)[[1]], unlist(input)[[2]], unlist(input)[[3]], unlist(input)[[4]])
+  # } else {
+  #   out <- list(input[[1]][[1]], input[[1]][[2]], input[[1]][[3]], input[[1]][[4]])
+  # }
+  # return(out)
 }

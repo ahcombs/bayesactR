@@ -10,6 +10,7 @@ save_eqn_actdata <- function(dataname, bayesact_dir){
   filename <- paste0(dataname, ".dat")
   filepath <- file.path(bayesact_dir, "data", filename)
   utils::write.table(data, filepath, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")
+  return(filename)
 }
 
 #' Given a key and assorted information OR a dataframe, construct and return a sensible file name.
@@ -28,7 +29,7 @@ save_eqn_actdata <- function(dataname, bayesact_dir){
 #' @return string with the filename
 construct_df_filename <- function(df = NA, key = "", gender = "", component = "", stat = ""){
   if(!is.data.frame(df) & !tibble::is_tibble(df)){
-    file <- paste0(paste0(key, "_", gender, "_", component, "_", stat), ".csv")
+    file <- paste0(paste0(key, "_", component, "_", gender, "_", stat), ".csv")
   } else {
     file <-  paste0("dict_", component,".csv")
   }
@@ -57,14 +58,14 @@ save_dict_df <- function(data, filename, bayesact_dir){
 
   # DOES A FILE WITH THIS NAME EXIST HERE ALREADY? IS IT THE SAME?
   # WE ALSO HAVE TO CHECK ALL THE OTHER SUBSET VERSIONS
-  for(filename in allversions){
-    filepath <- paste0(dirpath, "/", filename)
+  for(f in allversions){
+    filepath <- paste0(dirpath, "/", f)
     otherfile <- utils::read.table(filepath, sep = ",", header = FALSE)
     # if the file is the same in dimensions and elements, don't need to resave
     if(all(dim(data) == dim(otherfile))){
       if((all(data == otherfile))){
         save <- FALSE
-        filename_to_return <- filename
+        filename_to_return <- f
       }
     }
   }
