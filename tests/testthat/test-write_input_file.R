@@ -1,4 +1,5 @@
 test_that("a. running with a dataset works", {
+  library(dplyr)
   identlist <- c("buddy", "bully", "classmate", "co_worker", "dummy", "enemy", "foe", "follower",
                  "friend", "loser", "miser", "opportunist", "partner", "robber", "scrooge", "traitor",
                  "opponent", "jerk")
@@ -10,19 +11,18 @@ test_that("a. running with a dataset works", {
     dplyr::arrange(term) %>%
     unlist()
 
-  # TODO add an option to search exactly to the subset function
   pd_ident_egypt <- actdata::epa_subset(expr = ident_terms,
+                                        exactmatch = TRUE,
                                         dataset = "egypt2015",
                                         component = "identity",
                                         stat = c('mean', 'cov'),
-                                        gender = "average") %>%
-    dplyr::filter(term %in% identlist)
+                                        gender = "average")
   pd_ident_us <- actdata::epa_subset(expr = ident_terms,
+                                     exactmatch = TRUE,
                                      dataset = "usmturk2015",
                                      component = "identity",
                                      stat = c('mean', 'cov'),
-                                     gender = "average") %>%
-    dplyr::filter(term %in% identlist)
+                                     gender = "average")
   pd_beh_us <- actdata::epa_subset(expr = c("collaborate", "^cheat$"),
                                    dataset = "usmturk2015",
                                    component = "behavior",
@@ -67,8 +67,8 @@ test_that("b. basic run with a dataset key works", {
 
   # TODO add a check that determines the stat automatically from the df structure
   nodelist <- blank_nodelist()
-  nodelist <- add_actor(nodelist, name = "frank", dict = "egypt2015", dict_stat = "cov")
-  nodelist <- add_actor(nodelist, name = "reem", dict = "egypt2015", dict_stat = "cov")
+  nodelist <- add_actor(nodelist, name = "frank", dict = "egypt2015", dict_stat = "sd")
+  nodelist <- add_actor(nodelist, name = "reem", dict = "egypt2015", dict_stat = "sd")
 
   edgelist <- blank_edgelist()
   edgelist <- add_interaction(edgelist, agent = "frank", object = "reem", agent_ident = "friend", agent_ident_prob = 1, object_ident = c("friend", "co_worker"), object_ident_prob = c(.5, .5))
