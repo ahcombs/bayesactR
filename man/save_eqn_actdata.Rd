@@ -4,9 +4,11 @@
 \alias{save_eqn_actdata}
 \title{Save files where bayesact can find them}
 \usage{
-save_eqn_actdata(dataname, bayesact_dir)
+save_eqn_actdata(data, dataname, bayesact_dir)
 }
 \arguments{
+\item{data}{equation data object (from actdata)}
+
 \item{dataname}{name of actdata object}
 
 \item{bayesact_dir}{top level of bayesact code directory}

@@ -14,11 +14,6 @@ test_that("dict-component compatibility", {
   expect_error(check_dict_components(c("usfullsurveyor2015", "nc1978", "usfullsurveyor2015", "politics2003")))
 })
 
-test_that("equation-gender compatibility", {
-  expect_true(check_eqn_gender(c("us2010", "nc1978"), c("av", "male")))
-  expect_error(check_eqn_gender(c("us2010", "nc1978"), c("female", "male")))
-})
-
 test_that("probability sums", {
   expect_true(check_probs(agent_ident_prob = c("1"), object_ident_prob = c("1")))
   expect_true(check_probs(agent_ident_prob = c(".5", ".5"), object_ident_prob = c(".5", ".5")))

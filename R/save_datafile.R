@@ -1,12 +1,14 @@
 #' Save files where bayesact can find them
 #'
 #' @param bayesact_dir top level of bayesact code directory
+#' @param data equation data object (from actdata)
 #' @param dataname name of actdata object
 #'
 #' @import actdata
-save_eqn_actdata <- function(dataname, bayesact_dir){
-  # TODO this is SUPER sensitive to the input format of the dataframe. Does it work with every actdata dataset?
-  data <- get(dataname, asNamespace("actdata"))
+save_eqn_actdata <- function(data, dataname, bayesact_dir){
+  # # TODO this is SUPER sensitive to the input format of the dataframe. Does it work with every actdata dataset?
+  # data <- get(dataname, asNamespace("actdata"))
+
   filename <- paste0(dataname, ".dat")
   filepath <- file.path(bayesact_dir, "data", filename)
   utils::write.table(data, filepath, quote = FALSE, row.names = FALSE, col.names = FALSE, sep = "\t")

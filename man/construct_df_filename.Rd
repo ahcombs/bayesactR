@@ -6,10 +6,10 @@
 \usage{
 construct_df_filename(
   df = NA,
-  key = NA,
-  gender = NA,
-  component = NA,
-  stat = NA
+  key = "",
+  gender = "",
+  component = "",
+  stat = ""
 )
 }
 \arguments{

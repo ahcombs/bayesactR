@@ -26,9 +26,9 @@ agent(
 
 \item{dict_gender}{string or length 4 vector (\code{"average"}, \code{"male"}, or \code{"female"})}
 
-\item{eqns}{string or length 2 vector, key(s) of an available equation set OR filepath(s)}
+\item{eqns}{string or length 2 vector, key(s) of an available equation set OR filepath(s). First is gender for impression ABO equation, second is gender for emotion equation.}
 
-\item{eqns_gender}{string or length 2 vector (\code{"av"}, \code{"f"}, or \code{"m"})}
+\item{eqns_gender}{string or length 2 vector (\code{"av"}, \code{"f"}, or \code{"m"}). First is gender for impression ABO equation, second is gender for emotion equation.}
 
 \item{opt_args}{more agent-level parameters that may or may not be included}
 }

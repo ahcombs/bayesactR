@@ -146,9 +146,9 @@ get_eqn_file <- function(key, gender, component, bayesact_dir){
     rstudioapi::terminalKill(termId)
     return(filename)
   } else {
-    # we have already checked that the keyword is valid
-    # get the equation object associated with it
-    eq_obj <- actdata::this_dict(key, class = "equation")
+    # # we have already checked that the keyword is valid
+    # # get the equation object associated with it
+    # eq_obj <- actdata::this_dict(key, class = "equation")
 
     # # abbreviate gender terms
     # gender = standardize_option(gender, param = "gender", version = "eqn")
@@ -157,11 +157,16 @@ get_eqn_file <- function(key, gender, component, bayesact_dir){
     # # gender[gender=="male"] <- "m"
 
     # we now have all components of the file name
-    name <- paste0(eq_obj@key, "_", component, "_", gender, "_eqn")
+    # name <- paste0(eq_obj@key, "_", component, "_", gender, "_eqn")
+    name <- paste0(key, "_", component, "_", gender, "_eqn")
+
+    # get the equation dataframe--this also checks validity
+    eqndf <- actdata::get_eqn(key = key, equation_type = component, gender = gender)
+
 
     # save datafile from actdata to the actdata_dicts_eqns folder in the user's wd so bayesact can find it
     # return the file name
-    return(save_eqn_actdata(dataname = name, bayesact_dir))
+    return(save_eqn_actdata(data = eqndf, dataname = name, bayesact_dir))
   }
 }
 

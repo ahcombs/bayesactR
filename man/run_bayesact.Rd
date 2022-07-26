@@ -7,8 +7,8 @@
 run_bayesact(
   simfilename,
   bayesact_dir,
-  inputdir = "bayesact_input",
-  outputdir = "bayesact_output",
+  input_dir = "bayesact_input",
+  output_dir = "bayesact_output",
   wd = getwd()
 )
 }
@@ -17,9 +17,9 @@ run_bayesact(
 
 \item{bayesact_dir}{the top level directory where the bayesact code lives}
 
-\item{inputdir}{the directory the file is in}
+\item{input_dir}{the directory the file is in}
 
-\item{outputdir}{the directory in which to put the bayesact output}
+\item{output_dir}{the directory in which to put the bayesact output}
 
 \item{wd}{current working directory}
 }

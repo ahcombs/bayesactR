@@ -147,8 +147,8 @@ write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eve
 #' @param dict string or length 4 vector, key(s) of an available dictionary OR filepaths OR data frames. If there are any file paths or data frames, it must be a length 4 vector.
 #' @param dict_stat string or length 4 vector (\code{"mean"}, \code{"sd"}, or \code{"cov"})
 #' @param dict_gender string or length 4 vector (\code{"average"}, \code{"male"}, or \code{"female"})
-#' @param eqns string or length 2 vector, key(s) of an available equation set OR filepath(s)
-#' @param eqns_gender string or length 2 vector (\code{"av"}, \code{"f"}, or \code{"m"})
+#' @param eqns string or length 2 vector, key(s) of an available equation set OR filepath(s). First is gender for impression ABO equation, second is gender for emotion equation.
+#' @param eqns_gender string or length 2 vector (\code{"av"}, \code{"f"}, or \code{"m"}). First is gender for impression ABO equation, second is gender for emotion equation.
 #' @param bayesact_dir top level directory at which the bayesact code lives
 #' @param opt_args more agent-level parameters that may or may not be included
 #'
@@ -200,7 +200,7 @@ agent <- function(name, bayesact_dir,
 
   # check that equations are allowed
   check_input_list(eqns,
-                   allowlist = actdata::eqn_key_subset(actdata::get_eqns()),
+                   allowlist = actdata::equations$key,
                    allowlength = 2,
                    allowsingle = TRUE,
                    allowfile = TRUE)
@@ -234,8 +234,9 @@ agent <- function(name, bayesact_dir,
   # check that the dict_name and dict_stat are compatible with one another
   check_dict_stat(dict, dict_stat, indices)
 
-  # check that equations have specified genders
-  check_eqn_gender(eqns, eqns_gender)
+  # # check that equations have specified genders
+  # NOW UNNECESSARY since this is done when I retrieve the file
+  # check_eqn_gender(eqns, eqns_gender)
 
 
   ##### OPTIONAL AGENT ARGUMENTS: alphas, betas, deltas, numsamples

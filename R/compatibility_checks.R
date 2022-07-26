@@ -204,51 +204,6 @@ check_dict_gender <- function(dictname, gender, indices = c(1, 2, 3, 4)){
   # }
 }
 
-#' Check that specified equations and equation genders are compatible
-#'
-#' @param eqns equation list
-#' @param eqns_gender equation gender list
-#'
-#' @return boolean successful check
-check_eqn_gender <- function(eqns, eqns_gender){
-  # check for file inputs--if all entries are file inputs, no need to check
-  file <- TRUE
-  for(i in length(eqns)){
-    if(!fileinput(eqns[i])){
-      file <- FALSE
-    }
-  }
-  if(file){
-    return(TRUE)
-  }
-
-  # at least one input is a keyword
-  components <- c("impressionabo", "emotionid")
-
-  # abbreviate gender terms to match file names
-  eqns_gender[eqns_gender == "average"] <- "av"
-  eqns_gender[eqns_gender == "female"] <- "f"
-  eqns_gender[eqns_gender == "male"] <- "m"
-
-  for(i in 1:2){
-    # is this a file input? If yes, skip this check
-    if(!fileinput(eqns[i])){
-      # get the equation object
-      eq_obj <- actdata::this_dict(eqns[i], class = "equation")
-      gender <- eqns_gender[i]
-      component <- components[i]
-
-      # is the specified gender available for the specified equation? If not, give an error
-      eqnset_components <- eq_obj@gendercomponents[component == regmatches(eq_obj@gendercomponents, regexpr("^[[:alnum:]]*", eq_obj@gendercomponents))]
-      eqnset_genders <- regmatches(eqnset_components, regexpr("[[:alnum:]]*$", eqnset_components))
-      has_gender <- sapply(gender, function(x) x %in% eqnset_genders)
-      if(!(TRUE %in% has_gender)){
-        stop("Specified gender is not available for specified equations")
-      }
-    }
-  }
-  return(TRUE)
-}
 
 #' Check that probabilities given sum to 1
 #'

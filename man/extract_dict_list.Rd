@@ -18,6 +18,7 @@ This can be:
 \enumerate{
 \item a list containing one tibble with four rows containing four strings (if actdata keys or filepaths)
 \item or a list of four tibbles representing dictionaries (if a df was passed)
+\item A mix of these two formats
 }
 }
 \details{

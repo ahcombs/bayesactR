@@ -10,6 +10,7 @@ add_actor(
   dict = "usfullsurveyor2015",
   dict_stat = "mean",
   dict_gender = "av",
+  dict_file_prefix = "dict",
   eqns = "us2010",
   eqns_gender = c("av", "female"),
   alphas = NA,
@@ -28,6 +29,8 @@ add_actor(
 \item{dict_stat}{string or string list length 4: stat of provided dictionaries (mean, cov, sd). For datasets in actdata, check available stats with actdata::dict_info().}
 
 \item{dict_gender}{string or string list length 4: gender of provided dictionaries (av, female, male). For datasets in actdata, check available genders with actdata::dict_info().}
+
+\item{dict_file_prefix}{string prefix to append to dictionary data files that are saved out}
 
 \item{eqns}{string or string list length 2: equations to use. Entries must either by equation keys from the actdata package or valid filepaths to coefficient matrices.}
 
