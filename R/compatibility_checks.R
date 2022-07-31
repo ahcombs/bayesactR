@@ -211,6 +211,7 @@ check_dict_gender <- function(dictname, gender, indices = c(1, 2, 3, 4)){
 #' @param object_ident_prob list of object probabilities
 #'
 #' @return boolean successful test
+#' @keywords internal
 check_probs <- function(agent_ident_prob, object_ident_prob){
   agent_ident_prob <- as.numeric(agent_ident_prob)
   if(sum(agent_ident_prob) != 1){
@@ -233,7 +234,8 @@ check_probs <- function(agent_ident_prob, object_ident_prob){
 #' @param ident identity list
 #' @param prob probability list
 #'
-#' @return boolean for successful check
+#' @return logical for successful check
+#' @keywords internal
 check_identity_prob_match <- function(ident, prob){
   if(length(ident) == length(prob)){
     return(TRUE)
@@ -248,7 +250,8 @@ check_identity_prob_match <- function(ident, prob){
 #'
 #' @param opt_args named vector of provided optional arguments
 #'
-#' @return boolean for successful check
+#' @return logical for successful check
+#' @keywords internal
 check_agent_opt_args <- function(opt_args){
   for(arg in names(opt_args)){
     # arguments must be one of alphas, betas, deltas, numsamples. Warn if not.
@@ -284,7 +287,8 @@ check_agent_opt_args <- function(opt_args){
 #'
 #' @param opt_args named list of optional arguments
 #'
-#' @return boolean for successful check
+#' @return logical for successful check
+#' @keywords internal
 check_interaction_opt_args <- function(opt_args){
   for(arg in names(opt_args)){
     # arguments must be one of institution, rseed. Warn if not.
@@ -320,7 +324,8 @@ check_interaction_opt_args <- function(opt_args){
 #'
 #' @param events dataframe
 #'
-#' @return boolean successful check
+#' @return logical successful check
+#' @keywords internal
 check_events <- function(events){
   # file format: six columns
   cols <- c("agent", "agent_action", "agent_emotion", "object", "object_action", "object_emotion")
@@ -347,6 +352,7 @@ check_events <- function(events){
 #' @param allowed the list of allowed abbreviations/alternate spellings
 #'
 #' @return logical indicating success
+#' @keywords internal
 check_abbrev <- function(value, allowed){
   for(v in value){
     if(!(v %in% allowed)){

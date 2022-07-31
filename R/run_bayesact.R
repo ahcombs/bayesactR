@@ -113,6 +113,7 @@ run_bayesact <- function(simfilename, bayesact_dir, input_dir = "bayesact_input"
 #' @param termId the terminal id that is running
 #'
 #' @return boolean success
+#' @keywords internal
 wait_until_done <- function(termId){
   while (is.null(rstudioapi::terminalExitCode(termId))) {
     Sys.sleep(0.5)
@@ -124,6 +125,7 @@ wait_until_done <- function(termId){
 #'
 #' @param outfile path to terminal output file
 #' @param termId the terminal process id
+#' @keywords internal
 check_exit <- function(termId, outfile){
   exit <- rstudioapi::terminalExitCode(termId)
   if(!is.null(exit) & exit != 0){

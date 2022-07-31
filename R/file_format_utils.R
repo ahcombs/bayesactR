@@ -57,6 +57,7 @@ insert_lines <- function(file, lines, start, end, insertAt = "end"){
 #' @param row the dataframe row to convert and return
 #'
 #' @return row with needed entries converted to lists
+#' @keywords internal
 get_lists <- function(row){
   for(i in 1:ncol(row)){
     if(is.character(row[,i])){
@@ -75,6 +76,7 @@ get_lists <- function(row){
 #' @param file the file to remove from
 #'
 #' @return file with lines containing string removed
+#' @keywords internal
 remove_line <- function(string, file){
   places <- c()
   for(i in 1:nrow(file)){
@@ -95,6 +97,7 @@ remove_line <- function(string, file){
 #' @param probs list of probabilities
 #'
 #' @return text string to enter in line
+#' @keywords internal
 get_actor_prob_line <- function(identities, probs){
   line <- ""
 
@@ -117,6 +120,7 @@ get_actor_prob_line <- function(identities, probs){
 #' @param vec vector of possibly decimal numbers
 #'
 #' @return formatted character vector with leading zero before decimal
+#' @keywords internal
 add_leading_zeros <- function(vec){
   for(i in 1:length(vec)){
     if(!is.na(vec[i])){
@@ -136,6 +140,7 @@ add_leading_zeros <- function(vec){
 #' @param opt_args named list of optional arguments for one agent
 #'
 #' @return list of lines for file
+#' @keywords internal
 get_agent_opt_arg_lines <- function(opt_args){
   lines <- c()
   argnames <- names(opt_args)
@@ -166,6 +171,7 @@ get_agent_opt_arg_lines <- function(opt_args){
 #' @param opt_args optional arguments
 #'
 #' @return list of lines for file
+#' @keywords internal
 get_interaction_opt_arg_lines <- function(opt_args){
   lines <- c()
   argnames <- names(opt_args)
@@ -194,6 +200,7 @@ get_interaction_opt_arg_lines <- function(opt_args){
 #' @param input the input passed from the nodelist df
 #'
 #' @return a list with four string entries or a tibble with four nested tibble entries
+#' @keywords internal
 extract_dict_list <- function(input){
   input <- input[[1]]
   wrongLength <- FALSE

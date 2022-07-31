@@ -5,6 +5,7 @@
 #' @param dataname name of actdata object
 #'
 #' @import actdata
+#' @keywords internal
 save_eqn_actdata <- function(data, dataname, bayesact_dir){
   # # TODO this is SUPER sensitive to the input format of the dataframe. Does it work with every actdata dataset?
   # data <- get(dataname, asNamespace("actdata"))
@@ -29,6 +30,7 @@ save_eqn_actdata <- function(data, dataname, bayesact_dir){
 #' @param stat stat string
 #'
 #' @return string with the filename
+#' @keywords internal
 construct_df_filename <- function(df = NA, key = "", gender = "", component = "", stat = ""){
   if(!is.data.frame(df) & !tibble::is_tibble(df)){
     file <- paste0(paste0(key, "_", component, "_", gender, "_", stat), ".csv")
@@ -47,6 +49,7 @@ construct_df_filename <- function(df = NA, key = "", gender = "", component = ""
 #' @param filename name to save under (and return)
 #'
 #' @return file name
+#' @keywords internal
 save_dict_df <- function(data, filename, bayesact_dir){
   orig_filename <- filename
   save <- TRUE

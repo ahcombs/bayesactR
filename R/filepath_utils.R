@@ -6,6 +6,7 @@
 #' @param wd path to prepend to a relative path. Current working directory by default.
 #'
 #' @return absolute path
+#' @keywords internal
 absolute_path <- function(path, wd = getwd()){
   if(!grepl("^/", path)){
     path <- file.path(wd, path)
@@ -17,7 +18,8 @@ absolute_path <- function(path, wd = getwd()){
 #'
 #' @param dir path to directory
 #'
-#' @return boolean whether directory needed to be created or not
+#' @return logical whether directory needed to be created or not
+#' @keywords internal
 create_dir_if_needed <- function(dir){
   if(!dir.exists(dir)){
     dir.create(dir)

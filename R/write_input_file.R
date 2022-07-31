@@ -341,6 +341,19 @@ agent <- function(name, bayesact_dir,
 
 
 ### Interactions
+
+#' Add an interaction line to the simulation text file
+#'
+#' @param agent agent name
+#' @param object object name
+#' @param agent_ident agent identities
+#' @param agent_ident_prob agent identity probabilities
+#' @param object_ident object identities
+#' @param object_ident_prob object identity probabilities
+#' @param opt_args more arguments
+#'
+#' @return the lines to add
+#' @keywords internal
 interaction <- function(agent, object,
                         agent_ident = "person",
                         agent_ident_prob = "1",
@@ -388,6 +401,7 @@ interaction <- function(agent, object,
 #' @param filepath a filepath to save to
 #'
 #' @return the line as a character vector
+#' @keywords internal
 event_lines <- function(events, filepath){
   check_events(events)
   # the iterations row is not really necessary I don't think; I believe bayesact overwrites it with the number of rows it parses from the
@@ -421,6 +435,7 @@ simfile_out <- function(template, filename, dir){
 #' @param dir directory name to save in
 #'
 #' @return filepath saved under
+#' @keywords internal
 eventfile_out <- function(template, filename, dir){
   if(grepl(".events$", filename) == FALSE){
     stop("Events file must end in extension .events")

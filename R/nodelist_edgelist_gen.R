@@ -312,6 +312,7 @@ add_interaction <- function(edgelist, agent, object,
 #' @param df given object
 #'
 #' @return list of length 4--identity, behavior, identity, modifier
+#' @keywords internal
 component_split <- function(df){
   if(!is.data.frame(df) & !tibble::is_tibble(df)){
     stop("Given dictionary object must be a data frame or a tibble")

@@ -179,6 +179,7 @@ get_eqn_file <- function(key, gender, component, bayesact_dir){
 #' @param len desired length
 #'
 #' @return vector of desired length
+#' @keywords internal
 expand <- function(s, len){
   if(length(s) == 1){
     return(rep(s, len))
@@ -198,6 +199,7 @@ expand <- function(s, len){
 #' @param version dict or eqn
 #'
 #' @return the standardized version of the input string
+#' @keywords internal
 standardize_option <- function(input, param, version = "dict"){
   input <- trimws(tolower(input))
   for(i in 1:length(input)){
