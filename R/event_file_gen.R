@@ -2,26 +2,41 @@
 #'
 #' This function constructs an events dataframe in the proper format for inputting to write_input_from_df.
 #' It constructs basic dataframes only. It is limited to two actors who must act in patterned ways and only
-#' perform one type of action throughout the interaction (this can be the optimal action as calculated by
-#' bayesact or interact or it can be an action from the behaviors dictionary).
-#'
-#' It is possible to simulate interaction in larger network structures and with more complex patterns of action.
-#' Dataframes created by this function may be useful as templates for creating the more complicated events
-#' files needed for this.
+#' perform one type of action throughout the interaction. This can be the optimal action as calculated by
+#' bayesact or interact or it can be an action from the behaviors dictionary. It is possible to simulate
+#' interaction in larger network structures and with more complex patterns of action. Dataframes created
+#' by this function may be useful as templates for creating the more complicated events files needed for this.
 #'
 #' @param n numeric; number of turns
 #' @param actors string vector of length 2; names of agents a1 and a2
-#' @param a1_action string; one of "bayesact_optimal", "interact_optimal", or an action from the dictionary. Default "bayesact_optimal".
-#' @param a2_action string; one of "bayesact_optimal", "interact_optimal", or an action from the dictionary. Default "bayesact_optimal".
-#' @param a1_emotion string; one of "none", "bayesact_optimal", "interact_optimal", or a modifier from the modifier dictionary. Default "none".
-#' @param a2_emotion string; one of "none", "bayesact_optimal", "interact_optimal", or a modifier from the modifier dictionary. Default "none".
-#' @param noise string vector listing all the places where noise is desired. Options are "none" (default), "a1_action", "a1_emotion", "a2_action", "a2_emotion"
-#' @param act_simultaneously boolean whether the actors should act at the same time. Default FALSE--in this case, they will instead take turns.
-#' @param perspective_shift boolean; whether to switch which actor is the agent/client when the turn switches. If true, the "perspective" of bayesact is always from the agent's point of view. If false, the perspective is always from one actor's point of view.
-#' @param switch_actor_after numeric; how many actions each actor should take before switching. Default 1. If act_simultaneously is TRUE, this is ignored.
+#' @param a1_action,a2_action string; one of "bayesact_optimal", "interact_optimal", or an action from the
+#'     dictionary. Default "bayesact_optimal".
+#' @param a1_emotion,a2_emotion string; one of "none", "bayesact_optimal", "interact_optimal", or a
+#'     modifier from the modifier dictionary. Default "none".
+#' @param noise string vector listing all the places where noise is desired. Options are "none" (default),
+#'     "a1_action", "a1_emotion", "a2_action", "a2_emotion"
+#' @param act_simultaneously logical; whether the actors should act at the same time. Default FALSE--in
+#'     this case, they will instead take turns.
+#' @param perspective_shift logical; whether to switch which actor is the agent/client when the turn
+#'     switches. If true (default), the "perspective" of bayesact is always from the agent's point of view. If
+#'     false, the perspective is always from one actor's point of view.
+#' @param switch_actor_after numeric; how many actions each actor should take before switching. Default
+#'     1. If act_simultaneously is TRUE, this is ignored.
 #'
 #' @return dataframe listing events
 #' @export
+#'
+#' @examples
+#' basic_event_df(10, actors = c("Sally", "Reem"))
+#' basic_event_df(2, actors = c("Jamal", "Sam"), a1_action = "greet", a2_action = "bayesact_optimal",
+#'     noise = c("a1_action", "a2_action"))
+#' basic_event_df(7, actors = c("Sally", "Reem"),
+#'     noise = c("a1_action", "a2_action"), perspective_shift = FALSE,
+#'     switch_actor_after = 2)
+#' basic_event_df(4, actors = c("Jamal", "Sam"),
+#'     a1_action = "greet", a2_action = "bayesact_optimal",
+#'     a1_emotion = "excited", a2_emotion = "tired",
+#'     noise = c("a1_action", "a2_action", "a1_emotion", "a2_emotion"))
 basic_event_df <- function(n, actors,
                            a1_action = "bayesact_optimal", a2_action = "bayesact_optimal",
                            a1_emotion = "none", a2_emotion = "none",

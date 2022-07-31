@@ -2,16 +2,16 @@
 % Please edit documentation in R/nodelist_edgelist_gen.R
 \name{add_interaction}
 \alias{add_interaction}
-\title{Add an interaction line to the interaction edgelist}
+\title{Add an interaction line to the edgelist}
 \usage{
 add_interaction(
   edgelist,
   agent,
   object,
   agent_ident = c("friend", "person"),
-  agent_ident_prob = c(0.7, 0.3),
+  agent_ident_prob = c(0.5, 0.5),
   object_ident = c("friend", "person"),
-  object_ident_prob = c(0.7, 0.3),
+  object_ident_prob = c(0.5, 0.5),
   institution = NA,
   rseed = NA
 )
@@ -23,21 +23,84 @@ add_interaction(
 
 \item{object}{string object's name}
 
-\item{agent_ident}{string or string list: agent's understanding of their own identity}
+\item{agent_ident}{string or string list: agent's label(s) for their own identity at the
+outset of an interaction. If multiple are provided, the agent chooses one of them, and
+the probability of each being chosen is taken from the agent_ident_prob argument.
+Default is c("friend", "person").}
 
-\item{agent_ident_prob}{numeric or numeric list summing to 1: probability of taking each identity in agent_ident}
+\item{agent_ident_prob}{numeric or numeric list summing to 1: probability of taking
+each identity in agent_ident. Default is c(.5, .5).}
 
-\item{object_ident}{string or string list: agent's understanding of object's identity}
+\item{object_ident}{string or string list: agent's label(s) for object's identity at the
+outset of an interaction. If multiple are provided, the agent chooses one of them, and
+the probability of each being chosen is taken from the object_ident_prob argument.
+Default is c("friend", "person").}
 
-\item{object_ident_prob}{numeric or numeric list summing to 1: probability of taking each identity in object_ident}
+\item{object_ident_prob}{numeric or numeric list summing to 1: probability of taking
+each identity in object_ident. Default is c(.5, .5).}
 
-\item{institution}{string or string list: the institution(s) identities in this relationship can come from}
+\item{institution}{string or string list: the institution(s) identities in this relationship
+can come from. Valid institutions are lay, business, law, politics, academe, medicine,
+religion, family, sexual, monadic, group, corporal, male, and female (see actdata for details).
+Default is NA, which allows all institutions.}
 
-\item{rseed}{the random seed}
+\item{rseed}{an optional seed value to ensure identical simulation results with repeated runs.}
 }
 \value{
 edgelist data frame with added interaction line
 }
 \description{
-If an interaction is given optional arguments (institution, rseed) that are not already columns in the provided dataframe, those columns are added.
+The edgelist is a data frame containing information on the relationships between
+actors, including the identities they inhabit in interactions with one another and
+the labels they ascribe to each other. This function adds a line, representing a directed
+relationship between one actor and another, to an edgelist data frame created by
+\code{\link[=blank_edgelist]{blank_edgelist()}}.
+}
+\details{
+An edgelist line can be considered to define a relationship between two actors, an agent
+and an object, in a simulation \emph{from the perspective of the agent}. The agent has a label
+(or multiple possible labels) for their own identity, and possible label(s) for
+the object's identity. If a list of multiple identities are provided for either agent
+or object, then the agent will randomly select one of the provided identities in each
+simulation repetition. In this case, the selection probabilities are given by
+agent_ident_prob and object_ident_prob.
+
+Because each edgelist line represents the situation from the perspective of just one
+actor (the agent), each dyadic relationship in a simulation requires two edgelist lines:
+one from the perspective of each actor. Actors might agree on their identities--for example, both
+may agree that person 1 will act as a "sister" and person 2 will act as a "brother". In
+this case the two edgelist lines will be mirror images of each other. Actors may also
+begin interactions in disagreement about their identities--person 1 may see themselves as
+a "sister" and see person 2 as a "brother," but person 2 may instead see person 1 as a "bully"
+and themselves as a "victim."
+
+It is possible that person 1 knows person 2 but person 2 does not know person 1. In this case,
+two edgelist lines are still required. However, the object_ident and object_ident_prob for
+person 2 (representing their initial label for person 1) will be the empty string "".
+
+These identities are only starting points for a simulation. Identities may shift through the
+course of an interaction and generally may take any value represented in the identity dictionaries
+provided in the nodelist. If you wish to restrict the possible values, you may remove them
+from the dictionary provided there, or use the optional "institution" argument in this function
+to restrict to identities that only apply in particular social contexts.
+
+If an interaction is given optional arguments (institution, rseed) that are not already
+columns in the provided dataframe, those columns are added.
+}
+\examples{
+edgelist <- blank_edgelist()
+edgelist <- add_interaction(edgelist, agent = "Sally", object = "Reem",
+    agent_ident = "teacher", agent_ident_prob = 1,
+    object_ident = c("student", "troublemaker"), object_ident_prob = c(.8, .2))
+edgelist <- add_interaction(edgelist, agent = "Reem", object = "Sally",
+    agent_ident = c("student", "teenager"), agent_ident_prob = c(.3, .7),
+    object_ident = "bore", object_ident_prob = 1)
+edgelist <- add_interaction(edgelist, agent = "Jamal", object = "Sam",
+    agent_ident = "boss", agent_ident_prob = 1,
+    object_ident = c("employee", "friend", "do_nothing"), object_ident_prob = c(.5, .25, .25),
+    institution = "business")
+edgelist <- add_interaction(edgelist, agent = "Sam", object = "Jamal",
+    agent_ident = "employee", agent_ident_prob = 1,
+    object_ident = "", object_ident_prob = "",
+    institution = "business")
 }

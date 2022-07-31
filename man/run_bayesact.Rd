@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_bayesact.R
 \name{run_bayesact}
 \alias{run_bayesact}
-\title{Run bayesact for a single simulation file}
+\title{Run BayesACT for a single simulation file}
 \usage{
 run_bayesact(
   simfilename,
@@ -13,22 +13,52 @@ run_bayesact(
 )
 }
 \arguments{
-\item{simfilename}{the name of the simulation file}
+\item{simfilename}{the name of the simulation txt file created by \code{\link[=write_input_from_df]{write_input_from_df()}}.
+This is the same file name that is passed to the "simfilename" input in that function.}
 
-\item{bayesact_dir}{the top level directory where the bayesact code lives}
+\item{bayesact_dir}{the top level directory where the BayesACT code lives. This
+is typically a folder called "bayesact."}
 
-\item{input_dir}{the directory the file is in}
+\item{input_dir}{the directory the simulation txt file is in.}
 
-\item{output_dir}{the directory in which to put the bayesact output}
+\item{output_dir}{the directory in which to put the bayesact output.
+Defaults to a folder named "bayesact_output" under the current working directory.
+If the folder specified does not already exist, it is created.}
 
-\item{wd}{current working directory}
+\item{wd}{current working directory.}
 }
 \value{
 output file path
 }
 \description{
-Code adapted from that written by Jon Morgan and Kim Rogers
+This function calls the BayesACT C code to run a BayesACT simulation given a
+set of input files. Before running this function, you must have installed the
+BayesACT C code and all of its dependencies, and you must have the file path
+to the top level of the C code directory--most likely a directory called
+"bayesact." See the BayesACTR documentation for more information on C code setup.
+You must also have created a set of input files containing the specifications
+for the simulation by either using \code{\link[=write_input_from_df]{write_input_from_df()}} (recommended) or
+by manually creating them. The file name for the main simulation txt file--required
+as an argument in \code{\link[=write_input_from_df]{write_input_from_df()}}--should be passed to the "simfilename"
+argument.
 }
 \details{
-TODO: There are more options here (see p. 7-8 of bayesactv2.pdf).
+The function runs the simulation, saves the output to the output directory
+specified, and returns the file path to a csv that contains the simulation results.
+Other output saved to this folder includes the text output that would have been
+printed to the terminal if the simulation were run using the command line. This
+can be helpful for debugging purposes. If the simulation does not complete
+successfully, this function prints a warning with the error code thrown by the
+C code.
+
+These simulations can be slow. Do not be surprised if one takes several minutes
+to run.
+
+This code was adapted from that written by Jon Morgan and Kim Rogers.
+}
+\examples{
+\dontrun{
+run_bayesact(simfilename = "inputfile.txt", bayesactdir = "path/to/my/bayesact/C/directory",
+    input_dir = "my/input/directory", output_dir = "path/to/directory/for/output")
+}
 }

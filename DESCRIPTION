@@ -31,3 +31,4 @@ Depends:
     R (>= 2.10),
     actdata
 VignetteBuilder: knitr
+URL: https://ahcombs.github.io/bayesactR/

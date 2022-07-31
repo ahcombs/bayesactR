@@ -7,7 +7,7 @@
 add_actor(
   nodelist,
   name,
-  dict = "usfullsurveyor2015",
+  dicts = "usfullsurveyor2015",
   dict_stat = "mean",
   dict_gender = "av",
   dict_file_prefix = "dict",
@@ -20,33 +20,128 @@ add_actor(
 )
 }
 \arguments{
-\item{nodelist}{data frame to add to}
+\item{nodelist}{a data frame to add the actor line to}
 
-\item{name}{string actor's name}
+\item{name}{a string to use as the actor's name}
 
-\item{dict}{string or string list length 4: dictionary to use. Entries must either be dictionary keys from the actdata package or valid filepaths to dictionaries.}
+\item{dicts}{one of several options (see Details):
+1a. A dictionary key from actdata. Data is pulled from that package and split into
+the four required components based on the component column.
+1b. A list of four dictionary keys from actdata to be used for, in order, own identities,
+behaviors, partner identities, and emotions. The same key may be used for more than one
+category.
+2a. An EPA data frame with a "component" column that is used to split it into
+a list of length 4 following the above order.
+2b. A list of four EPA data frames in order: own identities, behaviors, partner
+identities, emotions. Use "list()", rather than "c()", to construct this list.
+3a. A list of four file paths to csv files containing the required dictionaries.}
 
-\item{dict_stat}{string or string list length 4: stat of provided dictionaries (mean, cov, sd). For datasets in actdata, check available stats with actdata::dict_info().}
+\item{dict_stat}{string or string list length 4: stat of provided dictionaries (mean,
+cov, sd). For data sets in actdata, check available stats with \code{\link[actdata:dict_info]{actdata::dict_info()}}.}
 
-\item{dict_gender}{string or string list length 4: gender of provided dictionaries (av, female, male). For datasets in actdata, check available genders with actdata::dict_info().}
+\item{dict_gender}{string or string list length 4: gender of provided dictionaries (av,
+female, male). For data sets in actdata, check available genders with \code{\link[actdata:dict_info]{actdata::dict_info()}}.}
 
-\item{dict_file_prefix}{string prefix to append to dictionary data files that are saved out}
+\item{dict_file_prefix}{prefix to append to dictionary data files that
+are written out. Default is "dict."}
 
-\item{eqns}{string or string list length 2: equations to use. Entries must either by equation keys from the actdata package or valid filepaths to coefficient matrices.}
+\item{eqns}{string or string list length 2 providing equations to use. See Details. Entries must either by
+equation keys from the actdata package or valid filepaths to coefficient matrices. If
+provided as a length 2 list, the first entry is used as the impression ABO coefficients and
+the second as the emotion coefficients. If a single entry (only possible for coefficients in
+actdata), the function attempts to find these two components itself.}
 
-\item{eqns_gender}{string or string list length 2: gender of equations to use (av, female, male). For datasets in actdata, check available genders with actdata::eqn_info().}
+\item{eqns_gender}{string or string list length 2: gender of equations to use (av, female,
+male). For datasets in actdata, check available genders with \code{\link[actdata:eqn_info]{actdata::eqn_info()}}. An error
+is thrown if the specified equation set is not available for the specified gender.}
 
-\item{alphas}{numeric or numeric list length 3: alpha value(s) to use.}
+\item{alphas}{numeric or numeric list length 3: alpha value(s) to use. See Details.}
 
-\item{betas}{numeric or numeric list length 2: beta value(s) to use.}
+\item{betas}{numeric or numeric list length 2: beta value(s) to use. See Details.}
 
-\item{deltas}{numeric or numeric list length 2: delta value(s) to use.}
+\item{deltas}{numeric or numeric list length 2: delta value(s) to use. See Details.}
 
-\item{numsamples}{numeric: number of samples to draw}
+\item{numsamples}{numeric: number of samples to be used by the actor for each interaction.
+Default is 1000.}
 }
 \value{
 provided nodelist with actor line appended
 }
 \description{
-If the actor is given optional arguments (alphas, betas, deltas, numsamples) that are not already columns in the data frame, these columns will be added.
+The nodelist is a data frame that contains information for the actors in
+a simulation, including names and EPA dictionaries and equations. Actors
+also have optional parameters that control how they manage uncertainty in
+interactions.
+}
+\section{Dictionaries and equations}{
+Each actor needs four dictionaries representing:
+\enumerate{
+\item the EPA values for identities they assign to themselves
+\item the EPA values they assign to behaviors that are valid within the interaction
+\item the EPA values for identities they assign to their interaction partners
+\item the EPA values they assign to modifiers and emotions.
+}
+
+They also need two sets of equation coefficients:
+\enumerate{
+\item Impression equation coefficients which determine ideal elements of A-B-O
+(actor-behavior-object) events. In actdata, these are referred to with the
+"impressionabo" keyword.
+\item Emotion equation coefficients which estimate emotional reactions to events.
+In actdata, these are referred to with the "emotionid" keyword.
+}
+
+These dictionaries and equations can be provided in one of three ways (mixing and matching is allowed):
+\itemize{
+\item If you are working with publicly available ACT sentiment dictionaries and equation
+sets, dictionaries may be specified using keywords from the actdata package. This
+package is a repository for standardized versions of many publicly available ACT
+sentiment dictionaries and equation sets, and it and bayesactR were developed to
+complement each other. If using dictionaries and/or equations from actdata, provide
+the applicable keyword as the dict or eqns argument. To see information about available
+data sets and gender subsets, see the package readme or call \code{\link[actdata:dict_info]{actdata::dict_info()}} or
+\code{\link[actdata:eqn_info]{actdata::eqn_info()}}.
+\item Dictionaries can also be provided as data frame objects. This is particularly useful
+when you wish to use a subset of terms from a public dictionary–for example, perhaps
+you only want your agents to be able to take a limited set of behaviors, or identities
+from just one institution, rather than having access to the whole list. The
+\code{\link[actdata:epa_subset]{actdata::epa_subset()}} function within actdata makes creating subsets from public
+data straightforward.
+\item If you have collected or estimated your own data or otherwise have access to non-public
+data sets, you may provide a filepath to the dictionary and equation files in the
+dict and eqns arguments. These must be properly formatted for BayesACT. When provided with
+filepaths, bayesactR passes them directly to BayesACT with no formatting checks or changes.
+See also \code{\link[actdata:format_for_bayesact]{actdata::format_for_bayesact()}}, which can help reformat datasets correctly.
+}
+}
+
+\section{Parameters alpha, beta, and delta}{
+There are three parameters that control how actors tend to respond to interactions. In
+each case, these parameters can be set separately for the relevant elements of the situation
+(actor, behavior, and client/object), or can be provided as a single number which is applied
+across elements.
+
+For more information on these parameters, see the \emph{BayesACT Version 2: Technical Users Manual},
+available in the BayesACT C directory under the subdirectory \emph{bayesact/docs/}. The following is
+a summary of description found there.
+\itemize{
+\item Alpha (a set of three values alpha_a, alpha_b, alpha_c) represents the strength of the affect
+control principle (higher value is weaker; default is 0.1).
+\item Beta (a set of two values beta_a and beta_c) represents identity sentiment inertia, or how
+stable we expect EPA values for identities to remain over time. Default is 0.01.
+\item Delta (a set of two values delta_a and delta_c) represents denotative identity stability, or
+how likely it is that someone is relabeled. Default is 0.1.
+}
+
+If the actor is given optional arguments (alphas, betas, deltas, numsamples) that are not
+already columns in the data frame, these columns will be added.
+}
+
+\examples{
+nodelist <- blank_nodelist()
+nodelist <- add_actor(nodelist, name = "Sally", dict_stat = "cov")
+nodelist <- add_actor(nodelist, name = "Reem", dicts = "egypt2015", dict_stat = "cov",
+    eqns = "egypt2014")
+nodelist <- add_actor(nodelist, name = "Jamal",
+    dicts = c("indiana2003", "usmturk2015", "indiana2003", "indiana2003"), alphas = .5)
 }

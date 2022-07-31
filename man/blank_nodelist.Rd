@@ -2,7 +2,7 @@
 % Please edit documentation in R/nodelist_edgelist_gen.R
 \name{blank_nodelist}
 \alias{blank_nodelist}
-\title{Create a blank actor nodelist in dataframe format}
+\title{Create a blank actor nodelist data frame}
 \usage{
 blank_nodelist(
   use.alphas = FALSE,
@@ -12,17 +12,24 @@ blank_nodelist(
 )
 }
 \arguments{
-\item{use.alphas}{boolean whether to include alphas column}
+\item{use.alphas, use.betas, use.deltas}{logical indicating whether to include
+columns for alpha, beta, or delta parameters. All default to FALSE. See the
+BayesACT C documentation for more information on these parameters.}
 
-\item{use.betas}{boolean whether to include betas column}
-
-\item{use.deltas}{boolean whether to include deltas column}
-
-\item{use.numsamples}{boolean whether to include numsamples column}
+\item{use.numsamples}{logical indicating whether to include a numsamples column.
+See the BayesACT C documentation for more information on this parameter.}
 }
 \value{
-empty nodelist data frame with correct column names
+Empty nodelist data frame with correct column names
 }
 \description{
-This can be added to manually or with the help of add_actor()
+The nodelist is a data frame that contains information for the actors in
+a simulation, including names and EPA dictionaries and equations to use.
+This function creates a blank nodelist. Actor lines can be added with
+\code{\link[=add_actor]{add_actor()}} (recommended) or manually.
+}
+\examples{
+blank_nodelist()
+blank_nodelist(use.alphas = TRUE, use.numsamples = TRUE)
+blank_nodelist(use.alphas = TRUE, use.betas = TRUE, use.deltas = TRUE)
 }

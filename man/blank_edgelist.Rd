@@ -2,18 +2,27 @@
 % Please edit documentation in R/nodelist_edgelist_gen.R
 \name{blank_edgelist}
 \alias{blank_edgelist}
-\title{Create a blank interaction edgelist}
+\title{Create a blank interaction edgelist data frame}
 \usage{
 blank_edgelist(use.institution = FALSE, use.rseed = FALSE)
 }
 \arguments{
-\item{use.institution}{boolean whether to include an institution column}
+\item{use.institution}{logical indicating whether to include an institution column}
 
-\item{use.rseed}{boolean whether to include an rseed column}
+\item{use.rseed}{logical indicating whether to include an rseed column}
 }
 \value{
-empty edgelist data frame with correct column names
+Empty edgelist data frame with correct column names
 }
 \description{
-Create a blank interaction edgelist
+The edgelist is a data frame containing information on the relationships between
+actors, including the identities they inhabit in interactions with one another and
+the labels they ascribe to each other. This function returns a blank edgelist with
+properly named columns. Lines can be added using \code{\link[=add_interaction]{add_interaction()}} (recommended)
+or manually.
+}
+\examples{
+blank_edgelist()
+blank_edgelist(use.institution = TRUE)
+blank_edgelist(use.rseed = TRUE)
 }

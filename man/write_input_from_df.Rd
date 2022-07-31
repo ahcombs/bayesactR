@@ -2,7 +2,7 @@
 % Please edit documentation in R/write_input_file.R
 \name{write_input_from_df}
 \alias{write_input_from_df}
-\title{Write BayesACT input file}
+\title{Write BayesACT input files}
 \usage{
 write_input_from_df(
   nodelist,
@@ -15,29 +15,68 @@ write_input_from_df(
 )
 }
 \arguments{
-\item{nodelist}{a dataframe giving dictionary information for each actor}
+\item{nodelist}{a dataframe giving dictionary information for each actor
+such as that constructed using \code{\link[=blank_nodelist]{blank_nodelist()}} and \code{\link[=add_actor]{add_actor()}}.}
 
-\item{edgelist}{a dataframe delineating starting parameters (actor identity vector, object identity vector, probabilities) for each dyad}
+\item{edgelist}{a dataframe delineating starting parameters (actor identity
+vector, object identity vector, probabilities) for each dyad. Constructed
+using \code{\link[=blank_edgelist]{blank_edgelist()}} and \code{\link[=add_interaction]{add_interaction()}}.}
 
-\item{eventslist}{a dataframe containing an ordered list of actions to perform}
+\item{eventslist}{a dataframe containing an ordered list of actions to perform.
+Created using \code{\link[=basic_event_df]{basic_event_df()}}.}
 
-\item{simfilename}{file name by which to save the sim file}
+\item{simfilename}{file name under which to save the sim file. Should have the
+extension ".txt". This same name should be passed to the simfilename
+argument of \code{\link[=run_bayesact]{run_bayesact()}} in order to run the simulation.}
 
-\item{eventfilename}{file name by which to save the events file}
+\item{eventfilename}{file name by which to save the events file. Should have the
+extension ".events".}
 
-\item{bayesact_dir}{the top level directory at which the bayesact code lives}
+\item{bayesact_dir}{the path to the top level directory at which the BayesACT C
+code is located. Generally this is a folder called "bayesact."}
 
-\item{input_dir}{the directory in which to save the sim and events files.}
+\item{input_dir}{the directory in which to save the sim and events files. If the
+directory does not already exist, it is created. This same path should be
+passed to the input_dir argument of \code{\link[=run_bayesact]{run_bayesact()}} to run the simulation.}
 }
 \description{
+This function takes information in three dataframes (a nodelist created by
+\code{\link[=blank_nodelist]{blank_nodelist()}} and \code{\link[=add_actor]{add_actor()}}, an edgelist created by \code{\link[=blank_edgelist]{blank_edgelist()}}
+and \code{\link[=add_interaction]{add_interaction()}}, and an eventslist created by \code{\link[=basic_event_df]{basic_event_df()}})
+and writes properly formatted input files that are needed to run the BayesACT C code.
+}
+\details{
+The information in these dataframes is used to write the following files. Generally,
+users need not open or edit these files and can simply pass the required filepaths
+and filenames to \code{\link[=run_bayesact]{run_bayesact()}}, but the information is provided here for
+debugging purposes. Examples of these files can be found in the BayesACT C code directory
+under the "examples" subdirectory.
+- a .txt file providing information on actors and relationships between them
+(from the nodelist and edgelist). Users set the name of this file using the
+"simfilename" argument. This same file name must also be passed to \code{\link[=run_bayesact]{run_bayesact()}}
+in order to run the simulation. This is saved to input_dir.
+- a file with the extension ".events" that contains specifications for the events
+that happen in the simulation (from the eventslist). This is saved to input_dir.
+- Four to eight files with ".dat" or ".csv" extensions that provide EPA rating
+information for the identities, behaviors, and modifiers that can occur in
+simulations. These are written to the "data" folder under the BayesACT C code
+top directory.
+
 From information in three dataframes (agents, interactions, events),
 write out a .txt sim file and a .events file in the format required by BayesACT.
 These contain information on actors, interactions/dyads, and events/actions.
-}
-\details{
+
 The data format expected for agents and interactions is similar to that used in social network analysis.
 Information on individual actors (including name, dictionaries, equations, etc) is stored in a node list (one line per actor).
 Information specific to ties between actors (called interactions here), such as identity distributions, is stored in an edgelist-like format (one line per directed tie).
 
 The function also requires an events file, which is simply a dataframe containing information on the actions to be simulated (one line per action)
+}
+\examples{
+\dontrun{
+write_input_from_df(some_nodelist, some_edgelist, some_eventslist,
+    simfilename = "mysimfile.txt", eventfilename = "myeventfile.events",
+    bayesactdir = "path/to/my/C/code/bayesact",
+    input_dir = "path/to/directory/to/save/inputfiles")
+}
 }

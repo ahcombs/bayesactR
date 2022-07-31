@@ -1,4 +1,25 @@
-#' Write BayesACT input file
+#' Write BayesACT input files
+#'
+#' This function takes information in three dataframes (a nodelist created by
+#' [blank_nodelist()] and [add_actor()], an edgelist created by [blank_edgelist()]
+#' and [add_interaction()], and an eventslist created by [basic_event_df()])
+#' and writes properly formatted input files that are needed to run the BayesACT C code.
+#'
+#' The information in these dataframes is used to write the following files. Generally,
+#' users need not open or edit these files and can simply pass the required filepaths
+#' and filenames to [run_bayesact()], but the information is provided here for
+#' debugging purposes. Examples of these files can be found in the BayesACT C code directory
+#' under the "examples" subdirectory.
+#'     - a .txt file providing information on actors and relationships between them
+#'     (from the nodelist and edgelist). Users set the name of this file using the
+#'     "simfilename" argument. This same file name must also be passed to [run_bayesact()]
+#'     in order to run the simulation. This is saved to input_dir.
+#'     - a file with the extension ".events" that contains specifications for the events
+#'     that happen in the simulation (from the eventslist). This is saved to input_dir.
+#'     - Four to eight files with ".dat" or ".csv" extensions that provide EPA rating
+#'     information for the identities, behaviors, and modifiers that can occur in
+#'     simulations. These are written to the "data" folder under the BayesACT C code
+#'     top directory.
 #'
 #' From information in three dataframes (agents, interactions, events),
 #' write out a .txt sim file and a .events file in the format required by BayesACT.
@@ -13,14 +34,32 @@
 #'
 #'
 #' @param nodelist a dataframe giving dictionary information for each actor
-#' @param edgelist a dataframe delineating starting parameters (actor identity vector, object identity vector, probabilities) for each dyad
-#' @param eventslist a dataframe containing an ordered list of actions to perform
-#' @param simfilename file name by which to save the sim file
-#' @param bayesact_dir the top level directory at which the bayesact code lives
-#' @param input_dir the directory in which to save the sim and events files.
-#' @param eventfilename file name by which to save the events file
+#'     such as that constructed using [blank_nodelist()] and [add_actor()].
+#' @param edgelist a dataframe delineating starting parameters (actor identity
+#'     vector, object identity vector, probabilities) for each dyad. Constructed
+#'     using [blank_edgelist()] and [add_interaction()].
+#' @param eventslist a dataframe containing an ordered list of actions to perform.
+#'     Created using [basic_event_df()].
+#' @param simfilename file name under which to save the sim file. Should have the
+#'     extension ".txt". This same name should be passed to the simfilename
+#'     argument of [run_bayesact()] in order to run the simulation.
+#' @param eventfilename file name by which to save the events file. Should have the
+#'     extension ".events".
+#' @param bayesact_dir the path to the top level directory at which the BayesACT C
+#'     code is located. Generally this is a folder called "bayesact."
+#' @param input_dir the directory in which to save the sim and events files. If the
+#'     directory does not already exist, it is created. This same path should be
+#'     passed to the input_dir argument of [run_bayesact()] to run the simulation.
 #'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' write_input_from_df(some_nodelist, some_edgelist, some_eventslist,
+#'     simfilename = "mysimfile.txt", eventfilename = "myeventfile.events",
+#'     bayesactdir = "path/to/my/C/code/bayesact",
+#'     input_dir = "path/to/directory/to/save/inputfiles")
+#' }
 write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eventfilename, bayesact_dir, input_dir = "bayesact_input"){
   # The sim text file contains information on agents and interactions, and a line that points to a separate events file
   # The events file (.events extension) contains the list of actions to perform, in order
@@ -342,6 +381,13 @@ interaction <- function(agent, object,
 # So the line should be "simtype : events" with an events file.
 # num_iterations can be left alone; I am pretty sure it gets overridden by the number of lines in the events file
 # see the notes I pasted on github for things to check for in the events file
+
+#' Create events line for input file
+#'
+#' @param events a list of events
+#' @param filepath a filepath to save to
+#'
+#' @return the line as a character vector
 event_lines <- function(events, filepath){
   check_events(events)
   # the iterations row is not really necessary I don't think; I believe bayesact overwrites it with the number of rows it parses from the
@@ -349,6 +395,8 @@ event_lines <- function(events, filepath){
   lines = c(paste0("num_iterations : ", nrow(events)),
             paste0("events: ", filepath),
             "simtype : events")
+
+  return(lines)
 }
 
 ### Write out

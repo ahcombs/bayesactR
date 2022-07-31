@@ -50,8 +50,8 @@ test_that("a. running with a dataset works", {
 
   # TODO add a check that determines the stat automatically from the df structure
   nodelist <- blank_nodelist()
-  nodelist <- add_actor(nodelist, name = "frank", dict = list(pd_ident_us, pd_beh_us, pd_ident_us, pd_mods_us), dict_stat = "cov")
-  nodelist <- add_actor(nodelist, name = "reem", dict = list(pd_ident_egypt, pd_beh_egypt, pd_ident_egypt, pd_mods_egypt), eqns = "egypt2014", eqns_gender = c("av", "f"), dict_stat = "cov")
+  nodelist <- add_actor(nodelist, name = "frank", dicts = list(pd_ident_us, pd_beh_us, pd_ident_us, pd_mods_us), dict_stat = "cov")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = list(pd_ident_egypt, pd_beh_egypt, pd_ident_egypt, pd_mods_egypt), eqns = "egypt2014", eqns_gender = c("av", "f"), dict_stat = "cov")
 
   edgelist <- blank_edgelist()
   edgelist <- add_interaction(edgelist, agent = "frank", object = "reem", agent_ident = "friend", agent_ident_prob = 1, object_ident = c("friend", "co_worker"), object_ident_prob = c(.5, .5))
@@ -68,8 +68,8 @@ test_that("b. basic run with a dataset key works", {
 
   # TODO add a check that determines the stat automatically from the df structure
   nodelist <- blank_nodelist()
-  nodelist <- add_actor(nodelist, name = "frank", dict = "egypt2015", dict_stat = "sd")
-  nodelist <- add_actor(nodelist, name = "reem", dict = "egypt2015", dict_stat = "sd")
+  nodelist <- add_actor(nodelist, name = "frank", dicts = "egypt2015", dict_stat = "sd")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = "egypt2015", dict_stat = "sd")
 
   edgelist <- blank_edgelist()
   edgelist <- add_interaction(edgelist, agent = "frank", object = "reem", agent_ident = "friend", agent_ident_prob = 1, object_ident = c("friend", "co_worker"), object_ident_prob = c(.5, .5))
@@ -88,8 +88,8 @@ test_that("c. error handling for mismatched term sets works and cross-cultural r
 
   # TODO add a check that determines the stat automatically from the df structure
   nodelist <- blank_nodelist()
-  nodelist <- add_actor(nodelist, name = "frank", dict = c("usmturk2015", "morocco2015", "morocco2015", "usmturk2015"), dict_stat = "mean")
-  nodelist <- add_actor(nodelist, name = "reem", dict = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "frank", dicts = c("usmturk2015", "morocco2015", "morocco2015", "usmturk2015"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
 
   edgelist <- blank_edgelist()
   edgelist <- add_interaction(edgelist, agent = "frank", object = "reem", agent_ident = "friend", agent_ident_prob = 1, object_ident = c("jerk", "co_worker"), object_ident_prob = c(.5, .5))
@@ -100,23 +100,23 @@ test_that("c. error handling for mismatched term sets works and cross-cultural r
   expect_error(write_input_from_df(nodelist, edgelist, eventslist, simfilename = "c_sim.txt", eventfilename = "c_event.events", bayesact_dir = bayesact_dir, input_dir = "/Users/aidan/Desktop/bayesact_test_input"),
                "The agent identity dictionaries have different terms for different actors. BayesACT requires that the term sets match between actors for identity and behavior dictionaries. The recommended solution is to subset the dictionaries to the terms that are contained in both. EPA values may differ between actors.")
   nodelist <- blank_nodelist()
-  nodelist <- add_actor(nodelist, name = "frank", dict = c("morocco2015", "usmturk2015", "morocco2015", "usmturk2015"), dict_stat = "mean")
-  nodelist <- add_actor(nodelist, name = "reem", dict = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "frank", dicts = c("morocco2015", "usmturk2015", "morocco2015", "usmturk2015"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
 
   expect_error(write_input_from_df(nodelist, edgelist, eventslist, simfilename = "c_sim.txt", eventfilename = "c_event.events", bayesact_dir = bayesact_dir, input_dir = "/Users/aidan/Desktop/bayesact_test_input"),
                "The behavior dictionaries have different terms for different actors. BayesACT requires that the term sets match between actors for identity and behavior dictionaries. The recommended solution is to subset the dictionaries to the terms that are contained in both. EPA values may differ between actors.")
 
   nodelist <- blank_nodelist()
-  nodelist <- add_actor(nodelist, name = "frank", dict = c("morocco2015", "morocco2015", "usmturk2015", "usmturk2015"), dict_stat = "mean")
-  nodelist <- add_actor(nodelist, name = "reem", dict = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "frank", dicts = c("morocco2015", "morocco2015", "usmturk2015", "usmturk2015"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
 
   expect_error(write_input_from_df(nodelist, edgelist, eventslist, simfilename = "c_sim.txt", eventfilename = "c_event.events", bayesact_dir = bayesact_dir, input_dir = "/Users/aidan/Desktop/bayesact_test_input"),
                "The client identity dictionaries have different terms for different actors. BayesACT requires that the term sets match between actors for identity and behavior dictionaries. The recommended solution is to subset the dictionaries to the terms that are contained in both. EPA values may differ between actors.")
 
 
   nodelist <- blank_nodelist()
-  nodelist <- add_actor(nodelist, name = "frank", dict = c("morocco2015", "morocco2015", "morocco2015", "usmturk2015"), dict_stat = "mean")
-  nodelist <- add_actor(nodelist, name = "reem", dict = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "frank", dicts = c("morocco2015", "morocco2015", "morocco2015", "usmturk2015"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
   write_input_from_df(nodelist, edgelist, eventslist, simfilename = "c_sim.txt", eventfilename = "c_event.events", bayesact_dir = bayesact_dir, input_dir = "/Users/aidan/Desktop/bayesact_test_input")
   # run_bayesact(simfilename = "c_sim.txt", bayesact_dir = bayesact_dir, input_dir = "/Users/aidan/Desktop/bayesact_test_input", output_dir = "/Users/aidan/Desktop/bayesact_test_output")
   # all this does is see if it makes it to the end of the thing successfully
@@ -130,12 +130,12 @@ test_that("d. passing a file works", {
 
   # TODO add a check that determines the stat automatically from the df structure
   nodelist <- blank_nodelist()
-  nodelist <- add_actor(nodelist, name = "frank", dict = c(file.path("/Users", "aidan", "Desktop", "dict_identity.csv"),
+  nodelist <- add_actor(nodelist, name = "frank", dicts = c(file.path("/Users", "aidan", "Desktop", "dict_identity.csv"),
                                                            file.path("/Users", "aidan", "Desktop", "dict_behavior.csv"),
                                                            file.path("/Users", "aidan", "Desktop", "dict_identity.csv"),
                                                            file.path("/Users", "aidan", "Desktop", "dict_modifier.csv")),
                         dict_stat = "cov")
-  nodelist <- add_actor(nodelist, name = "reem", dict = c(file.path("/Users", "aidan", "Desktop", "dict_identity.csv"),
+  nodelist <- add_actor(nodelist, name = "reem", dicts = c(file.path("/Users", "aidan", "Desktop", "dict_identity.csv"),
                                                          file.path("/Users", "aidan", "Desktop", "dict_behavior.csv"),
                                                          file.path("/Users", "aidan", "Desktop", "dict_identity.csv"),
                                                          file.path("/Users", "aidan", "Desktop", "dict_modifier.csv")),
@@ -163,9 +163,9 @@ test_that("e. passing a mix of keys and dfs works", {
 
   # TODO add a check that determines the stat automatically from the df structure
   nodelist <- blank_nodelist()
-  nodelist <- add_actor(nodelist, name = "frank", dict = list("usmturk2015", pd_beh_us, "usmturk2015", "usmturk2015"),
+  nodelist <- add_actor(nodelist, name = "frank", dicts = list("usmturk2015", pd_beh_us, "usmturk2015", "usmturk2015"),
                         dict_stat = "cov")
-  nodelist <- add_actor(nodelist, name = "reem", dict = list("usmturk2015", pd_beh_us, "usmturk2015", "usmturk2015"),
+  nodelist <- add_actor(nodelist, name = "reem", dicts = list("usmturk2015", pd_beh_us, "usmturk2015", "usmturk2015"),
                         eqns = "egypt2014", eqns_gender = c("av", "f"), dict_stat = "cov")
 
   edgelist <- blank_edgelist()
