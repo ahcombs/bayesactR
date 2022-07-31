@@ -17,3 +17,4 @@ the line as a character vector
 \description{
 Create events line for input file
 }
+\keyword{internal}

@@ -14,3 +14,4 @@ check_exit(termId, outfile)
 \description{
 Check whether BayesACT completed successfully and print a warning if not.
 }
+\keyword{internal}

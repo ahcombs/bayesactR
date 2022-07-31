@@ -17,3 +17,4 @@ text string to enter in line
 \description{
 Utility for building a line in the interaction section of the input file
 }
+\keyword{internal}

@@ -15,3 +15,4 @@ boolean success
 \description{
 Pause until terminal process is done
 }
+\keyword{internal}

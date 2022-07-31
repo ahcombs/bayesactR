@@ -15,3 +15,4 @@ list of lines for file
 \description{
 Get lines to insert in file for interaction optional arguments
 }
+\keyword{internal}

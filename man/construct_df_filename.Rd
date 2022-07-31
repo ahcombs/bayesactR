@@ -33,3 +33,4 @@ or "dfname.csv" if the dict was provided as a dataframe.
 \details{
 These are all dictionaries and so should be csvs
 }
+\keyword{internal}

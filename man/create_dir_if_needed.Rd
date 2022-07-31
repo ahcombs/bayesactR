@@ -10,8 +10,9 @@ create_dir_if_needed(dir)
 \item{dir}{path to directory}
 }
 \value{
-boolean whether directory needed to be created or not
+logical whether directory needed to be created or not
 }
 \description{
 Create directory if it doesn't already exist
 }
+\keyword{internal}

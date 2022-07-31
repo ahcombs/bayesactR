@@ -12,8 +12,9 @@ check_identity_prob_match(ident, prob)
 \item{prob}{probability list}
 }
 \value{
-boolean for successful check
+logical for successful check
 }
 \description{
 Are lists the same length?
 }
+\keyword{internal}

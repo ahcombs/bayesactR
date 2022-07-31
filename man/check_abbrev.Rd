@@ -17,3 +17,4 @@ logical indicating success
 \description{
 Check abbreviation validity
 }
+\keyword{internal}

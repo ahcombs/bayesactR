@@ -15,3 +15,4 @@ row with needed entries converted to lists
 \description{
 Useful for when actor or interaction input is read in from a csv file.
 }
+\keyword{internal}

@@ -17,3 +17,4 @@ file with lines containing string removed
 \description{
 Remove lines that contain a given string
 }
+\keyword{internal}

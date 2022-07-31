@@ -10,8 +10,9 @@ check_events(events)
 \item{events}{dataframe}
 }
 \value{
-boolean successful check
+logical successful check
 }
 \description{
 Check events file input for format errors
 }
+\keyword{internal}

@@ -15,3 +15,4 @@ list of length 4--identity, behavior, identity, modifier
 \description{
 Split a given data frame into identity, behavior, and modifier components, if possible. Return error if not.
 }
+\keyword{internal}

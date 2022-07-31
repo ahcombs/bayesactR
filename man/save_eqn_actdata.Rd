@@ -16,3 +16,4 @@ save_eqn_actdata(data, dataname, bayesact_dir)
 \description{
 Save files where bayesact can find them
 }
+\keyword{internal}

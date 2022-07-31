@@ -17,3 +17,4 @@ vector of desired length
 \description{
 If object passed is already a vector, no change
 }
+\keyword{internal}

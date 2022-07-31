@@ -10,8 +10,9 @@ check_agent_opt_args(opt_args)
 \item{opt_args}{named vector of provided optional arguments}
 }
 \value{
-boolean for successful check
+logical for successful check
 }
 \description{
 institution, alphas, betas, deltas, numsamples
 }
+\keyword{internal}

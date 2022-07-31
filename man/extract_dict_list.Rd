@@ -24,3 +24,4 @@ This can be:
 \details{
 These are not checked for validity here; that happens later. TODO: Think about whether this check should be moved up (possibly to the nodelist creation).
 }
+\keyword{internal}

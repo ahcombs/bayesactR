@@ -10,8 +10,9 @@ check_interaction_opt_args(opt_args)
 \item{opt_args}{named list of optional arguments}
 }
 \value{
-boolean for successful check
+logical for successful check
 }
 \description{
 Check institution optional arguments
 }
+\keyword{internal}

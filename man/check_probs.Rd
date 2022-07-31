@@ -17,3 +17,4 @@ boolean successful test
 \description{
 Check that probabilities given sum to 1
 }
+\keyword{internal}

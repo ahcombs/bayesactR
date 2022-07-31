@@ -17,3 +17,4 @@ absolute path
 \description{
 First checks if path is relative or absolute, and if relative prepends wd (or other given absolute path)
 }
+\keyword{internal}
