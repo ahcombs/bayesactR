@@ -207,11 +207,11 @@ write_input_from_df(nodelist, edgelist, eventlist,
 ```
 
 ```{r write input run, echo = FALSE, include = FALSE, results = FALSE}
-write_input_from_df(nodelist, edgelist, eventlist,
-                    simfilename = "readme_simfile.txt",
-                    eventfilename = "readme_eventfile.events",
-                    bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact",
-                    input_dir = "example_sim")
+# write_input_from_df(nodelist, edgelist, eventlist,
+#                     simfilename = "readme_simfile.txt",
+#                     eventfilename = "readme_eventfile.events",
+#                     bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact",
+#                     input_dir = "example_sim")
 ```
 
 ## Running BayesACT using bayesactR
