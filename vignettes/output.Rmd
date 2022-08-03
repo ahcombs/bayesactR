@@ -32,7 +32,8 @@ head(results[,1:6])
 ```
 
 ```{r csv results run, include = FALSE}
-results <- utils::read.csv2("example_sim/readme_simfile.csv", sep = ",", header = TRUE)
+# results <- utils::read.csv2("example_sim/readme_simfile.csv", sep = ",", header = TRUE)
+results <- bayesactR:::vignetteoutput
 ```
 
 ```{r results print, echo = FALSE}
