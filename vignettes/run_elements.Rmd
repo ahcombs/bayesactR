@@ -207,11 +207,11 @@ write_input_from_df(nodelist, edgelist, eventlist,
 ```
 
 ```{r write input run, echo = FALSE, include = FALSE, results = FALSE}
-write_input_from_df(nodelist, edgelist, eventlist, 
-                    simfilename = "readme_simfile.txt", 
-                    eventfilename = "readme_eventfile.events", 
-                    bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact", 
-                    input_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/input")
+write_input_from_df(nodelist, edgelist, eventlist,
+                    simfilename = "readme_simfile.txt",
+                    eventfilename = "readme_eventfile.events",
+                    bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact",
+                    input_dir = "example_sim")
 ```
 
 ## Running BayesACT using bayesactR
@@ -227,10 +227,10 @@ run_bayesact(simfilename = "readme_simfile.txt",
 
 ```{r simulate run, include = FALSE, echo = FALSE, results = FALSE}
 # this DOES NOT WORK in a vignette because it requires the RStudio api
-# run_bayesact(simfilename = "readme_simfile.txt", 
+# run_bayesact(simfilename = "readme_simfile.txt",
 #              bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact",
-#              input_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/input",
-#              output_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/output")
+#              input_dir = "example_sim",
+#              output_dir = "example_sim")
 ```
 
 ## Batches of simulations
@@ -333,11 +333,11 @@ for(i in 1:5){
   simname <- paste0("readme_simfile_batch_", i, ".txt")
   
   # write out input files
-  write_input_from_df(nodelist, edgelist, eventlist, 
-                      simfilename = simname, 
-                      eventfilename = "readme_eventfile_batch.events", 
-                      bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact", 
-                      input_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/input")
+  # write_input_from_df(nodelist, edgelist, eventlist,
+  #                     simfilename = simname,
+  #                     eventfilename = "readme_eventfile_batch.events",
+  #                     bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact",
+  #                     input_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/input")
   
   # # run the current simulation THIS DOES NOT WORK IN A VIGNETTE BECAUSE IT REQUIRES THE RSTUDIO API
   # run_bayesact(simname, 

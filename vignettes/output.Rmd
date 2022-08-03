@@ -32,7 +32,7 @@ head(results[,1:6])
 ```
 
 ```{r csv results run, include = FALSE}
-results <- utils::read.csv2("/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/output/readme_simfile.csv", sep = ",", header = TRUE)
+results <- utils::read.csv2("example_sim/readme_simfile.csv", sep = ",", header = TRUE)
 ```
 
 ```{r results print, echo = FALSE}
