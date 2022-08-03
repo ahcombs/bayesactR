@@ -25,16 +25,18 @@ add_actor(
 \item{name}{a string to use as the actor's name}
 
 \item{dicts}{one of several options (see Details):
-1a. A dictionary key from actdata. Data is pulled from that package and split into
+\itemize{
+\item 1a: A dictionary key from actdata. Data is pulled from that package and split into
 the four required components based on the component column.
-1b. A list of four dictionary keys from actdata to be used for, in order, own identities,
+\item 1b: A list of four dictionary keys from actdata to be used for, in order, own identities,
 behaviors, partner identities, and emotions. The same key may be used for more than one
 category.
-2a. An EPA data frame with a "component" column that is used to split it into
+\item 2a: An EPA data frame with a "component" column that is used to split it into
 a list of length 4 following the above order.
-2b. A list of four EPA data frames in order: own identities, behaviors, partner
+\item 2b: A list of four EPA data frames in order: own identities, behaviors, partner
 identities, emotions. Use "list()", rather than "c()", to construct this list.
-3a. A list of four file paths to csv files containing the required dictionaries.}
+\item 3: A list of four file paths to csv files containing the required dictionaries.
+}}
 
 \item{dict_stat}{string or string list length 4: stat of provided dictionaries (mean,
 cov, sd). For data sets in actdata, check available stats with \code{\link[actdata:dict_info]{actdata::dict_info()}}.}

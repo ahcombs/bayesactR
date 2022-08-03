@@ -1,4 +1,24 @@
 url: https://ahcombs.github.io/bayesactR/
 template:
   bootstrap: 5
+  bootswatch: pulse
+  bslib:
+    pkgdown-nav-height: 81.4px
+reference:
+- title: Simulation set up
+  desc: >
+    Functions for creating the files that store simulation parameters and
+    writing them to file where BayesACT can locate them.
+  contents:
+  - blank_nodelist
+  - add_actor
+  - blank_edgelist
+  - add_interaction
+  - basic_event_df
+  - write_input_from_df
+- title: Run BayesACT
+  desc: >
+    Function for running simulations with the C code.
+  contents:
+    - run_bayesact
 

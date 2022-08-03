@@ -1,11 +1,11 @@
 Package: bayesactR
 Title: Functions for Running BayesACT Simulations Using an R Workflow
-Version: 0.0.0.9002
+Version: 0.0.0.9003
 Authors@R: 
     person(given = "Aidan",
            family = "Combs",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
+           email = "ahc26@duke.edu",
            comment = c(ORCID = "0000-0003-1955-3572"))
 Description: This package provides utilities to facilitate running BayesACT simulations in a replicable way using R. It includes all publicly available dictionary and equation data, converted to a standard format. It includes functions to automate the production of BayesACT input text files so that running multiple simulations (perhaps to loop over identities, parameter settings, behaviors, etc) is easy. 
 License: GPL (>= 3)
@@ -14,7 +14,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Remotes: 
-  actdata=github::ahcombs/actdata
+    ahcombs/actdata
 Suggests: 
     knitr,
     rmarkdown,
@@ -31,6 +31,6 @@ Imports:
     tibble
 Depends: 
     R (>= 2.10),
-    actdata
+    actdata (>= 0.0.0.9003)
 VignetteBuilder: knitr
 URL: https://ahcombs.github.io/bayesactR/

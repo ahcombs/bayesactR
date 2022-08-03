@@ -1,0 +1,348 @@
+---
+title: "Setting up and running simulations"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Setting up and running simulations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(bayesactR)
+library(dplyr)
+library(actdata)
+```
+# Setting up and running simulations
+
+There are three stages to running BayesACT simulations: a setup stage, a run stage, and an analysis stage. The setup and run stages are described on this page. For more information on output and analysis, visit the [results information page](https://ahcombs.github.io/bayesactR/articles/output.html).
+
+## Setup: Creating input files
+
+BayesACT needs some information about actors, their relationships with one another, and the structure of their interaction. These parameters are provided to the C package via specially formatted text files. These files can be created by hand (and many examples are provided in the BayesACT C package and documentation), however, bayesactR also provides functions that generate them automatically. Automatic generation of the required input files is easier when running batches of simulations, more reproducible, and less prone to errors than manual creation. 
+
+The information needed to generate the proper input files can be divided into three types: information about individual actors, information about the actors' initial relationships with one another, and information about the kinds of events that can occur in the simulation. Within bayesactR, this information is structured in a way that parallels that often used in social network analysis and agent based modeling. Information specific to individual actors is stored in a data frame structured like a nodelist. Information about relationships between actors is stored in a data frame structured like an edgelist. Finally, information about events is stored in a sequentially ordered data frame, and this is information is conceptually similar to algorithms that define action in agent-based models. 
+
+### Actor nodelist
+
+The actor nodelist contains information that is specific to each actor in a simulation. Specifically, we need to know which sentiment dictionaries and equations represent each actor's understanding of the world, and (optionally) we can define parameter values that control how they manage uncertainty. bayesactR pairs with [actdata](ahcombs.github.io/actdata/) to make specifying dictionaries and equations easy.
+
+The recommended way to create the nodelist is to generate it using a pair of provided functions `blank_nodelist()` and `add_actor()`.
+
+#### Dictionaries
+
+Each actor needs four dictionaries representing (a) meanings of identities they assign to themselves, (b) meanings they assign to behaviors, (c) meanings of identities they assign to their interaction partners, and (4) meanings assigned to modifiers and emotions. These dictionaries can be provided in one of three ways (mixing and matching is allowed):
+
+  1. **Using actdata data set keys.** If you are working with publicly available ACT sentiment dictionaries and equation sets, you can specify dictionaries using keywords from the [actdata package](https://ahcombs.github.io/actdata/). This package is a repository for standardized version of many publicly available ACT sentiment dictionaries and equation data sets, and it and bayesactR were developed to complement each other. If using dictionaries and/or equations from `actdata`, just provide the applicable keyword as the `dict` argument. If you wish to use different dictionaries for the four components, provide four dictionary keys in a list (eg, c("uga2015", "nc1978", "uga2015", "uga2015")). To see information about available data sets and gender subsets, see the actdata help pages on [dictionaries](https://ahcombs.github.io/actdata/articles/dictionaries.html) or call `actdata::dict_info()`.
+  2. **Using data frame objects.** Dictionaries can be provided as data frame objects. This is particularly useful when you wish to use a subset of terms from a public dictionary--for example, perhaps you only want your agents to be able to take a limited set of behaviors, or identities from just one institution, rather than having access to the whole list. The `actdata::epa_subset()` function within `actdata` makes creating subsets from public data straightforward. You can also provide your own data as a properly formatted data frame--see `actdata::format_for_bayesact()`, which checks and fixes this formatting for you. 
+  You can either provide a single data frame with a column titled "component" that is used to determine which rows apply to which of the four categories above, or you can provide a list of four data frames in the order above (use `list()` rather than `c()` to create this list). 
+  3. **Using file paths.** Finally, you may provide a filepath to the dictionary files. These must already be properly formatted for BayesACT--bayesactR does not do any checking or reformatting of them; it simply passes the files directly to the C code.
+  
+Below is an example showing the syntax for specifying dictionaries using data set keys. Further down the page there is an example using data frame objects that are subsets of public dictionaries.
+
+```{r nodelist gen}
+library(bayesactR)
+
+# blank_nodelist() creates an empty data frame with the correct column labels
+nodelist <- blank_nodelist()
+
+# add_actor() appends a line representing an actor to this data frame. If dictionaries, equations, or dict/eqn stats or genders are not specified, they will revert to defaults. 
+nodelist <- add_actor(nodelist, 
+                      name = "Ingrid", 
+                      dicts = "germany2007", 
+                      eqns = "germany2007", eqns_gender = "av")
+
+# To add another actor, use add_actor() again. Different parameter values can be specified for each actor.
+# For Felix we use the actdata keyword for the Germany 2007 sentiment dictionary and equations, and we use the values collected from men.
+nodelist <- add_actor(nodelist, 
+                      name = "Felix", 
+                      dicts = "germany2007", 
+                      dict_gender = "male", 
+                      eqns = "germany2007", eqns_gender = "av", 
+                      alphas = 1)
+
+knitr::kable(nodelist)
+```
+
+
+##### A note about dictionaries and cross-cultural interaction
+
+When two actors are based in the same culture, it is reasonable to assign them the same set of dictionaries and equations. When two actors are from different cultures, we may want to instead assign them different dictionaries and equations. This is possible in BayesACT, but there is a caveat: the dictionaries for all actors (except for modifier dictionaries) must contain the same sets of words. If the set of terms differs between dictionaries, one agent will not be able to comprehend the action performed or identity assigned by the other, and BayesACT will crash. The recommended workaround is simply to subset each of the desired dictionaries so that each contains only the terms that are present in all others. The `actdata::epa_subset()` function in `actdata` makes this kind of manipulation reasonably straightforward. 
+
+#### Equations
+
+In addition to dictionaries, each actor also needs two sets of equation coefficients:
+1. **Impression equation coefficients**, which determine ideal elements of A-B-O(actor-behavior-object) events. In actdata, these are referred to as type "impressionabo".
+2. **Emotion equation coefficients**, which estimate emotional reactions to events. In actdata, these are referred to as type "emotionid".
+
+Similarly to dictionaries, these equations can be provided using actdata keys, data frames, or filepaths. If using an actdata key, also pay attention to the `eqns_gender` argument of `add_actor()`--not all equation type-gender combinations are available. Call `eqn_info()` to see what combinations are valid.
+
+Call `?add_actor()` for more details on creating the nodelist. 
+
+#### Other parameters
+
+The nodelist is also where optional parameters that control how actors manage uncertainty and strange situations can be adjusted. These parameters are alpha, beta, and delta. See `?add_actor()` for more details.
+
+#### An example:
+
+In this example, we say that Sally is American and so uses the meanings in one of the recent U.S. dictionaries. We say Reem is Egyptian and uses meanings from Egyptian dictionaries. We subset both the U.S. and Egypt dictionaries to contain the same set of identities and behaviors. 
+
+BayesACT takes into account uncertainty around identity meanings. This can be represented by an arbitrary constant around mean values or standard deviation or covariance information calculated from EPA measurement data. Most older public datasets contain only mean values, but more recent data collections (2015 or newer) also contain standard deviation and covariance information. In this example we use two recent datasets and we perform the BayesACT simulation using the covariance information they contain.
+
+```{r subsetting dicts}
+egypt_identity <- actdata::epa_subset(dataset = "egypt2015", 
+                                      component = "identity", 
+                                      gender = "average", 
+                                      stat = c("mean", "cov")) %>% 
+  dplyr::semi_join(actdata::epa_subset(dataset = "usfullsurveyor2015", 
+                                       component = "identity", 
+                                       gender = "average"), 
+                   by = "term")
+
+us_identity <- actdata::epa_subset(dataset = "usfullsurveyor2015", 
+                                   component = "identity", 
+                                   gender = "average", 
+                                   stat = c("mean", "cov")) %>% 
+  dplyr::semi_join(actdata::epa_subset(dataset = "egypt2015", 
+                                       component = "identity", 
+                                       gender = "average"), 
+                   by = "term")
+
+egypt_behavior <- actdata::epa_subset(dataset = "egypt2015", 
+                                      component = "behavior", 
+                                      gender = "average", 
+                                      stat = c("mean", "cov")) %>% 
+  dplyr::semi_join(actdata::epa_subset(dataset = "usfullsurveyor2015", 
+                                       component = "behavior", 
+                                       gender = "average"), 
+                   by = "term")
+
+us_behavior <- actdata::epa_subset(dataset = "usfullsurveyor2015", 
+                                   component = "behavior", 
+                                   gender = "average", 
+                                   stat = c("mean", "cov")) %>% 
+  dplyr::semi_join(actdata::epa_subset(dataset = "egypt2015", 
+                                       component = "behavior", 
+                                       gender = "average"), 
+                   by = "term")
+
+head(egypt_identity)
+
+# We can provide these data frames by passing a list to the dict argument. 
+# The order is c(agent_identity, agent_behavior, object_identity, agent_emotion).
+# Modifier term sets do not have to match, so instead of going to the trouble of creating modifier subsets, 
+# here we pass the actdata dataset key for the modifier slot instead.
+nodelist <- blank_nodelist()
+nodelist <- add_actor(nodelist, 
+                      name = "Sally", 
+                      dicts = list(us_identity, us_behavior, us_identity, "usfullsurveyor2015"))
+# Reem also uses the Egyptian equations (the default, which Sally uses, is us2010).
+nodelist <- add_actor(nodelist, 
+                      name = "Reem", 
+                      dicts = list(egypt_identity, egypt_behavior, egypt_identity, "egypt2015"), 
+                      eqns = "egypt2014", eqns_gender = c("av", "f"), 
+                      alphas = 1)
+```
+
+
+### Interaction edgelist
+
+The interaction edgelist contains information that defines relationships between actors--in particular, the identities they will ascribe to themselves and their alter at the outset of an interaction. The process for creating this edgelist is very similar to that for creating the nodelist--call `?add_interaction()` for more details.
+
+```{r edgelist gen}
+# creates a blank data frame with the correct column names
+edgelist <- blank_edgelist()
+
+# Note that interactions are directed--how one actor views herself does not necessary match how her partner views her. 
+# The focal actor is referred to as the agent, and the partner is referred to as the object or client. 
+# Sally views herself as a teacher and Reem as a student when they interact.
+edgelist <- add_interaction(edgelist, 
+                            agent = "Sally", object = "Reem", 
+                            agent_ident = "teacher", agent_ident_prob = 1, 
+                            object_ident = "student", object_ident_prob = 1)
+
+# When she interacts with Sally, Reem usually sees herself as a student (p = .9) but sometimes as a genius (p = .1). She usually sees Sally as a teacher (p - .85) but occasionally as a bore (p = .15). 
+edgelist <- add_interaction(edgelist, 
+                            agent = "Reem", object = "Sally", 
+                            agent_ident = c("student", "genius"), agent_ident_prob = c(.9, .1), 
+                            object_ident = c("teacher", "bore"), object_ident_prob = c(.85, .15))
+
+knitr::kable(edgelist)
+```
+
+### Event list
+
+The last piece of input information is the event list. The event list is a data frame that has one line per turn in the simulation and defines who can act and what they can do on that turn. 
+
+bayesactR provides a function, `basic_event_df()` for generating relatively simple events files in which actors take either the BayesACT-optimal action, the interact-optimal action, or a specific action from the dictionary on each of their turns. Actors must switch off on some regular interval. 
+
+It is possible to use more complex events files (see the BayesACT C package documentation), but this simple structure should suffice for many applications. It can also be used as a base from which to build more complex specifications.
+
+The contents of this file are more cryptic than the nodelist and edgelist. Each row represents one turn in the simulation. On each turn, one or both actors will have an entry in their action column--this is what they will do on that turn. Similarly, neither, one or both may have an entry in their emotion column--this is the emotion they will express. Asterisks in these columns indicate that the action or emotion will be the one that is optimal (least deflecting) according to BayesACT. Exclamation points mean that it is optimal according to affect control theory (Interact). A plus sign after the entry indicates that a small amount of noise will be added to the other party's perception of the action or emotion. 
+
+```{r events gen}
+# Sally and Reem will take 10 turns using the default specifications: bayesact optimal actions and no emotion expression. A small amount of noise will be added to each person's perception of the other's action--this means that there is a chance actions will be misinterpreted by the observing party. 
+eventlist <- basic_event_df(n = 10, 
+                            actors = c("Sally", "Reem"), 
+                            noise = c("a1_action", "a2_action"))
+
+knitr::kable(eventlist)
+```
+
+## Writing input data frames to file
+
+Now that we have created the three data frames, we need to generate the text files that the BayesACT C code takes as input. bayesactR provides the `write_input_from_df()` function for this purpose. In addition to the three dataframes, this function needs file names for the two text files that it will write. The sim file contains the actor and interaction information, and must have the extension .txt. The event file contains the event information and must have the extension .events. This function also requires the filepath for the directory that houses the BayesACT C package on your machine (see the section on downloading and installing the BayesACT C package below). By default, the function will put the text files it generates in a directory called "bayesact_input" that lives under your current working directory. If you want the files to be saved to a different directory, provide a filepath to the `input_dir` argument. This function returns the filepath at which it saved the input files. 
+
+```{r write input, eval = FALSE}
+write_input_from_df(nodelist, edgelist, eventlist, 
+                    simfilename = "readme_simfile.txt", 
+                    eventfilename = "readme_eventfile.events", 
+                    bayesact_dir = "/path/to/my/bayesact/Cpackage/top/level/directory/")
+```
+
+```{r write input run, echo = FALSE, include = FALSE, results = FALSE}
+write_input_from_df(nodelist, edgelist, eventlist, 
+                    simfilename = "readme_simfile.txt", 
+                    eventfilename = "readme_eventfile.events", 
+                    bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact", 
+                    input_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/input")
+```
+
+## Running BayesACT using bayesactR
+
+The function used to run simulations is `run_bayesact()`. It requires the file name we gave the input sim file, the path to the top level directory of the Bayesact C package, the path to the directory where the input files were saved (if something other than "bayesact_input" under the working directory, which is the default), and the path where the output should be saved ("bayesact_output" under the current working directory is the default). 
+
+This will probably take a minute or two to run (longer if there are more events). 
+
+```{r simulate, eval = FALSE}
+run_bayesact(simfilename = "readme_simfile.txt", 
+             bayesact_dir = "/path/to/my/bayesact/Cpackage/top/level/directory/")
+```
+
+```{r simulate run, include = FALSE, echo = FALSE, results = FALSE}
+# this DOES NOT WORK in a vignette because it requires the RStudio api
+# run_bayesact(simfilename = "readme_simfile.txt", 
+#              bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact",
+#              input_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/input",
+#              output_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/output")
+```
+
+## Batches of simulations
+
+Now that we know how to set up, run, and analyze results from a single situation, we can think about how to efficiently scale up. It is likely that many BayesACT applications will require running simulations over a range of parameter settings, making running batches in a replicable way very useful. 
+
+The functions described above are all amenable to being run inside of loops. Notably, it may not be necessary to recreate every dataframe for every run. For example, if a user wants to run a number of simulations where the probability that the actor takes each of their possible identities (`agent_ident_prob` in the interaction edgelist) varies, only the edgelist needs to be modified. The nodelist and events file can be created once and passed to `write_input_from_df()` repeatedly.
+
+```{r batch, eval = FALSE}
+# What happens if the probability that Reem sees Sally as a teacher versus a bore varies? Let's run 5 simulations with different values of object_ident_prob to find out.
+# This is defined in the edgelist, so the nodelist and events files can just be created once. This code is the same as used above. 
+
+nodelist <- blank_nodelist()
+nodelist <- add_actor(nodelist, 
+                      name = "Sally", 
+                      dicts = list(us_identity, us_behavior, us_identity, "usfullsurveyor2015"))
+nodelist <- add_actor(nodelist, 
+                      name = "Reem", 
+                      dicts = list(egypt_identity, egypt_behavior, egypt_identity, "egypt2015"), 
+                      eqns = "egypt2014", eqns_gender = c("av", "f"), 
+                      alphas = 1)
+
+eventlist <- basic_event_df(n = 6, 
+                            actors = c("Sally", "Reem"), 
+                            noise = c("a1_action", "a2_action"))
+
+# We need to create a different edgelist for each of the simulations and write out different input files for each as well. We will do this in a for loop. 
+# the list of probabilities of Reem seeing Sally as a teacher that we will loop over
+p_teacher = seq(.05, .95, .2)
+
+for(i in 1:5){
+  this_p_teacher <- p_teacher[i]
+  # the probabilities of all identities combined must always sum to 1
+  this_p_bore <- 1 - this_p_teacher
+  
+  
+  edgelist <- blank_edgelist()
+  edgelist <- add_interaction(edgelist, 
+                              agent = "Sally", object = "Reem", 
+                              agent_ident = "teacher", agent_ident_prob = 1, 
+                              object_ident = "student", object_ident_prob = 1)
+  edgelist <- add_interaction(edgelist, 
+                              agent = "Reem", object = "Sally", 
+                              agent_ident = c("student", "genius"), agent_ident_prob = c(.9, .1), 
+                              object_ident = c("teacher", "bore"), object_ident_prob = c(this_p_teacher, this_p_bore))
+  
+  # each simulation file needs a different name
+  simname <- paste0("readme_simfile_batch_", i, ".txt")
+  
+  # write out input files
+  write_input_from_df(nodelist, edgelist, eventlist, 
+                      simfilename = simname, 
+                      eventfilename = "readme_eventfile_batch.events", 
+                      bayesact_dir = "/path/to/my/bayesact/Cpackage/top/level/directory/")
+  
+  # run the current simulation
+  run_bayesact(simname, bayesact_dir = "/path/to/my/bayesact/Cpackage/top/level/directory/")
+}
+```
+
+```{r batch run, include = FALSE, results = FALSE, echo = FALSE}
+# What happens if the probability that Reem sees Sally as a teacher versus a bore varies? Let's run 5 simulations with different values of object_ident_prob to find out.
+# This is defined in the edgelist, so the nodelist and events files can just be created once. This code is the same as used above. 
+
+nodelist <- blank_nodelist()
+nodelist <- add_actor(nodelist, 
+                      name = "Sally", 
+                      dicts = list(us_identity, us_behavior, us_identity, "usfullsurveyor2015"))
+nodelist <- add_actor(nodelist, 
+                      name = "Reem", 
+                      dicts = list(egypt_identity, egypt_behavior, egypt_identity, "egypt2015"), 
+                      eqns = "egypt2014", eqns_gender = c("av", "f"), 
+                      alphas = 1)
+
+eventlist <- basic_event_df(n = 6, 
+                            actors = c("Sally", "Reem"), 
+                            noise = c("a1_action", "a2_action"))
+
+# We need to create a different edgelist for each of the simulations and write out different input files for each as well. We will do this in a for loop. 
+# the list of probabilities of Reem seeing Sally as a teacher that we will loop over
+p_teacher = seq(.05, .95, .2)
+
+for(i in 1:5){
+  this_p_teacher <- p_teacher[i]
+  # the probabilities of all identities combined must always sum to 1
+  this_p_bore <- 1 - this_p_teacher
+  
+  
+  edgelist <- blank_edgelist()
+  edgelist <- add_interaction(edgelist, 
+                              agent = "Sally", object = "Reem", 
+                              agent_ident = "teacher", agent_ident_prob = 1, 
+                              object_ident = "student", object_ident_prob = 1)
+  edgelist <- add_interaction(edgelist, 
+                              agent = "Reem", object = "Sally", 
+                              agent_ident = c("student", "genius"), agent_ident_prob = c(.9, .1), 
+                              object_ident = c("teacher", "bore"), object_ident_prob = c(this_p_teacher, this_p_bore))
+  
+  # each simulation file needs a different name
+  simname <- paste0("readme_simfile_batch_", i, ".txt")
+  
+  # write out input files
+  write_input_from_df(nodelist, edgelist, eventlist, 
+                      simfilename = simname, 
+                      eventfilename = "readme_eventfile_batch.events", 
+                      bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact", 
+                      input_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/input")
+  
+  # # run the current simulation THIS DOES NOT WORK IN A VIGNETTE BECAUSE IT REQUIRES THE RSTUDIO API
+  # run_bayesact(simname, 
+  #              bayesact_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact",
+  #              input_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/input",
+  #              output_dir = "/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/output")
+}
+```

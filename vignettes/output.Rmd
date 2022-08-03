@@ -1,0 +1,48 @@
+---
+title: "Simulation results"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Simulation results}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Results and analysis
+
+In future iterations of the package, I intend to add functions to help summarize and display this output in useful ways. If you have thoughts about what kinds of things may be helpful here, please get in touch!
+
+Currently, BayesACT produces three types of output:
+
+## CSV output
+
+Likely of most use for analyzing results is the csv output. This is saved to the directory specified in `run_bayesact()`. Read this in with `read.csv()` or `readr::read_csv()`. This csv file contains one row per actor turn, and reports a number of different statistics about the state of the interaction on each turn. 
+
+Here are the results created by the example shown on the [simulation setup and run help page](https://ahcombs.github.io/bayesactR/articles/run_elements.html) It's easy to see here that many of the identities and behaviors chosen do not make much sense in context. Subsetting the dictionaries to identities that only belong to a relevant institution may help here. 
+
+```{r csv results, eval = FALSE}
+results <- read.csv2("/path/to/output/readme_simfile.csv", sep = ",", header = TRUE)
+head(results[,1:6])
+```
+
+```{r csv results run, include = FALSE}
+results <- utils::read.csv2("/Users/aidan/Desktop/School/Grad_school/ACT/inteRact/readme_bayesactR/output/readme_simfile.csv", sep = ",", header = TRUE)
+```
+
+```{r results print, echo = FALSE}
+knitr::kable(head(results[,1:6]))
+```
+
+## Terminal output
+
+When BayesACT is run from the command line, it produces a large amount of text output that is printed to the terminal. The bayesactR package saves this output to a text file. It is useful for debugging purposes in the case that BayesACT does not produce the expected output.
+
+## Plots
+
+BayesACT also produces plots that show how actors' identities shift in affective space through the course of the interaction. These are saved to the "output" folder under the BayesACT C package top level directory. 

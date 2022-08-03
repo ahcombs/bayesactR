@@ -7,13 +7,33 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+# Getting started with bayesactR
+
+The biggest hurdle to using this package is likely to be the setup. Unfortunately, it is currently a little complex because of the number of pieces required. In future iterations I am hoping to streamline this significantly.
+
+## Prerequisites: downloading and installing the BayesACT C package
+
+You need the BayesACT C code in order to run simulations using this R package. This is not currently available publicly, but we will be happy to provide it to you if you are interested in using it for research purposes. If you are a researcher interested in using BayesACT, contact [Dr. Jesse Hoey](https://cs.uwaterloo.ca/~jhoey/) or [myself](https://aidancombs.netlify.app/) for a download link. 
+
+Make a note of the file path of the top level directory for the C code--you will need this for some of the functions in this package. The version of BayesACT that bayesactR is currently set up to work with is listed at the top of this readme--I recommend that you install this same version if possible.
+
+The C package requires a few other pieces of software--see its documentation for information beyond what is included here. In summary, they are: 
+
+1. A C compiler. In my testing I have used GCC, but this is a pain to set up on Mac, and is not generally preferred for most applications. Another option that is much simpler is to download is [XCode](https://developer.apple.com/xcode/) which includes the compiler clang. Fair warning that this is a relatively large program and will likely take a long time to download and install. If you find that clang does not work, please let me know!
+
+2. [GSL (the GNU Scientific Library)](http://www.gnu.org/software/gsl/). The most recent version is recommended. If for some reason you must use an old version, see the BayesACT C documentation (in the C package at bayesact/docs/) for instructions on how to modify things so that it will work. 
+
+3. [Python **3.8**](https://www.python.org/downloads/release/python-380/). Note that this is **not** the most recent version of Python, but it is the one that the C code requires. On Mac, you must download this directly from [the Python website](https://www.python.org/downloads/release/python-380/) in order for it to be installed in a place where BayesACT can find it. Installing it using homebrew, anaconda, or other package managers will not work!
+
+The C package includes a number of examples and instructions on how to run them using the command line. These may be helpful for debugging purposes in order to ensure the C code is set up correctly.
+
+## Installation of bayesactR
+
+You can install the development version of bayesactR from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("ahcombs/bayesactR")
 ```
 
-```{r setup}
-library(bayesactR)
-```
+Then, congratulations! You are all set to start running simulations. See [this page](https://ahcombs.github.io/bayesactR/articles/run_elements.html) for information on the steps required to set up and run simulations.
