@@ -40,7 +40,7 @@ collection, the word *teacher* was found to be seen on average as
 extremely good (E = 2.62), quite powerful (P = 1.82) and slightly active
 (A = 1.3).
 
-These values can be used to run simulations of interactions, and the
+These values can be used to run simulations of interactions and the
 results of these simulations can tell us what kinds of behaviors we
 expect particular kinds of people to engage in, how we expect people who
 do certain things to be labeled, how strange particular social
