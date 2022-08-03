@@ -22,11 +22,11 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">bayesactR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9003</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,8 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/prisonersdilemma.html">prisonersdilemma</a>
+    <a class="dropdown-item" href="../articles/output.html">Simulation results</a>
+    <a class="dropdown-item" href="../articles/run_elements.html">Setting up and running simulations</a>
   </div>
 </li>
       </ul>
@@ -73,10 +74,35 @@
 
     
     
+<div class="section level2">
+<h2 id="getting-started-with-bayesactr">Getting started with bayesactR<a class="anchor" aria-label="anchor" href="#getting-started-with-bayesactr"></a>
+</h2>
+<p>The biggest hurdle to using this package is likely to be the setup. Unfortunately, it is currently a little complex because of the number of pieces required. In future iterations I am hoping to streamline this significantly.</p>
+<div class="section level3">
+<h3 id="prerequisites-downloading-and-installing-the-bayesact-c-package">Prerequisites: downloading and installing the BayesACT C package<a class="anchor" aria-label="anchor" href="#prerequisites-downloading-and-installing-the-bayesact-c-package"></a>
+</h3>
+<p>You need the BayesACT C code in order to run simulations using this R package. This is not currently available publicly, but we will be happy to provide it to you if you are interested in using it for research purposes. If you are a researcher interested in using BayesACT, contact <a href="https://cs.uwaterloo.ca/~jhoey/" class="external-link">Dr. Jesse Hoey</a> or <a href="https://aidancombs.netlify.app/" class="external-link">myself</a> for a download link.</p>
+<p>Make a note of the file path of the top level directory for the C code–you will need this for some of the functions in this package. The version of BayesACT that bayesactR is currently set up to work with is listed at the top of this readme–I recommend that you install this same version if possible.</p>
+<p>The C package requires a few other pieces of software–see its documentation for information beyond what is included here. In summary, they are:</p>
+<ol style="list-style-type: decimal">
+<li><p>A C compiler. In my testing I have used GCC, but this is a pain to set up on Mac, and is not generally preferred for most applications. Another option that is much simpler is to download is <a href="https://developer.apple.com/xcode/" class="external-link">XCode</a> which includes the compiler clang. Fair warning that this is a relatively large program and will likely take a long time to download and install. If you find that clang does not work, please let me know!</p></li>
+<li><p><a href="http://www.gnu.org/software/gsl/" class="external-link">GSL (the GNU Scientific Library)</a>. The most recent version is recommended. If for some reason you must use an old version, see the BayesACT C documentation (in the C package at bayesact/docs/) for instructions on how to modify things so that it will work.</p></li>
+<li><p><a href="https://www.python.org/downloads/release/python-380/" class="external-link">Python <strong>3.8</strong></a>. Note that this is <strong>not</strong> the most recent version of Python, but it is the one that the C code requires. On Mac, you must download this directly from <a href="https://www.python.org/downloads/release/python-380/" class="external-link">the Python website</a> in order for it to be installed in a place where BayesACT can find it. Installing it using homebrew, anaconda, or other package managers will not work!</p></li>
+</ol>
+<p>The C package includes a number of examples and instructions on how to run them using the command line. These may be helpful for debugging purposes in order to ensure the C code is set up correctly.</p>
+</div>
+<div class="section level3">
+<h3 id="installation-of-bayesactr">Installation of bayesactR<a class="anchor" aria-label="anchor" href="#installation-of-bayesactr"></a>
+</h3>
+<p>You can install the development version of bayesactR from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ahcombs.github.io/bayesactR/">bayesactR</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: actdata</span></span></code></pre></div>
-  </main>
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ahcombs/bayesactR"</span><span class="op">)</span></span></code></pre></div>
+<p>Then, congratulations! You are all set to start running simulations. See <a href="https://ahcombs.github.io/bayesactR/articles/run_elements.html">this page</a> for information on the steps required to set up and run simulations.</p>
+</div>
+</div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

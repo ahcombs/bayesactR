@@ -6,11 +6,11 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">bayesactR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9003</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,7 +27,8 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/prisonersdilemma.html">prisonersdilemma</a>
+    <a class="dropdown-item" href="../articles/output.html">Simulation results</a>
+    <a class="dropdown-item" href="../articles/run_elements.html">Setting up and running simulations</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -44,9 +45,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="simulation-set-up">Simulation set up<a class="anchor" aria-label="anchor" href="#simulation-set-up"></a></h2>
       
-      
+      <p class="section-desc"></p><p>Functions for creating the files that store simulation parameters and writing them to file where BayesACT can locate them.</p>
 
       
     </div><div id="" class="section level2">
@@ -56,9 +57,19 @@
 
       <dl><dt>
           
+          <code><a href="blank_nodelist.html">blank_nodelist()</a></code> 
+        </dt>
+        <dd>Create a blank actor nodelist data frame</dd>
+      </dl><dl><dt>
+          
           <code><a href="add_actor.html">add_actor()</a></code> 
         </dt>
         <dd>Add an actor line to a actor nodelist data frame</dd>
+      </dl><dl><dt>
+          
+          <code><a href="blank_edgelist.html">blank_edgelist()</a></code> 
+        </dt>
+        <dd>Create a blank interaction edgelist data frame</dd>
       </dl><dl><dt>
           
           <code><a href="add_interaction.html">add_interaction()</a></code> 
@@ -71,26 +82,28 @@
         <dd>Generate an events file for a dyad</dd>
       </dl><dl><dt>
           
-          <code><a href="blank_edgelist.html">blank_edgelist()</a></code> 
+          <code><a href="write_input_from_df.html">write_input_from_df()</a></code> 
         </dt>
-        <dd>Create a blank interaction edgelist data frame</dd>
-      </dl><dl><dt>
-          
-          <code><a href="blank_nodelist.html">blank_nodelist()</a></code> 
-        </dt>
-        <dd>Create a blank actor nodelist data frame</dd>
-      </dl><dl><dt>
+        <dd>Write BayesACT input files</dd>
+      </dl></div><div class="section level2">
+      <h2 id="run-bayesact">Run BayesACT<a class="anchor" aria-label="anchor" href="#run-bayesact"></a></h2>
+      
+      <p class="section-desc"></p><p>Function for running simulations with the C code.</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="run_bayesact.html">run_bayesact()</a></code> 
         </dt>
         <dd>Run BayesACT for a single simulation file</dd>
-      </dl><dl><dt>
-          
-          <code><a href="write_input_from_df.html">write_input_from_df()</a></code> 
-        </dt>
-        <dd>Write BayesACT input files</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

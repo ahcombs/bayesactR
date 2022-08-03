@@ -3,8 +3,9 @@ pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   bayesactR: bayesactR.html
-  prisonersdilemma: prisonersdilemma.html
-last_built: 2022-08-03T16:18Z
+  output: output.html
+  run_elements: run_elements.html
+last_built: 2022-08-03T23:52Z
 urls:
   reference: https://ahcombs.github.io/bayesactR/reference
   article: https://ahcombs.github.io/bayesactR/articles
