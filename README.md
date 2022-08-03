@@ -13,7 +13,7 @@ entirely from within R.
 Visit the [Getting Started
 page](https://ahcombs.github.io/bayesactR/articles/bayesactR.html) for
 installation information. For examples of how to set up and run
-simulations, visit [this
+simulations, visit [this help
 page](https://ahcombs.github.io/bayesactR/articles/run_elements.html).
 
 ## Bayesian Affect Control Theory
@@ -63,10 +63,10 @@ BayesACT that is written in C and designed to be interfaced with via the
 command line. bayesactR is an R wrapper for this tool.
 
 The goals of bayesactR are (1) to make BayesACT more accessible to
-social scientists, who seem to usually be more comfortable with R-based
-than command-line-based workflows, (2) to make setting up and running
-multiple simulations at one time simpler, and (3) to facilitate creating
-analytic workflows that are easily reproducible.
+social scientists who prefer R-based rather than command-line-based
+workflows, (2) to make setting up and running multiple simulations at
+one time simpler, and (3) to facilitate creating analytic workflows that
+are easily reproducible.
 
 ## This is a work in progress!
 
