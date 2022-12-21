@@ -82,14 +82,14 @@ dict_specs <- function(dict){
 #' if the input is a name from actdata, it saves the dataset in the "actdata_dicts_eqns" folder in the working directory
 #'
 #' @param dict string
-#' @param gender string (\code{"average"}, \code{"female"}, \code{"male"})
+#' @param group string (\code{"all"}, \code{"female"}, \code{"male"})
 #' @param component string (\code{"identity"}, \code{"behavior"}, \code{"setting"}, \code{"modifier"})
 #' @param stat string (\code{"mean"}, \code{"sd"}, \code{"cov"})
 #' @param bayesact_dir string
 #'
 #' @return string filepath
 #' @keywords internal
-make_file_string <- function(dict, spec, key, gender, component, stat, bayesact_dir){
+make_file_string <- function(dict, spec, key, group, component, stat, bayesact_dir){
   # We have already checked for validity of everything before so we don't need to repeat that here. We have also reformatted the data frames where they have been provided.
 
   if(spec == "file"){
@@ -102,7 +102,7 @@ make_file_string <- function(dict, spec, key, gender, component, stat, bayesact_
     rstudioapi::terminalKill(termId)
   } else if (spec == "key"){
     file <- save_dict_df(data = dict,
-                         filename = construct_df_filename(key = key, gender = gender, component = component, stat = stat),
+                         filename = construct_df_filename(key = key, group = group, component = component, stat = stat),
                          bayesact_dir = bayesact_dir)
   } else if (spec == "df"){
     # This has already been reformatted as necessary. Save it to the folder.
@@ -125,17 +125,17 @@ make_file_string <- function(dict, spec, key, gender, component, stat, bayesact_
 
 #' Construct file string (equation)
 #'
-#' this builds the correct filepath for the equations and checks if the specified gender is available.
-#' if the equations are given as a filepath, it returns the filepath and ignores specified gender.
+#' this builds the correct filepath for the equations and checks if the specified group is available.
+#' if the equations are given as a filepath, it returns the filepath and ignores specified group.
 #' if the input is a name from actdata, it saves the dataset in the "actdata_dicts_eqns" folder in the working directory
 #'
 #' @param eqn string
-#' @param gender string
+#' @param group string
 #' @param component string (\code{"impression"}, \code{"emotion"})
 #'
 #' @return string filepath
 #' @keywords internal
-get_eqn_file <- function(key, gender, component, bayesact_dir){
+get_eqn_file <- function(key, group, component, bayesact_dir){
   # if it is a valid filepath, need to copy it to the bayesact data directory
   # use the terminal to avoid having to read it in
   if(fileinput(key)){
@@ -150,18 +150,18 @@ get_eqn_file <- function(key, gender, component, bayesact_dir){
     # # get the equation object associated with it
     # eq_obj <- actdata::this_dict(key, class = "equation")
 
-    # # abbreviate gender terms
-    # gender = standardize_option(gender, param = "gender", version = "eqn")
-    # # gender[gender=="average"] <- "av"
-    # # gender[gender=="female"] <- "f"
-    # # gender[gender=="male"] <- "m"
+    # # abbreviate group terms
+    # group = standardize_option(group, param = "group", version = "eqn")
+    # # group[group=="all"] <- "all"
+    # # group[group=="female"] <- "f"
+    # # group[group=="male"] <- "m"
 
     # we now have all components of the file name
-    # name <- paste0(eq_obj@key, "_", component, "_", gender, "_eqn")
-    name <- paste0(key, "_", component, "_", gender, "_eqn")
+    # name <- paste0(eq_obj@key, "_", component, "_", group, "_eqn")
+    name <- paste0(key, "_", component, "_", group, "_eqn")
 
     # get the equation dataframe--this also checks validity
-    eqndf <- actdata::get_eqn(key = key, equation_type = component, gender = gender)
+    eqndf <- actdata::get_eqn(key = key, equation_type = component, group = group)
 
 
     # save datafile from actdata to the actdata_dicts_eqns folder in the user's wd so bayesact can find it
@@ -195,7 +195,7 @@ expand <- function(s, len){
 #' This function deals with abbreviations in parameter specification and returns the spellings that are used in the datasets.
 #'
 #' @param input the string to standardize
-#' @param param the dictionary parameter expected (gender, component, stat)
+#' @param param the dictionary parameter expected (group, component, stat)
 #' @param version dict or eqn
 #'
 #' @return the standardized version of the input string
@@ -203,16 +203,16 @@ expand <- function(s, len){
 standardize_option <- function(input, param, version = "dict"){
   input <- trimws(tolower(input))
   for(i in 1:length(input)){
-    if(param == "gender" & version == "dict"){
-      check_abbrev(input, allowed = c("m", "male", "man", "f", "female", "woman", "a", "av", "average"))
+    if(param == "group" & version == "dict"){
+      check_abbrev(input, allowed = c("m", "male", "man", "f", "female", "woman", "a", "av", "average", "all"))
       input[i] <- dplyr::case_when(substr(input[i], 1, 1) == "m" ~ "male",
-                                   substr(input[i], 1, 1) == "a" ~ "average",
+                                   substr(input[i], 1, 1) == "a" ~ "all",
                                    substr(input[i], 1, 1) %in% c("f", "w") ~ "female",
                                    TRUE ~ input[i])
-    } else if(param == "gender" & version == "eqn"){
-      check_abbrev(input, allowed = c("m", "male", "man", "f", "female", "woman", "a", "av", "average"))
+    } else if(param == "group" & version == "eqn"){
+      check_abbrev(input, allowed = c("m", "male", "man", "f", "female", "woman", "a", "av", "average", "all"))
       input[i] <- dplyr::case_when(substr(input[i], 1, 1) == "m" ~ "m",
-                                   substr(input[i], 1, 1) == "a" ~ "av",
+                                   substr(input[i], 1, 1) == "a" ~ "all",
                                    substr(input[i], 1, 1) %in% c("f", "w") ~ "f",
                                    TRUE ~ input[i])
     } else if(param == "component"){

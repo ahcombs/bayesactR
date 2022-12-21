@@ -9,10 +9,10 @@ add_actor(
   name,
   dicts = "usfullsurveyor2015",
   dict_stat = "mean",
-  dict_gender = "av",
+  dict_group = "all",
   dict_file_prefix = "dict",
   eqns = "us2010",
-  eqns_gender = c("av", "female"),
+  eqns_group = c("all", "female"),
   alphas = NA,
   betas = NA,
   deltas = NA,
@@ -41,8 +41,8 @@ identities, emotions. Use "list()", rather than "c()", to construct this list.
 \item{dict_stat}{string or string list length 4: stat of provided dictionaries (mean,
 cov, sd). For data sets in actdata, check available stats with \code{\link[actdata:dict_info]{actdata::dict_info()}}.}
 
-\item{dict_gender}{string or string list length 4: gender of provided dictionaries (av,
-female, male). For data sets in actdata, check available genders with \code{\link[actdata:dict_info]{actdata::dict_info()}}.}
+\item{dict_group}{string or string list length 4: respondent subset of provided dictionaries (usually genders; all,
+female, male). For data sets in actdata, check available groups with \code{\link[actdata:dict_info]{actdata::dict_info()}}.}
 
 \item{dict_file_prefix}{prefix to append to dictionary data files that
 are written out. Default is "dict."}
@@ -53,9 +53,9 @@ provided as a length 2 list, the first entry is used as the impression ABO coeff
 the second as the emotion coefficients. If a single entry (only possible for coefficients in
 actdata), the function attempts to find these two components itself.}
 
-\item{eqns_gender}{string or string list length 2: gender of equations to use (av, female,
-male). For datasets in actdata, check available genders with \code{\link[actdata:eqn_info]{actdata::eqn_info()}}. An error
-is thrown if the specified equation set is not available for the specified gender.}
+\item{eqns_group}{string or string list length 2: respondent subset of equations to use (usually genders; all, female,
+male). For datasets in actdata, check available groups with \code{\link[actdata:eqn_info]{actdata::eqn_info()}}. An error
+is thrown if the specified equation set is not available for the specified group.}
 
 \item{alphas}{numeric or numeric list length 3: alpha value(s) to use. See Details.}
 
@@ -101,7 +101,7 @@ package is a repository for standardized versions of many publicly available ACT
 sentiment dictionaries and equation sets, and it and bayesactR were developed to
 complement each other. If using dictionaries and/or equations from actdata, provide
 the applicable keyword as the dict or eqns argument. To see information about available
-data sets and gender subsets, see the package readme or call \code{\link[actdata:dict_info]{actdata::dict_info()}} or
+data sets and group subsets, see the package readme or call \code{\link[actdata:dict_info]{actdata::dict_info()}} or
 \code{\link[actdata:eqn_info]{actdata::eqn_info()}}.
 \item Dictionaries can also be provided as data frame objects. This is particularly useful
 when you wish to use a subset of terms from a public dictionary–for example, perhaps

@@ -18,40 +18,40 @@ test_that("a. running with a dataset works", {
                                         dataset = "egypt2015",
                                         component = "identity",
                                         stat = c('mean', 'cov'),
-                                        gender = "average")
+                                        group = "all")
   pd_ident_us <- actdata::epa_subset(expr = ident_terms,
                                      exactmatch = TRUE,
                                      dataset = "usmturk2015",
                                      component = "identity",
                                      stat = c('mean', 'cov'),
-                                     gender = "average")
+                                     group = "all")
   pd_beh_us <- actdata::epa_subset(expr = c("collaborate", "^cheat$"),
                                    dataset = "usmturk2015",
                                    component = "behavior",
                                    stat = c('mean', 'cov'),
-                                   gender = "average")
+                                   group = "all")
   pd_beh_egypt <- actdata::epa_subset(expr = c("collaborate", "^cheat$"),
                                       dataset = "egypt2015",
                                       component = "behavior",
                                       stat = c('mean', 'cov'),
-                                      gender = "average")
+                                      group = "all")
   pd_mods_us <- actdata::epa_subset(expr = c("^happy$", "^sad$", "^mad$"),
                                     dataset = "usmturk2015",
                                     component = "modifier",
                                     stat = c("mean", "cov"),
-                                    gender = "average")
+                                    group = "all")
   pd_mods_egypt <- actdata::epa_subset(expr = c("^happy$", "^sad$", "mad"),
                                        dataset = "egypt2015",
                                        component = "modifier",
                                        stat = c("mean", "cov"),
-                                       gender = "average")
+                                       group = "all")
 
   bayesact_dir <- "/Users/aidan/Desktop/School/Grad_school/ACT/bayesactgithub/bayesact"
 
   # TODO add a check that determines the stat automatically from the df structure
   nodelist <- blank_nodelist()
   nodelist <- add_actor(nodelist, name = "frank", dicts = list(pd_ident_us, pd_beh_us, pd_ident_us, pd_mods_us), dict_stat = "cov")
-  nodelist <- add_actor(nodelist, name = "reem", dicts = list(pd_ident_egypt, pd_beh_egypt, pd_ident_egypt, pd_mods_egypt), eqns = "egypt2014", eqns_gender = c("av", "f"), dict_stat = "cov")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = list(pd_ident_egypt, pd_beh_egypt, pd_ident_egypt, pd_mods_egypt), eqns = "egypt2014", eqns_group = c("all", "f"), dict_stat = "cov")
 
   edgelist <- blank_edgelist()
   edgelist <- add_interaction(edgelist, agent = "frank", object = "reem", agent_ident = "friend", agent_ident_prob = 1, object_ident = c("friend", "co_worker"), object_ident_prob = c(.5, .5))
@@ -89,7 +89,7 @@ test_that("c. error handling for mismatched term sets works and cross-cultural r
   # TODO add a check that determines the stat automatically from the df structure
   nodelist <- blank_nodelist()
   nodelist <- add_actor(nodelist, name = "frank", dicts = c("usmturk2015", "morocco2015", "morocco2015", "usmturk2015"), dict_stat = "mean")
-  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_group = c("all", "f"), dict_stat = "mean")
 
   edgelist <- blank_edgelist()
   edgelist <- add_interaction(edgelist, agent = "frank", object = "reem", agent_ident = "friend", agent_ident_prob = 1, object_ident = c("jerk", "co_worker"), object_ident_prob = c(.5, .5))
@@ -101,14 +101,14 @@ test_that("c. error handling for mismatched term sets works and cross-cultural r
                "The agent identity dictionaries have different terms for different actors. BayesACT requires that the term sets match between actors for identity and behavior dictionaries. The recommended solution is to subset the dictionaries to the terms that are contained in both. EPA values may differ between actors.")
   nodelist <- blank_nodelist()
   nodelist <- add_actor(nodelist, name = "frank", dicts = c("morocco2015", "usmturk2015", "morocco2015", "usmturk2015"), dict_stat = "mean")
-  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_group = c("all", "f"), dict_stat = "mean")
 
   expect_error(write_input_from_df(nodelist, edgelist, eventslist, simfilename = "c_sim.txt", eventfilename = "c_event.events", bayesact_dir = bayesact_dir, input_dir = "/Users/aidan/Desktop/bayesact_test_input"),
                "The behavior dictionaries have different terms for different actors. BayesACT requires that the term sets match between actors for identity and behavior dictionaries. The recommended solution is to subset the dictionaries to the terms that are contained in both. EPA values may differ between actors.")
 
   nodelist <- blank_nodelist()
   nodelist <- add_actor(nodelist, name = "frank", dicts = c("morocco2015", "morocco2015", "usmturk2015", "usmturk2015"), dict_stat = "mean")
-  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_group = c("all", "f"), dict_stat = "mean")
 
   expect_error(write_input_from_df(nodelist, edgelist, eventslist, simfilename = "c_sim.txt", eventfilename = "c_event.events", bayesact_dir = bayesact_dir, input_dir = "/Users/aidan/Desktop/bayesact_test_input"),
                "The client identity dictionaries have different terms for different actors. BayesACT requires that the term sets match between actors for identity and behavior dictionaries. The recommended solution is to subset the dictionaries to the terms that are contained in both. EPA values may differ between actors.")
@@ -116,7 +116,7 @@ test_that("c. error handling for mismatched term sets works and cross-cultural r
 
   nodelist <- blank_nodelist()
   nodelist <- add_actor(nodelist, name = "frank", dicts = c("morocco2015", "morocco2015", "morocco2015", "usmturk2015"), dict_stat = "mean")
-  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_gender = c("av", "f"), dict_stat = "mean")
+  nodelist <- add_actor(nodelist, name = "reem", dicts = "morocco2015", eqns = "us2010", eqns_group = c("all", "f"), dict_stat = "mean")
   write_input_from_df(nodelist, edgelist, eventslist, simfilename = "c_sim.txt", eventfilename = "c_event.events", bayesact_dir = bayesact_dir, input_dir = "/Users/aidan/Desktop/bayesact_test_input")
   # run_bayesact(simfilename = "c_sim.txt", bayesact_dir = bayesact_dir, input_dir = "/Users/aidan/Desktop/bayesact_test_input", output_dir = "/Users/aidan/Desktop/bayesact_test_output")
   # all this does is see if it makes it to the end of the thing successfully
@@ -139,7 +139,7 @@ test_that("d. passing a file works", {
                                                          file.path("/Users", "aidan", "Desktop", "dict_behavior.csv"),
                                                          file.path("/Users", "aidan", "Desktop", "dict_identity.csv"),
                                                          file.path("/Users", "aidan", "Desktop", "dict_modifier.csv")),
-                        eqns = "egypt2014", eqns_gender = c("av", "f"), dict_stat = "cov")
+                        eqns = "egypt2014", eqns_group = c("all", "f"), dict_stat = "cov")
 
   edgelist <- blank_edgelist()
   edgelist <- add_interaction(edgelist, agent = "frank", object = "reem", agent_ident = "friend", agent_ident_prob = 1, object_ident = c("jerk", "co_worker"), object_ident_prob = c(.5, .5))
@@ -159,14 +159,14 @@ test_that("e. passing a mix of keys and dfs works", {
                                    dataset = "usmturk2015",
                                    component = "behavior",
                                    stat = c('mean', 'cov'),
-                                   gender = "average")
+                                   group = "all")
 
   # TODO add a check that determines the stat automatically from the df structure
   nodelist <- blank_nodelist()
   nodelist <- add_actor(nodelist, name = "frank", dicts = list("usmturk2015", pd_beh_us, "usmturk2015", "usmturk2015"),
                         dict_stat = "cov")
   nodelist <- add_actor(nodelist, name = "reem", dicts = list("usmturk2015", pd_beh_us, "usmturk2015", "usmturk2015"),
-                        eqns = "egypt2014", eqns_gender = c("av", "f"), dict_stat = "cov")
+                        eqns = "egypt2014", eqns_group = c("all", "f"), dict_stat = "cov")
 
   edgelist <- blank_edgelist()
   edgelist <- add_interaction(edgelist, agent = "frank", object = "reem", agent_ident = "friend", agent_ident_prob = 1, object_ident = c("jerk", "co_worker"), object_ident_prob = c(.5, .5))

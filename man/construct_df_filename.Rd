@@ -4,20 +4,14 @@
 \alias{construct_df_filename}
 \title{Given a key and assorted information OR a dataframe, construct and return a sensible file name.}
 \usage{
-construct_df_filename(
-  df = NA,
-  key = "",
-  gender = "",
-  component = "",
-  stat = ""
-)
+construct_df_filename(df = NA, key = "", group = "", component = "", stat = "")
 }
 \arguments{
 \item{df}{dataframe object}
 
 \item{key}{key string}
 
-\item{gender}{gender string}
+\item{group}{group string}
 
 \item{component}{component string}
 
@@ -27,7 +21,7 @@ construct_df_filename(
 string with the filename
 }
 \description{
-This will be in format "key_gender_component_stat.csv" if the dict was provided via actdata key,
+This will be in format "key_group_component_stat.csv" if the dict was provided via actdata key,
 or "dfname.csv" if the dict was provided as a dataframe.
 }
 \details{

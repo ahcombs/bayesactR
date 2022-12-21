@@ -4,10 +4,10 @@
 \alias{get_eqn_file}
 \title{Construct file string (equation)}
 \usage{
-get_eqn_file(key, gender, component, bayesact_dir)
+get_eqn_file(key, group, component, bayesact_dir)
 }
 \arguments{
-\item{gender}{string}
+\item{group}{string}
 
 \item{component}{string (\code{"impression"}, \code{"emotion"})}
 
@@ -17,8 +17,8 @@ get_eqn_file(key, gender, component, bayesact_dir)
 string filepath
 }
 \description{
-this builds the correct filepath for the equations and checks if the specified gender is available.
-if the equations are given as a filepath, it returns the filepath and ignores specified gender.
+this builds the correct filepath for the equations and checks if the specified group is available.
+if the equations are given as a filepath, it returns the filepath and ignores specified group.
 if the input is a name from actdata, it saves the dataset in the "actdata_dicts_eqns" folder in the working directory
 }
 \keyword{internal}

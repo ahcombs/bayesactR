@@ -39,7 +39,7 @@ The recommended way to create the nodelist is to generate it using a pair of pro
 
 Each actor needs four dictionaries representing (a) meanings of identities they assign to themselves, (b) meanings they assign to behaviors, (c) meanings of identities they assign to their interaction partners, and (4) meanings assigned to modifiers and emotions. These dictionaries can be provided in one of three ways (mixing and matching is allowed):
 
-  1. **Using actdata data set keys.** If you are working with publicly available ACT sentiment dictionaries and equation sets, you can specify dictionaries using keywords from the [actdata package](https://ahcombs.github.io/actdata/). This package is a repository for standardized version of many publicly available ACT sentiment dictionaries and equation data sets, and it and bayesactR were developed to complement each other. If using dictionaries and/or equations from `actdata`, just provide the applicable keyword as the `dict` argument. If you wish to use different dictionaries for the four components, provide four dictionary keys in a list (eg, c("uga2015", "nc1978", "uga2015", "uga2015")). To see information about available data sets and gender subsets, see the actdata help pages on [dictionaries](https://ahcombs.github.io/actdata/articles/dictionaries.html) or call `actdata::dict_info()`.
+  1. **Using actdata data set keys.** If you are working with publicly available ACT sentiment dictionaries and equation sets, you can specify dictionaries using keywords from the [actdata package](https://ahcombs.github.io/actdata/). This package is a repository for standardized version of many publicly available ACT sentiment dictionaries and equation data sets, and it and bayesactR were developed to complement each other. If using dictionaries and/or equations from `actdata`, just provide the applicable keyword as the `dict` argument. If you wish to use different dictionaries for the four components, provide four dictionary keys in a list (eg, c("uga2015", "nc1978", "uga2015", "uga2015")). To see information about available data sets and group subsets, see the actdata help pages on [dictionaries](https://ahcombs.github.io/actdata/articles/dictionaries.html) or call `actdata::dict_info()`.
   2. **Using data frame objects.** Dictionaries can be provided as data frame objects. This is particularly useful when you wish to use a subset of terms from a public dictionary--for example, perhaps you only want your agents to be able to take a limited set of behaviors, or identities from just one institution, rather than having access to the whole list. The `actdata::epa_subset()` function within `actdata` makes creating subsets from public data straightforward. You can also provide your own data as a properly formatted data frame--see `actdata::format_for_bayesact()`, which checks and fixes this formatting for you. 
   You can either provide a single data frame with a column titled "component" that is used to determine which rows apply to which of the four categories above, or you can provide a list of four data frames in the order above (use `list()` rather than `c()` to create this list). 
   3. **Using file paths.** Finally, you may provide a filepath to the dictionary files. These must already be properly formatted for BayesACT--bayesactR does not do any checking or reformatting of them; it simply passes the files directly to the C code.
@@ -52,19 +52,19 @@ library(bayesactR)
 # blank_nodelist() creates an empty data frame with the correct column labels
 nodelist <- blank_nodelist()
 
-# add_actor() appends a line representing an actor to this data frame. If dictionaries, equations, or dict/eqn stats or genders are not specified, they will revert to defaults. 
+# add_actor() appends a line representing an actor to this data frame. If dictionaries, equations, or dict/eqn stats or groups are not specified, they will revert to defaults. 
 nodelist <- add_actor(nodelist, 
                       name = "Ingrid", 
                       dicts = "germany2007", 
-                      eqns = "germany2007", eqns_gender = "av")
+                      eqns = "germany2007", eqns_group = "all")
 
 # To add another actor, use add_actor() again. Different parameter values can be specified for each actor.
 # For Felix we use the actdata keyword for the Germany 2007 sentiment dictionary and equations, and we use the values collected from men.
 nodelist <- add_actor(nodelist, 
                       name = "Felix", 
                       dicts = "germany2007", 
-                      dict_gender = "male", 
-                      eqns = "germany2007", eqns_gender = "av", 
+                      dict_group = "male", 
+                      eqns = "germany2007", eqns_group = "all", 
                       alphas = 1)
 
 knitr::kable(nodelist)
@@ -81,7 +81,7 @@ In addition to dictionaries, each actor also needs two sets of equation coeffici
 1. **Impression equation coefficients**, which determine ideal elements of A-B-O(actor-behavior-object) events. In actdata, these are referred to as type "impressionabo".
 2. **Emotion equation coefficients**, which estimate emotional reactions to events. In actdata, these are referred to as type "emotionid".
 
-Similarly to dictionaries, these equations can be provided using actdata keys, data frames, or filepaths. If using an actdata key, also pay attention to the `eqns_gender` argument of `add_actor()`--not all equation type-gender combinations are available. Call `eqn_info()` to see what combinations are valid.
+Similarly to dictionaries, these equations can be provided using actdata keys, data frames, or filepaths. If using an actdata key, also pay attention to the `eqns_group` argument of `add_actor()`--not all equation type-group combinations are available. Call `eqn_info()` to see what combinations are valid.
 
 Call `?add_actor()` for more details on creating the nodelist. 
 
@@ -98,38 +98,38 @@ BayesACT takes into account uncertainty around identity meanings. This can be re
 ```{r subsetting dicts}
 egypt_identity <- actdata::epa_subset(dataset = "egypt2015", 
                                       component = "identity", 
-                                      gender = "average", 
+                                      group = "all", 
                                       stat = c("mean", "cov")) %>% 
   dplyr::semi_join(actdata::epa_subset(dataset = "usfullsurveyor2015", 
                                        component = "identity", 
-                                       gender = "average"), 
+                                       group = "all"), 
                    by = "term")
 
 us_identity <- actdata::epa_subset(dataset = "usfullsurveyor2015", 
                                    component = "identity", 
-                                   gender = "average", 
+                                   group = "all", 
                                    stat = c("mean", "cov")) %>% 
   dplyr::semi_join(actdata::epa_subset(dataset = "egypt2015", 
                                        component = "identity", 
-                                       gender = "average"), 
+                                       group = "all"), 
                    by = "term")
 
 egypt_behavior <- actdata::epa_subset(dataset = "egypt2015", 
                                       component = "behavior", 
-                                      gender = "average", 
+                                      group = "all", 
                                       stat = c("mean", "cov")) %>% 
   dplyr::semi_join(actdata::epa_subset(dataset = "usfullsurveyor2015", 
                                        component = "behavior", 
-                                       gender = "average"), 
+                                       group = "all"), 
                    by = "term")
 
 us_behavior <- actdata::epa_subset(dataset = "usfullsurveyor2015", 
                                    component = "behavior", 
-                                   gender = "average", 
+                                   group = "all", 
                                    stat = c("mean", "cov")) %>% 
   dplyr::semi_join(actdata::epa_subset(dataset = "egypt2015", 
                                        component = "behavior", 
-                                       gender = "average"), 
+                                       group = "all"), 
                    by = "term")
 
 head(egypt_identity)
@@ -146,7 +146,7 @@ nodelist <- add_actor(nodelist,
 nodelist <- add_actor(nodelist, 
                       name = "Reem", 
                       dicts = list(egypt_identity, egypt_behavior, egypt_identity, "egypt2015"), 
-                      eqns = "egypt2014", eqns_gender = c("av", "f"), 
+                      eqns = "egypt2014", eqns_group = c("all", "f"), 
                       alphas = 1)
 ```
 
@@ -250,7 +250,7 @@ nodelist <- add_actor(nodelist,
 nodelist <- add_actor(nodelist, 
                       name = "Reem", 
                       dicts = list(egypt_identity, egypt_behavior, egypt_identity, "egypt2015"), 
-                      eqns = "egypt2014", eqns_gender = c("av", "f"), 
+                      eqns = "egypt2014", eqns_group = c("all", "f"), 
                       alphas = 1)
 
 eventlist <- basic_event_df(n = 6, 
@@ -302,7 +302,7 @@ nodelist <- add_actor(nodelist,
 nodelist <- add_actor(nodelist, 
                       name = "Reem", 
                       dicts = list(egypt_identity, egypt_behavior, egypt_identity, "egypt2015"), 
-                      eqns = "egypt2014", eqns_gender = c("av", "f"), 
+                      eqns = "egypt2014", eqns_group = c("all", "f"), 
                       alphas = 1)
 
 eventlist <- basic_event_df(n = 6, 

@@ -4,9 +4,9 @@ test_that("dict-stat compatibility", {
   expect_error(check_dict_stat(c("usfullsurveyor2015", "uga2015", "nc1978", "germany2007"), c("mean", "mean", "mean", "cov")))
 })
 
-test_that("dict-gender compatibility", {
-  expect_true(check_dict_gender(c("usfullsurveyor2015", "nc1978", "nc1978", "politics2003"), c("average", "male", "female", "average")))
-  expect_error(check_dict_gender(c("usfullsurveyor2015", "nc1978", "usfullsurveyor2015", "politics2003"), c("female", "male", "female", "average")))
+test_that("dict-group compatibility", {
+  expect_true(check_dict_group(c("usfullsurveyor2015", "nc1978", "nc1978", "politics2003"), c("all", "male", "female", "all")))
+  expect_error(check_dict_group(c("usfullsurveyor2015", "nc1978", "usfullsurveyor2015", "politics2003"), c("female", "male", "female", "all")))
 })
 
 test_that("dict-component compatibility", {

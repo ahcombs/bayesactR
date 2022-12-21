@@ -4,12 +4,12 @@
 \alias{make_file_string}
 \title{Construct file string (dictionary)}
 \usage{
-make_file_string(dict, spec, key, gender, component, stat, bayesact_dir)
+make_file_string(dict, spec, key, group, component, stat, bayesact_dir)
 }
 \arguments{
 \item{dict}{string}
 
-\item{gender}{string (\code{"average"}, \code{"female"}, \code{"male"})}
+\item{group}{string (\code{"all"}, \code{"female"}, \code{"male"})}
 
 \item{component}{string (\code{"identity"}, \code{"behavior"}, \code{"setting"}, \code{"modifier"})}
 

@@ -19,7 +19,7 @@
 #' blank_nodelist(use.alphas = TRUE, use.numsamples = TRUE)
 #' blank_nodelist(use.alphas = TRUE, use.betas = TRUE, use.deltas = TRUE)
 blank_nodelist <- function(use.alphas = FALSE, use.betas = FALSE, use.deltas = FALSE, use.numsamples = FALSE){
-  cols = c("name", "dict", "dict_stat", "dict_gender", "eqns", "eqns_gender")
+  cols = c("name", "dict", "dict_stat", "dict_group", "eqns", "eqns_group")
   if(use.alphas){ cols <- append(cols, "alphas") }
   if(use.betas){ cols <- append(cols, "betas") }
   if(use.deltas){ cols <- append(cols, "deltas") }
@@ -88,7 +88,7 @@ blank_edgelist <- function(use.institution = FALSE, use.rseed = FALSE){
 #'     sentiment dictionaries and equation sets, and it and bayesactR were developed to
 #'     complement each other. If using dictionaries and/or equations from actdata, provide
 #'     the applicable keyword as the dict or eqns argument. To see information about available
-#'     data sets and gender subsets, see the package readme or call [actdata::dict_info()] or
+#'     data sets and group subsets, see the package readme or call [actdata::dict_info()] or
 #'     [actdata::eqn_info()].
 #' * Dictionaries can also be provided as data frame objects. This is particularly useful
 #'     when you wish to use a subset of terms from a public dictionary–for example, perhaps
@@ -138,8 +138,8 @@ blank_edgelist <- function(use.institution = FALSE, use.rseed = FALSE){
 #' * 3: A list of four file paths to csv files containing the required dictionaries.
 #' @param dict_stat string or string list length 4: stat of provided dictionaries (mean,
 #'     cov, sd). For data sets in actdata, check available stats with [actdata::dict_info()].
-#' @param dict_gender string or string list length 4: gender of provided dictionaries (av,
-#'     female, male). For data sets in actdata, check available genders with [actdata::dict_info()].
+#' @param dict_group string or string list length 4: respondent subset of provided dictionaries (usually genders; all,
+#'     female, male). For data sets in actdata, check available groups with [actdata::dict_info()].
 #' @param dict_file_prefix prefix to append to dictionary data files that
 #'     are written out. Default is "dict."
 #' @param eqns string or string list length 2 providing equations to use. See Details. Entries must either by
@@ -147,9 +147,9 @@ blank_edgelist <- function(use.institution = FALSE, use.rseed = FALSE){
 #'     provided as a length 2 list, the first entry is used as the impression ABO coefficients and
 #'     the second as the emotion coefficients. If a single entry (only possible for coefficients in
 #'     actdata), the function attempts to find these two components itself.
-#' @param eqns_gender string or string list length 2: gender of equations to use (av, female,
-#'     male). For datasets in actdata, check available genders with [actdata::eqn_info()]. An error
-#'     is thrown if the specified equation set is not available for the specified gender.
+#' @param eqns_group string or string list length 2: respondent subset of equations to use (usually genders; all, female,
+#'     male). For datasets in actdata, check available groups with [actdata::eqn_info()]. An error
+#'     is thrown if the specified equation set is not available for the specified group.
 #' @param alphas numeric or numeric list length 3: alpha value(s) to use. See Details.
 #' @param betas numeric or numeric list length 2: beta value(s) to use. See Details.
 #' @param deltas numeric or numeric list length 2: delta value(s) to use. See Details.
@@ -167,8 +167,8 @@ blank_edgelist <- function(use.institution = FALSE, use.rseed = FALSE){
 #' nodelist <- add_actor(nodelist, name = "Jamal",
 #'     dicts = c("indiana2003", "usmturk2015", "indiana2003", "indiana2003"), alphas = .5)
 add_actor <- function(nodelist, name,
-                      dicts = "usfullsurveyor2015", dict_stat = "mean", dict_gender = "av", dict_file_prefix = "dict",
-                      eqns = "us2010", eqns_gender = c("av", "female"),
+                      dicts = "usfullsurveyor2015", dict_stat = "mean", dict_group = "all", dict_file_prefix = "dict",
+                      eqns = "us2010", eqns_group = c("all", "female"),
                       alphas = NA, betas = NA, deltas = NA, numsamples = NA){
 
   # need to do some manipulating to get the dict column in the right format--nested tibble
@@ -191,16 +191,16 @@ add_actor <- function(nodelist, name,
   line <- tibble::tibble(name = name,
                          dict = d_entry,
                          dict_stat = standardize_option(dict_stat, "stat", version = "dict"),
-                         dict_gender = standardize_option(dict_gender, "gender", version = "dict"),
+                         dict_group = standardize_option(dict_group, "group", version = "dict"),
                          eqns = toString(eqns),
-                         eqns_gender = toString(standardize_option(eqns_gender, "gender", version = "eqn")))
+                         eqns_group = toString(standardize_option(eqns_group, "group", version = "eqn")))
   if(!all(is.na(alphas))){ line$alphas <- toString(alphas) }
   if(!all(is.na(betas))){ line$betas <- toString(betas) }
   if(!all(is.na(deltas))){ line$deltas <- toString(deltas) }
   if(!all(is.na(numsamples))){ line$numsamples <- toString(numsamples) }
 
    joined <- plyr::rbind.fill(nodelist, line)
-   joined <- dplyr::select(joined, intersect(c("name", "dict", "dict_stat", "dict_gender", "eqns", "eqns_gender", "alphas", "betas", "deltas", "numsamples"), names(joined)))
+   joined <- dplyr::select(joined, intersect(c("name", "dict", "dict_stat", "dict_group", "eqns", "eqns_group", "alphas", "betas", "deltas", "numsamples"), names(joined)))
    return(joined)
 }
 

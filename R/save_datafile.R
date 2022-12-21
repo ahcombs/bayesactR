@@ -18,22 +18,22 @@ save_eqn_actdata <- function(data, dataname, bayesact_dir){
 
 #' Given a key and assorted information OR a dataframe, construct and return a sensible file name.
 #'
-#' This will be in format "key_gender_component_stat.csv" if the dict was provided via actdata key,
+#' This will be in format "key_group_component_stat.csv" if the dict was provided via actdata key,
 #' or "dfname.csv" if the dict was provided as a dataframe.
 #'
 #' These are all dictionaries and so should be csvs
 #'
 #' @param df dataframe object
 #' @param key key string
-#' @param gender gender string
+#' @param group group string
 #' @param component component string
 #' @param stat stat string
 #'
 #' @return string with the filename
 #' @keywords internal
-construct_df_filename <- function(df = NA, key = "", gender = "", component = "", stat = ""){
+construct_df_filename <- function(df = NA, key = "", group = "", component = "", stat = ""){
   if(!is.data.frame(df) & !tibble::is_tibble(df)){
-    file <- paste0(paste0(key, "_", component, "_", gender, "_", stat), ".csv")
+    file <- paste0(paste0(key, "_", component, "_", group, "_", stat), ".csv")
   } else {
     file <-  paste0("dict_", component,".csv")
   }

@@ -143,16 +143,16 @@ check_dict_components <- function(dictname, indices = c(1, 2, 3, 4)){
 }
 
 
-#' Compatibility check: dictionary and gender
+#' Compatibility check: dictionary and group
 #'
-#' this checks that the provided dictionary has the requested gender (if it is an included dict). This will look different when things are provided as a list versus as singular.
+#' this checks that the provided dictionary has the requested group (if it is an included dict). This will look different when things are provided as a list versus as singular.
 #'
 #' @param dictname string or length 4 vector
-#' @param gender string or length 4 vector (\code{"av"}, \code{"m"}, \code{"f"})
+#' @param group string or length 4 vector (\code{"all"}, \code{"m"}, \code{"f"})
 #'
 #' @return boolean for successful check
 #' @keywords internal
-check_dict_gender <- function(dictname, gender, indices = c(1, 2, 3, 4)){
+check_dict_group <- function(dictname, group, indices = c(1, 2, 3, 4)){
   # check for file inputs--if all four entries are file inputs, no need to check
   # file <- TRUE
   # for(i in indices){
@@ -171,14 +171,14 @@ check_dict_gender <- function(dictname, gender, indices = c(1, 2, 3, 4)){
         # is this entry a file? If so skip this check
         # if(!fileinput(dictname[i])){
           d <- dictname[i]
-          # if(length(gender) == 4){
-            g <- gender[i]
+          # if(length(group) == 4){
+            g <- group[i]
           # } else {
-          #   g <- gender
+          #   g <- group
           # }
           thisdict <- actdata::this_dict(d)
-          if(!(g %in% thisdict@genders)){
-            stop("At least one requested dictionary does not contain responses from requested gender")
+          if(!(g %in% thisdict@groups)){
+            stop("At least one requested dictionary does not contain responses from requested group")
           }
         }
       # }
@@ -186,17 +186,17 @@ check_dict_gender <- function(dictname, gender, indices = c(1, 2, 3, 4)){
     # dictionary provided as single keyword
     # else {
     #   thisdict <- actdata::this_dict(dictname)
-    #   # gender still may be length 4
-    #   if(length(gender) == 4){
+    #   # group still may be length 4
+    #   if(length(group) == 4){
     #     for(i in 1:4){
-    #       g <- gender[i]
-    #       if(!(g %in% thisdict@genders)){
-    #         stop("At least one requested dictionary does not contain responses from requested gender")
+    #       g <- group[i]
+    #       if(!(g %in% thisdict@groups)){
+    #         stop("At least one requested dictionary does not contain responses from requested group")
     #       }
     #     }
     #   } else {
-    #     if(!(gender %in% thisdict@genders)){
-    #       stop("At least one requested dictionary does not contain responses from requested gender")
+    #     if(!(group %in% thisdict@groups)){
+    #       stop("At least one requested dictionary does not contain responses from requested group")
     #     }
     #   }
     # }

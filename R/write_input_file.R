@@ -73,7 +73,7 @@ write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eve
   agentlines <- c()
   agentfiledf <- data.frame(identity1 = NA, behavior = NA, identity2 = NA, mod = NA)
   for(i in 1:nrow(nodelist)){
-    mandatory_args <- c("name", "dict", "dict_stat", "dict_gender", "eqns", "eqns_gender")
+    mandatory_args <- c("name", "dict", "dict_stat", "dict_group", "eqns", "eqns_group")
     a <- get_lists(nodelist[i,])
     a_mand <- a[,mandatory_args]
     a_trim <- dplyr::select(a, function(x) (!is.na(x) & x != ""))
@@ -86,9 +86,9 @@ write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eve
                       bayesact_dir = bayesact_dir,
                       dict = extract_dict_list(input = a$dict),
                       dict_stat = unlist(a$dict_stat),
-                      dict_gender = unlist(a$dict_gender),
+                      dict_group = unlist(a$dict_group),
                       eqns = unlist(a$eqns),
-                      eqns_gender = unlist(a$eqns_gender),
+                      eqns_group = unlist(a$eqns_group),
                       opt_args = subset(a, select = opt_args))
 
     agentlines <- append(agentlines, newlines)
@@ -185,17 +185,17 @@ write_input_from_df <- function(nodelist, edgelist, eventslist, simfilename, eve
 #' @param name string agent name
 #' @param dict string or length 4 vector, key(s) of an available dictionary OR filepaths OR data frames. If there are any file paths or data frames, it must be a length 4 vector.
 #' @param dict_stat string or length 4 vector (\code{"mean"}, \code{"sd"}, or \code{"cov"})
-#' @param dict_gender string or length 4 vector (\code{"average"}, \code{"male"}, or \code{"female"})
-#' @param eqns string or length 2 vector, key(s) of an available equation set OR filepath(s). First is gender for impression ABO equation, second is gender for emotion equation.
-#' @param eqns_gender string or length 2 vector (\code{"av"}, \code{"f"}, or \code{"m"}). First is gender for impression ABO equation, second is gender for emotion equation.
+#' @param dict_group string or length 4 vector (\code{"all"}, \code{"male"}, or \code{"female"})
+#' @param eqns string or length 2 vector, key(s) of an available equation set OR filepath(s). First is group for impression ABO equation, second is group for emotion equation.
+#' @param eqns_group string or length 2 vector (\code{"all"}, \code{"f"}, or \code{"m"}). First is group for impression ABO equation, second is group for emotion equation.
 #' @param bayesact_dir top level directory at which the bayesact code lives
 #' @param opt_args more agent-level parameters that may or may not be included
 #'
 #' @return file with inserted lines
 #' @keywords internal
 agent <- function(name, bayesact_dir,
-                  dict = "usfullsurveyor2015", dict_stat = "mean", dict_gender = 'average',
-                  eqns = "us2010", eqns_gender = c('av', "female"),
+                  dict = "usfullsurveyor2015", dict_stat = "mean", dict_group = 'all',
+                  eqns = "us2010", eqns_group = c('av', "female"),
                   opt_args = ""){
 
   component_order <- c("identity", "behavior", "identity", "modifier")
@@ -203,7 +203,7 @@ agent <- function(name, bayesact_dir,
   # TODO: I probably don't need all the defaults here, though they aren't hurting anything so I will ignore for now
   # TODO: Need to standardize language between agent/actor, agentlist/nodelist.
 
-  ##### NECESSARY ARGUMENTS: name, dict, dict_stat, dict_gender, eqns, eqns_gender
+  ##### NECESSARY ARGUMENTS: name, dict, dict_stat, dict_group, eqns, eqns_group
 
   # Three options for dictionary format:
   # 1. A file path. Like before, don't do anything with these, just pass along to bayesact
@@ -244,10 +244,10 @@ agent <- function(name, bayesact_dir,
                    allowsingle = TRUE,
                    allowfile = TRUE)
 
-  # same with equation gender: standardize this input first
-  eqns_gender <- standardize_option(eqns_gender, param = "gender", version = "eqn")
-  check_input_list(eqns_gender,
-                   allowlist = c("av", "f", "m"),
+  # same with equation group: standardize this input first
+  eqns_group <- standardize_option(eqns_group, param = "group", version = "eqn")
+  check_input_list(eqns_group,
+                   allowlist = c("all", "f", "m"),
                    allowlength = 2,
                    allowsingle = TRUE,
                    allowfile = TRUE)
@@ -255,9 +255,9 @@ agent <- function(name, bayesact_dir,
   # to make line spec and compatibility checking easier, expand single strings to vectors of correct length
   dict <- expand(dict, 4)
   dict_stat <- expand(dict_stat, 4)
-  dict_gender <- expand(dict_gender, 4)
+  dict_group <- expand(dict_group, 4)
   eqns <- expand(eqns, 2)
-  eqns_gender <- expand(eqns_gender, 2)
+  eqns_group <- expand(eqns_group, 2)
 
   ### CHECK COMPATIBILTY
   # this isn't necessary for dfs and files; just check indices that are keys
@@ -267,15 +267,15 @@ agent <- function(name, bayesact_dir,
   # check that provided dictionaries contain necessary components
   check_dict_components(dict, indices)
 
-  # check that dictionary has the requested gender
-  check_dict_gender(dict, dict_gender, indices)
+  # check that dictionary has the requested group
+  check_dict_group(dict, dict_group, indices)
 
   # check that the dict_name and dict_stat are compatible with one another
   check_dict_stat(dict, dict_stat, indices)
 
-  # # check that equations have specified genders
+  # # check that equations have specified groups
   # NOW UNNECESSARY since this is done when I retrieve the file
-  # check_eqn_gender(eqns, eqns_gender)
+  # check_eqn_group(eqns, eqns_group)
 
 
   ##### OPTIONAL AGENT ARGUMENTS: alphas, betas, deltas, numsamples
@@ -290,9 +290,9 @@ agent <- function(name, bayesact_dir,
   keys <- c("","","","")
   for(i in 1:length(specs)){
     if(specs[i] == "key"){
-      # only need to check gender if a key is provided
-      check_input_list(dict_gender,
-                       allowlist = c("average", "female", "male"),
+      # only need to check group if a key is provided
+      check_input_list(dict_group,
+                       allowlist = c("all", "female", "male"),
                        allowlength = 4,
                        allowsingle = TRUE,
                        checkindex = i)
@@ -304,7 +304,7 @@ agent <- function(name, bayesact_dir,
       }
 
       keys[i] <- dict[[i]]
-      subset <- actdata::epa_subset(dataset = dict[[i]], gender = dict_gender[i], component = component_order[i], stat = stats_to_subset)
+      subset <- actdata::epa_subset(dataset = dict[[i]], group = dict_group[i], component = component_order[i], stat = stats_to_subset)
       d[[i]] <- suppressMessages(actdata::format_for_bayesact(subset, stat = dict_stat[i]))
 
     } else if (specs[i] == "df"){
@@ -323,13 +323,13 @@ agent <- function(name, bayesact_dir,
   # try line by line
   nametxt <- paste0('agent: ', name)
   # get dictionary filepaths
-  dict1 <- paste0("dictionary: AGENT : ", make_file_string(dict = d[[1]], spec = specs[1], key = keys[1], gender = dict_gender[1], component = "identity", stat = dict_stat[1], bayesact_dir = bayesact_dir), " : ", toupper(dict_stat[1]))
-  dict2 <- paste0("dictionary: BEHAVIOUR : ", make_file_string(d[[2]], spec = specs[2], key = keys[2], dict_gender[2], component = "behavior", stat = dict_stat[2], bayesact_dir), " : ", toupper(dict_stat[2]))
-  dict3 <- paste0("dictionary: CLIENT : ", make_file_string(d[[3]], spec = specs[3], key = keys[3], dict_gender[3], component = "identity", stat = dict_stat[3], bayesact_dir), " : ", toupper(dict_stat[3]))
-  dict4 <- paste0("dictionary: EMOTION : ", make_file_string(d[[4]], spec = specs[4], key = keys[4], dict_gender[4], component = "modifier", stat = dict_stat[4], bayesact_dir), " : ", toupper(dict_stat[4]))
+  dict1 <- paste0("dictionary: AGENT : ", make_file_string(dict = d[[1]], spec = specs[1], key = keys[1], group = dict_group[1], component = "identity", stat = dict_stat[1], bayesact_dir = bayesact_dir), " : ", toupper(dict_stat[1]))
+  dict2 <- paste0("dictionary: BEHAVIOUR : ", make_file_string(d[[2]], spec = specs[2], key = keys[2], dict_group[2], component = "behavior", stat = dict_stat[2], bayesact_dir), " : ", toupper(dict_stat[2]))
+  dict3 <- paste0("dictionary: CLIENT : ", make_file_string(d[[3]], spec = specs[3], key = keys[3], dict_group[3], component = "identity", stat = dict_stat[3], bayesact_dir), " : ", toupper(dict_stat[3]))
+  dict4 <- paste0("dictionary: EMOTION : ", make_file_string(d[[4]], spec = specs[4], key = keys[4], dict_group[4], component = "modifier", stat = dict_stat[4], bayesact_dir), " : ", toupper(dict_stat[4]))
   # get equation filepaths
-  dyn1 <- paste0("dynamics: IMPRESSION : ", get_eqn_file(key = eqns[1], gender = eqns_gender[1], component = "impressionabo", bayesact_dir))
-  dyn2 <- paste0("dynamics: EMOTION : ", get_eqn_file(eqns[2], eqns_gender[2], "emotionid", bayesact_dir))
+  dyn1 <- paste0("dynamics: IMPRESSION : ", get_eqn_file(key = eqns[1], group = eqns_group[1], component = "impressionabo", bayesact_dir))
+  dyn2 <- paste0("dynamics: EMOTION : ", get_eqn_file(eqns[2], eqns_group[2], "emotionid", bayesact_dir))
 
   end <- "endagent"
   blank <- ""

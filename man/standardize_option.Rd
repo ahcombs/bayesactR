@@ -9,7 +9,7 @@ standardize_option(input, param, version = "dict")
 \arguments{
 \item{input}{the string to standardize}
 
-\item{param}{the dictionary parameter expected (gender, component, stat)}
+\item{param}{the dictionary parameter expected (group, component, stat)}
 
 \item{version}{dict or eqn}
 }

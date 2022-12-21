@@ -9,9 +9,9 @@ agent(
   bayesact_dir,
   dict = "usfullsurveyor2015",
   dict_stat = "mean",
-  dict_gender = "average",
+  dict_group = "all",
   eqns = "us2010",
-  eqns_gender = c("av", "female"),
+  eqns_group = c("av", "female"),
   opt_args = ""
 )
 }
@@ -24,11 +24,11 @@ agent(
 
 \item{dict_stat}{string or length 4 vector (\code{"mean"}, \code{"sd"}, or \code{"cov"})}
 
-\item{dict_gender}{string or length 4 vector (\code{"average"}, \code{"male"}, or \code{"female"})}
+\item{dict_group}{string or length 4 vector (\code{"all"}, \code{"male"}, or \code{"female"})}
 
-\item{eqns}{string or length 2 vector, key(s) of an available equation set OR filepath(s). First is gender for impression ABO equation, second is gender for emotion equation.}
+\item{eqns}{string or length 2 vector, key(s) of an available equation set OR filepath(s). First is group for impression ABO equation, second is group for emotion equation.}
 
-\item{eqns_gender}{string or length 2 vector (\code{"av"}, \code{"f"}, or \code{"m"}). First is gender for impression ABO equation, second is gender for emotion equation.}
+\item{eqns_group}{string or length 2 vector (\code{"all"}, \code{"f"}, or \code{"m"}). First is group for impression ABO equation, second is group for emotion equation.}
 
 \item{opt_args}{more agent-level parameters that may or may not be included}
 }
