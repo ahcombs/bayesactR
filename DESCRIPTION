@@ -1,6 +1,6 @@
 Package: bayesactR
 Title: Functions for Running BayesACT Simulations Using an R Workflow
-Version: 0.0.0.9003
+Version: 0.0.0.9004
 Authors@R: 
     person(given = "Aidan",
            family = "Combs",
