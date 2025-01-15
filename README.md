@@ -4,6 +4,7 @@
 # bayesactR
 
 <!-- badges: start -->
+[![DOI](https://zenodo.org/badge/337827226.svg)](https://doi.org/10.5281/zenodo.14652420)
 <!-- badges: end -->
 
 bayesactR provides utilities that allow R users to run simulations using
