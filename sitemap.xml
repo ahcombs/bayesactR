@@ -1,162 +1,56 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/404.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/articles/bayesactR.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/articles/output.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/articles/run_elements.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/index.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/absolute_path.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/add_actor.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/add_interaction.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/add_leading_zeros.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/agent.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/basic_event_df.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/blank_edgelist.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/blank_nodelist.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_abbrev.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_agent_opt_args.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_dict_components.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_dict_group.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_dict_stat.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_events.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_exit.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_identity_prob_match.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_input_list.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_interaction_opt_args.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/check_probs.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/component_split.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/construct_df_filename.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/create_dir_if_needed.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/dict_specs.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/event_lines.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/eventfile_out.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/expand.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/extract_dict_list.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/fileinput.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/get_actor_prob_line.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/get_agent_opt_arg_lines.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/get_eqn_file.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/get_interaction_opt_arg_lines.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/get_lists.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/insert_lines.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/interaction.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/make_file_string.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/remove_line.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/run_bayesact.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/save_dict_df.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/save_eqn_actdata.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/simfile_out.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/standardize_option.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/wait_until_done.html</loc>
-  </url>
-  <url>
-    <loc>https://ahcombs.github.io/bayesactR/reference/write_input_from_df.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://ahcombs.github.io/bayesactR/404.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/LICENSE.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/articles/bayesactR.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/articles/index.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/articles/output.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/articles/run_elements.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/authors.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/index.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/absolute_path.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/add_actor.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/add_interaction.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/add_leading_zeros.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/agent.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/basic_event_df.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/blank_edgelist.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/blank_nodelist.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_abbrev.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_agent_opt_args.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_dict_components.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_dict_group.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_dict_stat.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_events.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_exit.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_identity_prob_match.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_input_list.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_interaction_opt_args.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/check_probs.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/component_split.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/construct_df_filename.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/create_dir_if_needed.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/dict_specs.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/event_lines.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/eventfile_out.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/expand.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/extract_dict_list.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/fileinput.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/get_actor_prob_line.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/get_agent_opt_arg_lines.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/get_eqn_file.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/get_interaction_opt_arg_lines.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/get_lists.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/index.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/insert_lines.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/interaction.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/make_file_string.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/remove_line.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/run_bayesact.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/save_dict_df.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/save_eqn_actdata.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/simfile_out.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/standardize_option.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/wait_until_done.html</loc></url>
+<url><loc>https://ahcombs.github.io/bayesactR/reference/write_input_from_df.html</loc></url>
 </urlset>
+
